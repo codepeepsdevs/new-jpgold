@@ -2,20 +2,78 @@
 @tailwind components;
 @tailwind utilities;
 
+.container {
+  @apply mx-auto max-w-[90%] sm:max-w-[93%];
+}
+
+/* manrope */
+
+@font-face {
+  font-family: "manrope-extraLight";
+  src: url("/fonts/manrope/Manrope-ExtraLight.ttf") format("truetype");
+}
+
+@font-face {
+  font-family: "manrope-light";
+  src: url("/fonts/manrope/Manrope-Light.ttf") format("truetype");
+}
+
+@font-face {
+  font-family: "manrope-regular";
+  src: url("/fonts/manrope/Manrope-Regular.ttf") format("truetype");
+}
+
+@font-face {
+  font-family: "manrope-medium";
+  src: url("/fonts/manrope/Manrope-Medium.ttf") format("truetype");
+}
+
+@font-face {
+  font-family: "manrope-semiBold";
+  src: url("/fonts/manrope/Manrope-SemiBold.ttf") format("truetype");
+}
+
+@font-face {
+  font-family: "manrope-bold";
+  src: url("/fonts/manrope/Manrope-Bold.ttf") format("truetype");
+}
+
+@font-face {
+  font-family: "manrope-extraBold";
+  src: url("/fonts/manrope/Manrope-ExtraBold.ttf") format("truetype");
+}
+
+/* instrumental sans */
+
+@font-face {
+  font-family: "instrumental-sans-regular";
+  src: url("/fonts/instrumental-sans/InstrumentSans-Regular.ttf")
+    format("truetype");
+}
+
+@font-face {
+  font-family: "instrumental-sans-medium";
+  src: url("/fonts/instrumental-sans/InstrumentSans-Medium.ttf")
+    format("truetype");
+}
+
+@font-face {
+  font-family: "instrumental-sans-semiBold";
+  src: url("/fonts/instrumental-sans/InstrumentSans-Bold.ttf")
+    format("truetype");
+}
+
+@font-face {
+  font-family: "instrumental-sans-bold";
+  src: url("/fonts/instrumental-sans/InstrumentSans-SemiBold.ttf")
+    format("truetype");
+}
+
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  font-family: "manrope-regular", sans-serif !important;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
-}
-
-body {
-  color: var(--foreground);
-  background: var(--background);
-  font-family: Arial, Helvetica, sans-serif;
+* {
+  margin: 0;
+  padding: 0;
 }
