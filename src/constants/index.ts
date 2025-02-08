@@ -1,7 +1,6 @@
 import { FaFacebookSquare } from "react-icons/fa";
 import { RiInstagramFill, RiTelegram2Fill } from "react-icons/ri";
 import { IoLogoLinkedin } from "react-icons/io5";
-import { FaDiscord } from "react-icons/fa6";
 import { FaXTwitter } from "react-icons/fa6";
 
 export const navItems = [
