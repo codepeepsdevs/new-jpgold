@@ -18,7 +18,7 @@ const NFTCard: FC<NFTCardProps> = ({ id, amount, price, imageUrl, verified = fal
 
     return (
         <div
-            className="bg-bg-dark-500 dark:bg-bg-800 rounded-lg transition-transform hover:cursor-pointer duration-200 hover:-translate-y-1 hover:shadow-lg hover:border-primary-500 border border-border-100"
+            className="dark:bg-bg-dark-500 rounded-lg transition-transform hover:cursor-pointer duration-200 hover:-translate-y-1 hover:shadow-lg hover:border-primary-500 border border-border-100"
             onMouseEnter={() => setIsHovered(true)}
             onMouseLeave={() => setIsHovered(false)}
         >
