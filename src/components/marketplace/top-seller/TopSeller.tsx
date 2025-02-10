@@ -34,12 +34,12 @@ const topSellerData = [
 
 const TopSeller = () => {
     return (
-        <section className="w-full py-8">
+        <section className="w-full">
             <h2 className="text-2xl dark:text-white font-bold mb-6 px-4 lg:px-0">Top Sellers</h2>
 
             {/* Mobile slider view */}
             <div className="sm:hidden w-full overflow-x-auto scrollbar-hide">
-                <div className="flex gap-4 px-4 pb-4 snap-x snap-mandatory">
+                <div className="flex gap-4 pb-4 snap-x snap-mandatory">
                     {topSellerData.map((nft) => (
                         <div key={nft.id} className="min-w-[280px] snap-start">
                             <NFTCard {...nft} />
