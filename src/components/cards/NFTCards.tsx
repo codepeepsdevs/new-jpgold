@@ -4,6 +4,8 @@ import { MdVerified } from "react-icons/md";
 import Image, { StaticImageData } from "next/image";
 import { FC, useState } from "react";
 import { FaShoppingCart } from 'react-icons/fa';
+import { useCartStore } from '@/store/useCartStore';
+import { BiTrash } from "react-icons/bi";
 
 interface NFTCardProps {
     id: number;
@@ -15,6 +17,18 @@ interface NFTCardProps {
 
 const NFTCard: FC<NFTCardProps> = ({ id, amount, price, imageUrl, verified = false }) => {
     const [isHovered, setIsHovered] = useState(false);
+    const { addItem, removeItem, items } = useCartStore();
+
+    const isInCart = items.some(item => item.id === id);
+
+    const handleCartClick = (e: React.MouseEvent) => {
+        e.stopPropagation(); // Prevent card click event
+        if (isInCart) {
+            removeItem(id);
+        } else {
+            addItem({ id, amount, price, imageUrl, verified });
+        }
+    };
 
     return (
         <div
@@ -57,23 +71,33 @@ const NFTCard: FC<NFTCardProps> = ({ id, amount, price, imageUrl, verified = fal
 
                 {isHovered ? (
                     <div className="w-full flex justify-between items-center gap-2">
-                        <button className="w-5/6 bg-gold-200 p-3 font-medium text-white rounded-lg">Buy (${price.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })})</button>
-
-
-                        <button className="w-1/6 bg-black/5 dark:bg-white/5 h-fit hover:bg-primary-600 p-4 rounded-lg transition-colors duration-200">
-
+                        <button className="w-5/6 bg-gold-200 p-3 font-medium text-white rounded-lg">
+                            Buy (${price.toLocaleString('en-US', { minimumFractionDigits: 2 })})
+                        </button>
+                        <button
+                            onClick={handleCartClick}
+                            className={`w-1/6 ${isInCart ? 'bg-primary-500' : 'bg-black/5 dark:bg-white/5'} h-fit hover:bg-primary-600 p-4 rounded-lg transition-colors duration-200`}
+                        >
                             <div className="top-0 h-full rounded-r-lg flex items-center justify-center">
-                                <FaShoppingCart className="text-black dark:text-white" size={20} />
+                                {isInCart ? (
+                                    <BiTrash className="text-red-500 dark:text-red-500" size={20} />
+                                ) : (
+                                    <FaShoppingCart className={'text-black dark:text-white'} size={20} />
+                                )}
                             </div>
                         </button>
                     </div>
-                ) : <div className="w-full flex justify-between items-center gap-2">
-                    <button className="dark:text-white text-xl p-4 font-bold">${price.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</button>
-
-                </div>}
+                ) : (
+                    <div className="w-full flex justify-between items-center gap-2">
+                        <button className="dark:text-white text-xl p-4 font-bold">
+                            ${price.toLocaleString('en-US', { minimumFractionDigits: 2 })}
+                        </button>
+                    </div>
+                )}
             </div>
         </div>
     );
 };
 
 export default NFTCard;
+
