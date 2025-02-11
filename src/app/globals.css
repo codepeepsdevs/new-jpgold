@@ -3,7 +3,7 @@
 @tailwind utilities;
 
 .container {
-  @apply mx-auto max-w-[90%] sm:max-w-[93%];
+  @apply mx-auto max-w-[90%] sm:max-w-[95%];
 }
 
 /* manrope */
@@ -76,4 +76,13 @@
 * {
   margin: 0;
   padding: 0;
+}
+
+.heroarea-bg {
+  background-image: url(../../public/images/root/home/heroBg.png);
+  background-position: right;
+  background-color: transparent;
+  background-repeat: no-repeat;
+  background-size: 100% 100%;
+  z-index: 10;
 }
