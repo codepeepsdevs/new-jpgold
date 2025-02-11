@@ -2,7 +2,6 @@
 import Image from "next/image";
 import images from "../../../public/images";
 import Socials from "./Socials";
-import path from "path";
 import { footerLinks } from "@/constants";
 import Link from "next/link";
 import { useTheme } from "@/store/theme.store";
