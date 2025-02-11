@@ -3,7 +3,7 @@
 @tailwind utilities;
 
 .container {
-  @apply mx-auto max-w-[90%] sm:max-w-[93%];
+  @apply mx-auto max-w-[90%] sm:max-w-[95%];
 }
 
 /* manrope */
