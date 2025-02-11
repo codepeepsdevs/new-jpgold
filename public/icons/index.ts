@@ -1,4 +1,9 @@
+import { AuthApple, AuthFacebook, AuthGoogle, CheckCircle } from "./auth";
+import { toastSuccessIcon, toastErrorIcon } from "./toast";
+
 const home = {};
+
+const auth = { AuthApple, AuthFacebook, AuthGoogle, CheckCircle };
 
 const about = {};
 
@@ -14,4 +19,7 @@ export default {
   marketplace,
   cart,
   team,
+  auth,
+  toastSuccessIcon,
+  toastErrorIcon,
 };
