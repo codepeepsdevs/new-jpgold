@@ -44,11 +44,11 @@ const NFTCard: FC<NFTCardProps> = ({ id, amount, price, imageUrl, verified = fal
 
     return (
         <div
-            className="dark:bg-bg-dark-500 rounded-lg transition-transform hover:cursor-pointer duration-200 hover:-translate-y-1 shadow-lg"
+            className="dark:bg-bg-dark-500 rounded-lg transition-transform hover:cursor-pointer duration-200 hover:-translate-y-[0.2rem] shadow-lg"
             onMouseEnter={() => setIsHovered(true)}
             onMouseLeave={() => setIsHovered(false)}
         >
-            <div onClick={handleCardClick} className="h-[200px] rounded-t-xl border-2 border-[#FBF5DE] relative bg-gold-100/50 dark:bg-gold-dark-100 p-4">
+            <div onClick={handleCardClick} className="h-[200px] rounded-t-xl border-2 border-[#FBF5DE] dark:border-none relative bg-gold-100/50 dark:bg-gold-dark-100 p-4">
                 <div className="relative h-full w-full flex items-center justify-center">
                     <Image
                         src={imageUrl}

@@ -320,7 +320,7 @@ const NFTList = () => {
 
             {/* Content */}
             {isGridView ? (
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
                     {paginatedData.map((row) => (
                         <NFTCard key={row.original.id} {...row.original} />
                     ))}
