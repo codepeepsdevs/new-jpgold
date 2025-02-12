@@ -34,6 +34,10 @@ export interface IVerifyEmail {
   token: string;
 }
 
+export interface IForgotPassword {
+  email: string;
+}
+
 export interface RVerifyEmail extends IResponse {}
 
 // verify two fa
@@ -42,4 +46,17 @@ export interface IVerifyTwoFa {
   otpCode: string;
 }
 
-export interface RVerifyTwoFa extends IResponse {}
+export interface RVerifyTwoFa extends IResponse {
+  accessToken: string;
+  user: IUser;
+}
+
+export interface RForgotPassword extends IResponse {}
+
+export interface IResetPassword {
+  token: string;
+  password: string;
+  confirmPassword: string;
+}
+
+export interface RResetPassword extends IResponse {}

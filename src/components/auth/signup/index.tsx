@@ -16,6 +16,7 @@ import { RRegister } from "@/api/auth/auth.types";
 import { useRegister } from "@/api/auth/auth.queries";
 import SuccessToast from "@/components/toast/SuccessToast";
 import ErrorToast from "@/components/toast/ErrorToast";
+import { useTheme } from "@/store/theme.store";
 
 const schema = yup.object().shape({
   fullName: yup.string().required("Full Name is required"),
@@ -43,6 +44,7 @@ const Signup = () => {
     mode: "onChange",
   });
 
+  const theme = useTheme();
   const navigate = useNavigate();
   const { register, handleSubmit, formState, reset, setValue } = form;
   const { errors, isValid } = formState;
@@ -84,16 +86,17 @@ const Signup = () => {
         <div className="w-full flex items-center flex-col">
           <Image
             onClick={() => navigate("/", "replace")}
-            src={images.logoSvg}
+            src={theme === "light" ? images.logoSvg : images.logoDarkSvg}
             alt="logo"
           />
-
-          <div className="w-full bg-[#FFFFFF47] mt-10 flex items-center justify-center border border-[#D0D0D0] rounded-2xl py-10">
+          <div className="w-full bg-[#FFFFFF47] dark:text-white dark:bg-[#00000033] mt-10 flex items-center justify-center border border-[#D0D0D0] dark:border-[#E3E3E826] rounded-2xl py-10">
             <div className="w-[90%] sm:w-[80%] flex flex-col gap-6 items-center justify-center">
               {/* headers */}
               <div className="flex flex-col gap-1 text-center">
                 <h1 className="text-2xl font-ibold">Get Started!</h1>
-                <p className="text-sm">create an account</p>
+                <p className="text-sm dark:text-[#FFFFFFA6]">
+                  create an account
+                </p>
               </div>
 
               {/* form */}
@@ -146,7 +149,7 @@ const Signup = () => {
                   type="submit"
                   loading={isPending}
                   className={classNames({
-                    "py-3 md:py-4 mt-3 rounded-[5px]": true,
+                    "py-3 mt-3 rounded-[5px]": true,
                     "bg-[#CA8E0E] text-white": isValid,
                     "bg-[#E6E6E6] text-[#323232]": !isValid,
                   })}
@@ -154,7 +157,7 @@ const Signup = () => {
               </form>
             </div>
           </div>
-          <div className="mt-10">
+          <div className="mt-10 dark:text-[#FFFFFFCC]">
             You already have an account?{" "}
             <Link href="/login" className=" text-[#CC8F00]">
               Login

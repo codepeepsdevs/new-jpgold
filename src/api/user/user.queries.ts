@@ -1,4 +1,4 @@
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQuery } from "@tanstack/react-query";
 import { getUser, updateUserRequest } from "./user.apis";
 import { User } from "@/constants/types";
 import { AxiosError, AxiosResponse } from "axios";

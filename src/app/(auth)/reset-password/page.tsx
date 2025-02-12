@@ -2,7 +2,7 @@ import ResetPassword from "@/components/auth/resetPassword";
 
 const ResetPasswordPage = () => {
   return (
-    <div className="bg-[#F7F7F7] py-10 pt-16">
+    <div className="min-h-screen dark:bg-[#232323]">
       <ResetPassword />
     </div>
   );

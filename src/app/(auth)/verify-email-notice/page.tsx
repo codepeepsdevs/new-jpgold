@@ -3,7 +3,7 @@ import React from "react";
 
 const VerifyEmailNoticePage = () => {
   return (
-    <div className="bg-[#F7F7F7] h-screen py-10 pt-16">
+    <div className="bg-[#F7F7F7] min-h-screen dark:bg-[#232323] py-10 pt-16">
       <VerifyEmailNotice />
     </div>
   );

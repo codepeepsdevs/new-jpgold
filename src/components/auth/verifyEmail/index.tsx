@@ -7,20 +7,32 @@ import { useSearchParams } from "next/navigation";
 import { useEffect } from "react";
 import { toast } from "react-hot-toast";
 import SpinnerLoader from "@/components/SpinnerLoader";
+import SuccessToast from "@/components/toast/SuccessToast";
+import ErrorToast from "@/components/toast/ErrorToast";
 
 const VerifyEmail = () => {
   const searchParams = useSearchParams();
   const token = searchParams.get("token");
   const navigate = useNavigate();
 
-  const onError = (error: AxiosError) => {
-    console.error(error);
-    toast.error("Email verification failed. Please try again.");
+  const onError = (error: any) => {
+    const descriptions = Array.isArray(error?.response?.data?.message)
+      ? error?.response?.data?.message
+      : [error?.response?.data?.message];
+
+    ErrorToast({
+      title: "Verification Failed",
+      descriptions,
+    });
     navigate("/login", "replace");
   };
 
   const onSuccess = () => {
-    toast.success("Email verified successfully!");
+    SuccessToast({
+      title: "Email Verified Successfully",
+      description:
+        "Your email has been confirmed. You can now log in to your account.",
+    });
     navigate("/login", "replace");
   };
 

@@ -1,17 +1,23 @@
 import { useMutation } from "@tanstack/react-query";
 import {
+  forgotPasswordRequest,
   loginRequest,
   registerRequest,
+  resetPasswordRequest,
   verifyEmailRequest,
   verifyTwoFaRequest,
 } from "./auth.apis";
 import {
+  IForgotPassword,
   ILogin,
   IRegister,
+  IResetPassword,
   IVerifyEmail,
   IVerifyTwoFa,
+  RForgotPassword,
   RLogin,
   RRegister,
+  RResetPassword,
   RVerifyEmail,
   RVerifyTwoFa,
 } from "./auth.types";
@@ -61,4 +67,30 @@ export const useVerifyTwoFa = (
   });
 };
 
-export const useForgotPassword = () => {};
+export const useForgotPassword = (
+  onError: (error: AxiosError) => void,
+  onSuccess: (data: AxiosResponse<RForgotPassword>) => void
+) => {
+  return useMutation<
+    AxiosResponse<RForgotPassword>,
+    AxiosError,
+    IForgotPassword
+  >({
+    mutationFn: forgotPasswordRequest,
+    onError,
+    onSuccess,
+  });
+};
+
+export const useResetPassword = (
+  onError: (error: AxiosError) => void,
+  onSuccess: (data: AxiosResponse<RResetPassword>) => void
+) => {
+  return useMutation<AxiosResponse<RResetPassword>, AxiosError, IResetPassword>(
+    {
+      mutationFn: resetPasswordRequest,
+      onError,
+      onSuccess,
+    }
+  );
+};

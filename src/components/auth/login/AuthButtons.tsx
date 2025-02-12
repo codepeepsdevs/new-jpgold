@@ -15,7 +15,7 @@ const AuthButton: React.FC<{
   return (
     <div
       onClick={clickAction}
-      className="w-full flex flex-items justify-center py-2 gap-2 border border-[#E6E6E6] rounded cursor-pointer"
+      className="w-full flex flex-items justify-center py-2 gap-2 border border-[#E6E6E6] dark:border-[#3D3D3D] dark:text-[#FFFFFFCC] rounded cursor-pointer"
     >
       <Image src={icon} alt="auth button" />
       <p className="font-semibold text-sm">{label}</p>

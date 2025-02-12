@@ -52,7 +52,7 @@ const AuthInput = forwardRef<HTMLInputElement, AuthInputProps>(
           </label>
         </div>
         <div
-          className={`w-full flex gap-2 justify-center items-center bg-bg-2000 dark:bg-bg-2100 border border-border-600 rounded py-3 px-3 ${containerStyles}`}
+          className={`w-full flex gap-2 justify-center items-center bg-bg-2000 dark:bg-bg-2100 border  dark:border-[#3D3D3D] border-border-600 rounded py-3 px-3 ${containerStyles}`}
         >
           <input
             ref={ref}

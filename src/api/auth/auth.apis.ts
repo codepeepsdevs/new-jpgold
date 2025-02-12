@@ -8,6 +8,10 @@ import {
   RVerifyEmail,
   RVerifyTwoFa,
   IVerifyTwoFa,
+  IForgotPassword,
+  RForgotPassword,
+  IResetPassword,
+  RResetPassword,
 } from "./auth.types";
 import { AxiosResponse } from "axios";
 
@@ -46,6 +50,26 @@ export const verifyTwoFaRequest = async (
 ): Promise<AxiosResponse<RVerifyTwoFa>> => {
   return request({
     url: "/v1/auth/verify-twoFa",
+    method: "post",
+    data: formdata,
+  });
+};
+
+export const forgotPasswordRequest = async (
+  formdata: IForgotPassword
+): Promise<AxiosResponse<RForgotPassword>> => {
+  return request({
+    url: "/v1/auth/forgot-password",
+    method: "post",
+    data: formdata,
+  });
+};
+
+export const resetPasswordRequest = async (
+  formdata: IResetPassword
+): Promise<AxiosResponse<RResetPassword>> => {
+  return request({
+    url: "/v1/auth/reset-password",
     method: "post",
     data: formdata,
   });

@@ -2,8 +2,9 @@
 
 import { motion } from "framer-motion";
 import { staggerContainer } from "../motion";
+import { FC } from "react";
 
-const SectionWrapper = (Component: any, idName: any) =>
+const SectionWrapper = (Component: FC) =>
   function HOC() {
     return (
       <motion.section
@@ -13,10 +14,6 @@ const SectionWrapper = (Component: any, idName: any) =>
         viewport={{ once: true, amount: 0.25 }}
         animate="show"
       >
-        <span className="hash-span" id={idName}>
-          &nbsp;
-        </span>
-
         <motion.div
           whileInView={{ opacity: [0, 1] }}
           transition={{ duration: 0.5, type: "tween" }}
