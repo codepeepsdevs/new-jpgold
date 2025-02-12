@@ -1,5 +1,3 @@
-import images from "../../../public/images";
-import Image from "next/image";
 import MarketPlaceHero from "./MarketPlace.hero";
 import TopSeller from "./top-seller/TopSeller";
 import NFTList from "./nft-list/NFTList";

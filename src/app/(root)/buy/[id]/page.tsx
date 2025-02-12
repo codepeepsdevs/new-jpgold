@@ -1,13 +1,14 @@
-import BuyNowCmp from '@/components/buy/BuyNowCmp';
-import { FC } from 'react';
+/* eslint-disable @typescript-eslint/no-explicit-any */
 
-interface BuyNowPageProps {
+import BuyNowCmp from '@/components/buy/BuyNowCmp';
+
+interface PageProps {
     params: {
-        id: string;
+        id: any;
     };
 }
 
-const BuyNowPage: FC<BuyNowPageProps> = ({ params }) => {
+const BuyNowPage = async ({ params }: PageProps) => {
     return (
         <BuyNowCmp params={params} />
     );

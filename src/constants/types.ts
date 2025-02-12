@@ -1,1 +1,4 @@
-export interface User {}
+/* eslint-disable  @typescript-eslint/no-empty-object-type */
+
+
+export interface User { }

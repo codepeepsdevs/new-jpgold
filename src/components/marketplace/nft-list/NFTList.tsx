@@ -2,7 +2,7 @@
 
 import { useState, useMemo } from 'react';
 import Image from 'next/image';
-import { IoSearch, IoList, IoCheckmark, IoChevronDown, IoCart } from 'react-icons/io5';
+import { IoSearch, IoList, IoCheckmark, IoChevronDown } from 'react-icons/io5';
 import { TbLayoutGrid } from 'react-icons/tb';
 import NFTCard from '../../cards/NFTCards';
 import images from '../../../../public/images';
@@ -166,7 +166,7 @@ const NFTList = () => {
                 ),
             }),
         ],
-        [columnHelper]
+        [columnHelper, router]
     );
 
     const table = useReactTable({

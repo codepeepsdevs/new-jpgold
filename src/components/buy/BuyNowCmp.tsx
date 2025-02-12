@@ -4,7 +4,6 @@ import { FC } from 'react';
 import Link from 'next/link';
 import { FaArrowLeft } from 'react-icons/fa6';
 import NFTPreview from '@/components/buy/NFTPreview';
-import toast from 'react-hot-toast';
 import OrderSummary from '../cart/OrderSummary';
 import images from '../../../public/images';
 
@@ -33,8 +32,8 @@ const BuyNowCmp: FC<BuyNowCmpProps> = ({ params }) => {
     const subtotal = nftData.currentPrice;
     const feeInGrams = 34; // 34g fee
     const feePercentage = 0.15;
-    const feeAmount = subtotal * (feePercentage / 100);
-    const total = subtotal + feeAmount;
+    // const feeAmount = subtotal * (feePercentage / 100);
+    // const total = subtotal + feeAmount;
     const maticRate = 145.973;
 
     return (

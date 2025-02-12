@@ -2,7 +2,7 @@ import axios from "axios";
 import Cookies from "js-cookie";
 
 const api = process.env.NEXT_PUBLIC_BACKEND_API;
-const apiKey = process.env.NEXT_PUBLIC_BACKEND_API_KEY;
+// const apiKey = process.env.NEXT_PUBLIC_BACKEND_API_KEY;
 
 export const client = axios.create({
   baseURL: `${api}`,

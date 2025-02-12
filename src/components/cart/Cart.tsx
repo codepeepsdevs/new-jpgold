@@ -11,7 +11,6 @@ import { FaArrowLeftLong } from 'react-icons/fa6';
 
 const Cart: FC = () => {
     const { items, removeItem, getTotalPrice } = useCartStore();
-    const fee = getTotalPrice() * 0.0015; // 0.15% fee
 
     return (
         <div className="container mx-auto py-8">
