@@ -8,7 +8,7 @@ const MarketPlaceHero = () => {
                 <Image
                     src={images.marketplace.marketplaceHero}
                     alt="marketplace"
-                    className="w-full h-[350px] sm:h-[300px] object-cover rounded-lg"
+                    className="w-full h-[300px] lg:h-[350px] object-cover rounded-lg"
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent rounded-lg" />
                 <div className="absolute inset-0 flex flex-col justify-end py-5 px-4 md:px-8">
