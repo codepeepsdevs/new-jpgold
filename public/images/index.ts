@@ -54,6 +54,20 @@ import blog7 from "./root/blog/blog7.png";
 import blog8 from "./root/blog/blog8.png";
 import blog9 from "./root/blog/blog9.png";
 
+import aboutHeroBg from "./root/about/about-hero-bg.png";
+
+import team1 from "./root/team/team1.png";
+import team2 from "./root/team/team2.png";
+import team3 from "./root/team/team3.png";
+import team4 from "./root/team/team4.png";
+import team5 from "./root/team/team5.png";
+import team6 from "./root/team/team6.png";
+import team7 from "./root/team/team7.png";
+import team8 from "./root/team/team8.png";
+import team9 from "./root/team/team9.png";
+import team10 from "./root/team/team10.png";
+import team11 from "./root/team/team11.png";
+
 const jpgc = {
   jpgcOne,
   jpgcOneDark,
@@ -106,7 +120,9 @@ const home = {
   elements,
 };
 
-const about = {};
+const about = {
+  aboutHeroBg,
+};
 
 const blog = {
   blog1,
@@ -122,7 +138,19 @@ const blog = {
 
 const marketplace = {};
 
-const team = {};
+const team = {
+  team1,
+  team2,
+  team3,
+  team4,
+  team5,
+  team6,
+  team7,
+  team8,
+  team9,
+  team10,
+  team11,
+};
 
 const cart = {};
 
