@@ -1,9 +1,8 @@
 "use client"
 
-import { MdVerified } from "react-icons/md";
+import { MdOutlineShoppingCart, MdVerified } from "react-icons/md";
 import Image, { StaticImageData } from "next/image";
 import { FC, useState } from "react";
-import { FaShoppingCart } from 'react-icons/fa';
 import { useCartStore } from '@/store/useCartStore';
 import { BiTrash } from "react-icons/bi";
 import { useRouter } from "next/navigation";
@@ -48,7 +47,7 @@ const NFTCard: FC<NFTCardProps> = ({ id, amount, price, imageUrl, verified = fal
             onMouseEnter={() => setIsHovered(true)}
             onMouseLeave={() => setIsHovered(false)}
         >
-            <div onClick={handleCardClick} className="h-[200px] rounded-t-xl border-2 border-[#FBF5DE] dark:border-none relative bg-gold-100/50 dark:bg-gold-dark-100 p-4">
+            <div onClick={handleCardClick} className="h-[200px] rounded-t-xl border-[1px] border-[#FBF5DE] dark:border-none relative bg-gold-100/50 dark:bg-gold-dark-100 p-4">
                 <div className="relative h-full w-full flex items-center justify-center">
                     <Image
                         src={imageUrl}
@@ -73,7 +72,7 @@ const NFTCard: FC<NFTCardProps> = ({ id, amount, price, imageUrl, verified = fal
                     <span>Listed Price</span>
                 </div>
 
-                <div className="flex justify-between font-[700] text-black dark:text-white">
+                <div className="flex justify-between font-[700] text-black dark:text-white pb-4">
                     <span className="">{amount} grams</span>
                     <span className="">${price.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
                 </div>
@@ -88,13 +87,13 @@ const NFTCard: FC<NFTCardProps> = ({ id, amount, price, imageUrl, verified = fal
                         </button>
                         <button
                             onClick={handleCartClick}
-                            className={`w-1/6 ${isInCart ? 'bg-primary-500' : 'bg-black/5 dark:bg-white/5'} h-fit hover:bg-primary-600 p-4 rounded-lg transition-colors duration-200`}
+                            className={`w-1/6 bg-black/5 dark:bg-white/5 h-fit hover:bg-primary-600 p-4 rounded-lg transition-colors duration-200`}
                         >
                             <div className="top-0 h-full rounded-r-lg flex items-center justify-center">
                                 {isInCart ? (
-                                    <BiTrash className="text-red-500 dark:text-red-500" size={20} />
+                                    <BiTrash className="text-red-500 dark:text-red-500" size={25} />
                                 ) : (
-                                    <FaShoppingCart className={'text-black dark:text-white'} size={20} />
+                                    <MdOutlineShoppingCart className={'text-black dark:text-white'} size={25} />
                                 )}
                             </div>
                         </button>

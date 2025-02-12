@@ -1,4 +1,5 @@
 import { FC } from 'react';
+import { FaChevronDown } from 'react-icons/fa';
 import { IoChevronBack, IoChevronForward } from 'react-icons/io5';
 
 interface PaginationProps {
@@ -10,19 +11,23 @@ interface PaginationProps {
 const Pagination: FC<PaginationProps> = ({ currentPage, totalPages, onPageChange }) => {
     return (
         <div className="flex items-center justify-end gap-2 py-4">
-            <div className="flex items-center gap-1 text-sm text-gray-600 dark:text-gray-400">
-                <select
-                    value={currentPage}
-                    onChange={(e) => onPageChange(Number(e.target.value))}
-                    className="px-1.5 py-0.5 border border-gray-200 dark:border-gray-700 rounded bg-white dark:bg-[#1C1C1E] text-sm appearance-none cursor-pointer outline-none"
-                >
-                    {Array.from({ length: totalPages }, (_, i) => i + 1).map(page => (
-                        <option key={page} value={page}>
-                            {page}
-                        </option>
-                    ))}
-                </select>
-                <span className="whitespace-nowrap">
+            <div className="flex items-center gap-1 text-sm text-[#232222] font-medium dark:text-gray-400">
+                <div className='flex gap-1 border-r px-2 items-center'>
+                    <select
+                        value={currentPage}
+                        onChange={(e) => onPageChange(Number(e.target.value))}
+                        className="py-1 cursor-pointer px-2 dark:border-gray-700 bg-white dark:bg-[#1C1C1E]  appearance-none outline-none"
+                    >
+                        {Array.from({ length: totalPages }, (_, i) => i + 1).map(page => (
+                            <option key={page} value={page}>
+                                {page}
+                            </option>
+                        ))}
+
+                    </select>
+                    <FaChevronDown className='text-[#232222]' />
+                </div>
+                <span className="whitespace-nowrap border-r px-2 text-[#9CA3AF]">
                     of {totalPages} pages
                 </span>
             </div>

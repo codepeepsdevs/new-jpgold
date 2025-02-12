@@ -11,13 +11,12 @@ import {
     flexRender,
     getCoreRowModel,
     useReactTable,
-    FilterFn,
     getFilteredRowModel,
 } from '@tanstack/react-table';
-import { useCartStore } from '@/store/useCartStore';
-import toast from 'react-hot-toast';
 import { StaticImageData } from 'next/image';
 import Pagination from '@/components/common/Pagination';
+import { useRouter } from 'next/navigation';
+import { MdOutlineShoppingCart, MdVerified } from 'react-icons/md';
 
 interface NFTItem {
     id: number;
@@ -28,97 +27,6 @@ interface NFTItem {
     todayChange: number;
     weekChange: number;
 }
-
-const columnHelper = createColumnHelper<NFTItem>();
-
-const columns = [
-    // Name Column with Image
-    columnHelper.accessor('id', {
-        header: 'Name',
-        cell: (info) => (
-            <div className="flex items-center gap-3">
-                <div className="w-10 h-10 bg-gold-100 dark:bg-gold-dark-100 rounded-lg flex items-center justify-center">
-                    <Image
-                        src={info.row.original.imageUrl}
-                        alt={`JPNFT #${info.getValue()}`}
-                        width={32}
-                        height={32}
-                        className="object-contain"
-                    />
-                </div>
-                <div className="flex items-center gap-2">
-                    <span>JPNFT#{info.getValue()}</span>
-                    {info.row.original.verified && (
-                        <span className="text-yellow-500">🏅</span>
-                    )}
-                </div>
-            </div>
-        ),
-    }),
-    // Amount Column
-    columnHelper.accessor('amount', {
-        header: 'Amount',
-        cell: (info) => <div>{info.getValue()} grams</div>,
-    }),
-    // Listed Price Column
-    columnHelper.accessor('price', {
-        header: 'Listed Price',
-        cell: (info) => (
-            <div>${info.getValue().toLocaleString('en-US', { minimumFractionDigits: 2 })}</div>
-        ),
-    }),
-    // Today Change Column
-    columnHelper.accessor('todayChange', {
-        header: 'Today',
-        cell: (info) => (
-            <div className={`flex items-center gap-1 ${info.getValue() < 0 ? 'text-red-500' : 'text-green-500'}`}>
-                <span>{info.getValue() < 0 ? '▼' : '▲'}</span>
-                <span>{Math.abs(info.getValue())}%</span>
-            </div>
-        ),
-    }),
-    // Week Change Column
-    columnHelper.accessor('weekChange', {
-        header: '7 Days',
-        cell: (info) => (
-            <div className={`flex items-center gap-1 ${info.getValue() < 0 ? 'text-red-500' : 'text-green-500'}`}>
-                <span>{info.getValue() < 0 ? '▼' : '▲'}</span>
-                <span>{Math.abs(info.getValue())}%</span>
-            </div>
-        ),
-    }),
-    // Current Price & Actions Column
-    columnHelper.accessor('price', {
-        id: 'actions',
-        header: 'Current Price',
-        cell: (info) => {
-            const { addItem, items } = useCartStore();
-            const isInCart = items.some(item => item.id === info.row.original.id);
-
-            const handleAddToCart = () => {
-                addItem(info.row.original);
-                toast.success('Added to cart');
-            };
-
-            return (
-                <div className="flex items-center justify-between">
-                    <span>${info.getValue().toLocaleString('en-US', { minimumFractionDigits: 2 })}</span>
-                    <div className="flex gap-2">
-                        <button className="bg-primary-500 hover:bg-primary-600 px-4 py-1 rounded-lg text-white">
-                            Buy
-                        </button>
-                        <button
-                            onClick={handleAddToCart}
-                            className={`p-2 rounded-lg ${isInCart ? 'bg-primary-500 text-white' : 'bg-gray-100 dark:bg-gray-800'}`}
-                        >
-                            <IoCart size={20} />
-                        </button>
-                    </div>
-                </div>
-            );
-        },
-    }),
-];
 
 const nftListData: NFTItem[] = [
     {
@@ -181,31 +89,81 @@ const NFTList = () => {
     const [isSelectOpen, setIsSelectOpen] = useState(false);
     const [currentPage, setCurrentPage] = useState(1);
     const [globalFilter, setGlobalFilter] = useState('');
-
-    const data = useMemo(() =>
-        Array.from({ length: 32 }, (_, i) => ({
-            id: i + 1,
-            amount: 5.8,
-            price: 1455.92,
-            imageUrl: '/images/nft-placeholder.jpg',
-            verified: true,
-        })),
-        []);
+    const router = useRouter();
 
     const columnHelper = createColumnHelper<NFTItem>();
     const columns = useMemo(
         () => [
             columnHelper.accessor('id', {
                 header: 'Name',
-                cell: info => `JPNFT #${info.getValue()}`,
+                cell: info => (
+                    <div className="flex items-center gap-2">
+                        <div className="w-6 h-6 rounded">
+                            <Image
+                                src={images.marketplace.nftGold}
+                                alt={`JPNFT #${info.getValue()}`}
+                                width={150}
+                                height={150}
+                                className="object-contain"
+                            />
+                        </div>
+                        <span>JPNFT #{info.getValue()}</span>
+                        <MdVerified className="text-gold-200" />
+                    </div>
+                ),
             }),
             columnHelper.accessor('amount', {
                 header: 'Amount',
                 cell: info => `${info.getValue()} grams`,
             }),
             columnHelper.accessor('price', {
-                header: 'Price',
+                header: 'Listed Price',
                 cell: info => `$${info.getValue().toLocaleString('en-US', { minimumFractionDigits: 2 })}`,
+            }),
+            columnHelper.accessor('todayChange', {
+                header: 'Today',
+                cell: info => {
+                    const value = info.getValue();
+                    const isPositive = value > 0;
+                    return (
+                        <span className={isPositive ? 'text-[#63BA23] font-semibold' : 'text-[#D20832] font-semibold'}>
+                            {isPositive ? '▲' : '▼'} {Math.abs(value).toFixed(2)}%
+                        </span>
+                    );
+                },
+            }),
+            columnHelper.accessor('weekChange', {
+                header: '7 Days',
+                cell: info => {
+                    const value = info.getValue();
+                    const isPositive = value > 0;
+                    return (
+                        <span className={isPositive ? 'text-[#63BA23]' : 'text-[#D20832]'}>
+                            {isPositive ? '▲' : '▼'} {Math.abs(value).toFixed(2)}%
+                        </span>
+                    );
+                },
+            }),
+            columnHelper.accessor('price', {
+                header: 'Current Price',
+                cell: info => `$${info.getValue().toLocaleString('en-US', { minimumFractionDigits: 2 })}`,
+            }),
+            columnHelper.display({
+                id: 'actions',
+                header: 'Purchase',
+                cell: info => (
+                    <div className="flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                        <button
+                            onClick={() => router.push(`/buy/${info.row.original.id}`)}
+                            className="bg-[#CC8F00] font-semibold text-white px-6 py-2 rounded hover:bg-[#B37E00] transition-colors"
+                        >
+                            Buy
+                        </button>
+                        <button className="bg-black/5 py-2 px-4">
+                            <MdOutlineShoppingCart size={20} />
+                        </button>
+                    </div>
+                ),
             }),
         ],
         [columnHelper]
@@ -251,9 +209,9 @@ const NFTList = () => {
     return (
         <section className="w-full py-8">
             {/* Header Controls */}
-            <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between p-2 bg-[#F6F6F6] dark:bg-bg-dark-400 rounded-lg mb-6">
+            <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between p-2 bg-[#F6F6F6] dark:bg-[#1D1F1E] rounded-lg mb-6">
                 <div className="relative w-full md:w-1/2">
-                    <div className="flex items-center gap-2 bg-white dark:bg-[#1C1C1E] border border-[#D5D5DD] rounded-lg px-4 py-3">
+                    <div className="flex items-center gap-2 bg-white dark:bg-[#1C1C1E] border border-[#D5D5DD] dark:border-[#717179] rounded-lg px-4 py-3">
                         <IoSearch size={20} className="text-gray-500 dark:text-[#4E4E4E]" />
                         <input
                             type="text"
@@ -272,7 +230,7 @@ const NFTList = () => {
                 <div className="relative flex justify-end gap-2">
                     <button
                         onClick={() => setIsSelectOpen(!isSelectOpen)}
-                        className="w-full bg-white dark:bg-[#1C1C1E] border border-[#D5D5DD] dark:text-white rounded-lg px-4 py-3 flex gap-2 items-center justify-between"
+                        className="w-full bg-white dark:bg-[#1C1C1E] border border-[#D5D5DD] dark:border-[#717179] dark:text-white rounded-lg px-4 py-3 flex gap-2 items-center justify-between"
                     >
                         <span>{sortOptions.find(option => option.value === sortBy)?.label}</span>
                         <IoChevronDown
@@ -301,16 +259,16 @@ const NFTList = () => {
                     )}
 
 
-                    <div className="hidden sm:flex items-center gap-1 bg-white dark:bg-[#1C1C1E] p-2 rounded-lg border dark:border-[#D5D5DD]">
+                    <div className="hidden sm:flex items-center gap-1 bg-white dark:bg-black/20 p-1 rounded-lg border dark:border-none shadow-lg">
                         <button
                             onClick={() => setIsGridView(true)}
-                            className={`p-2 rounded ${isGridView ? 'bg-[#0A0C0F] text-white' : 'text-gray-500'}`}
+                            className={`p-2 rounded ${isGridView ? 'dark:bg-white bg-[#0A0C0F] dark:text-[#1C1B1F] text-white' : 'text-[#1C1B1F] dark:text-[#DDDDDD]'}`}
                         >
                             <TbLayoutGrid size={20} />
                         </button>
                         <button
                             onClick={() => setIsGridView(false)}
-                            className={`p-2 rounded ${!isGridView ? 'bg-[#0A0C0F] text-white' : 'text-gray-500'}`}
+                            className={`p-2 rounded ${!isGridView ? 'dark:bg-white bg-[#0A0C0F] dark:text-[#1C1B1F] text-white' : 'text-[#1C1B1F] dark:text-[#DDDDDD]'}`}
                         >
                             <IoList size={20} />
                         </button>
@@ -326,13 +284,13 @@ const NFTList = () => {
                     ))}
                 </div>
             ) : (
-                <div className="w-full bg-[#1C1C1E] rounded-lg overflow-hidden">
+                <div className="w-full border border-[#E2E2E2] dark:border-[#E2E2E2]/20  p-4 rounded-lg overflow-hidden">
                     <table className="w-full">
                         <thead>
                             {table.getHeaderGroups().map(headerGroup => (
-                                <tr key={headerGroup.id} className="border-b border-[#2C2C2E]">
+                                <tr key={headerGroup.id} className="border-b border-gray-200 dark:border-gray-700">
                                     {headerGroup.headers.map(header => (
-                                        <th key={header.id} className="text-left px-6 py-4 text-white font-medium">
+                                        <th key={header.id} className="text-left px-6 py-4 dark:text-white font-semibold">
                                             {flexRender(
                                                 header.column.columnDef.header,
                                                 header.getContext()
@@ -344,9 +302,12 @@ const NFTList = () => {
                         </thead>
                         <tbody>
                             {paginatedData.map(row => (
-                                <tr key={row.id} className="border-b border-[#2C2C2E] hover:bg-[#2C2C2E] transition-colors">
+                                <tr
+                                    key={row.id}
+                                    className="group border-b dark:text-white border-[#E2E2E2] cursor-pointer dark:border-[#E2E2E2]/20 hover:bg-[#FAFAFA] dark:hover:bg-[#FAFAFA]/10 transition-colors"
+                                >
                                     {row.getVisibleCells().map(cell => (
-                                        <td key={cell.id} className="px-6 py-4 text-white">
+                                        <td key={cell.id} className="px-6 py-4 font-semibold">
                                             {flexRender(
                                                 cell.column.columnDef.cell,
                                                 cell.getContext()

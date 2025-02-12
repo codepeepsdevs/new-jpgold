@@ -95,11 +95,11 @@ const teamMembers: TeamMember[] = [
 
 export default function Team() {
     return (
-        <div className="md:container mx-auto w-full flex justify-center bg-white dark:bg-bg-700 py-3 relative">
-            <div className="container">
+        <div className="container mx-auto w-full flex justify-center bg-white dark:bg-bg-700 py-3 relative">
+            <div className="">
                 {/* title */}
                 <div className='w-full flex flex-col md:flex-row gap-2 text-center md:text-left justify-between items-center py-5'>
-                    <h1 className='dark:text-white text-3xl md:text-5xl font-bold text-text-100'>Meet the Team</h1>
+                    <h1 className='dark:text-white text-3xl md:text-5xl font-bold text-text-200'>Meet the Team</h1>
                     <p className='dark:text-white/80 text-[#131319] md:w-1/3'>We are committed to developing an outstanding product that not only meets but surpasses the needs and expectations of our users.</p>
                 </div>
 
@@ -116,7 +116,7 @@ export default function Team() {
 
 const TeamMember: React.FC<TeamMember> = ({ name, position, image, linkedin, about }) => {
     return (
-        <div className='bg-white dark:bg-[#1C1C1E] rounded-lg p-6 shadow-lg border border-gray-100 dark:border-none'>
+        <div className='bg-white dark:bg-[#1C1C1E] rounded-lg p-6 md:p-10 pb-20 border border-[#CCCCCC] dark:border-none'>
             <div className='flex flex-col gap-4'>
                 {/* Image and LinkedIn */}
                 <div className='relative'>
@@ -141,7 +141,7 @@ const TeamMember: React.FC<TeamMember> = ({ name, position, image, linkedin, abo
                         )}
                     </div>
                     <p className='text-sm text-[#6B6B6B] dark:text-white/80'>{position}</p>
-                    <p className='text-sm text-[#3C3C3C] dark:text-white line-clamp-4'>{about}</p>
+                    <p className='text-[#3C3C3C] dark:text-white line-clamp-4'>{about}</p>
                 </div>
             </div>
         </div>
