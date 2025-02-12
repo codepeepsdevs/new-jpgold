@@ -40,7 +40,7 @@ const OrderSummary: FC<OrderSummaryProps> = ({
     };
 
     return (
-        <div className="bg-white dark:bg-[#1C1C1C] dark:border-none shadow-lg border border-[#E3E3E8] dark:bg-bg-800 rounded-lg p-6">
+        <div className="bg-white dark:bg-[#1C1C1C] dark:border-none shadow-lg border border-[#E3E3E8] h-fit dark:bg-bg-800 rounded-lg p-6">
             <h2 className="text-xl font-semibold mb-6 dark:text-white">Order Summary</h2>
             <form onSubmit={handleSubmit(onSubmit)} className="space-y-4 dark:border-none sm:p-8 rounded-lg">
                 {/* Price Summary */}

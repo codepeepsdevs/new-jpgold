@@ -29,7 +29,6 @@ export default {
           700: "#050706",
         },
 
-
         border: {
           100: "#D0D0D0",
           200: "#DCDCDC",
