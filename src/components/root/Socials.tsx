@@ -1,6 +1,11 @@
+import { FC } from 'react';
 import { socialsLinks } from "@/constants";
 
-const Socials = () => {
+interface SocialsProps {
+  isContactUs?: boolean;
+}
+
+const Socials: FC<SocialsProps> = ({ isContactUs = false }) => {
   return (
     <div className="flex items-center gap-4">
       {socialsLinks.map((item, index) => (
@@ -10,7 +15,7 @@ const Socials = () => {
           target="_blank"
           rel="noopener noreferrer"
         >
-          <item.logo className="text-base xs:text-lg text-text-200 dark:text-white" />
+          <item.logo className={`text-base xs:text-lg dark:text-white ${isContactUs ? "text-gold-200" : "text-text-200"}`} />
         </a>
       ))}
     </div>
