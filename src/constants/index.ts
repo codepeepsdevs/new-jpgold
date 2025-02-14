@@ -2,6 +2,7 @@ import { FaFacebookSquare } from "react-icons/fa";
 import { RiInstagramFill, RiTelegram2Fill } from "react-icons/ri";
 import { IoLogoLinkedin } from "react-icons/io5";
 import { FaXTwitter } from "react-icons/fa6";
+import images from "../../public/images";
 
 export const navItems = [
   { id: 1, title: "Home", path: "/" },
@@ -80,5 +81,80 @@ export const footerLinks = [
         path: "tel:+2348026169018",
       },
     ],
+  },
+];
+
+export const blogData = [
+  {
+    id: 1,
+    title: "Tokenomics: JPGold Coin a digital token backed With Gold",
+    description: "JPGold Coin is a digital token backed by gold from JaPaul LTD., a gold manufacturing company in Ghana that aims to make gold ownership easy and affordable. Though it listed in 2022, the JPGC wa",
+    image: images.blog.blog1,
+    tag: "Product updates",
+    date: "Feb 11, 2025",
+    duration: "3 min",
+  },
+  {
+    id: 2,
+    title: "Tokenomics: JPGold Coin a digital token backed With Gold",
+    description: "JPGold Coin is a digital token backed by gold from JaPaul LTD., a gold manufacturing company in Ghana that aims to make gold ownership easy and affordable. Though it listed in 2022, the JPGC wa",
+    image: images.blog.blog2,
+    tag: "Product updates",
+    date: "Feb 11, 2025",
+    duration: "3 min",
+  },
+  {
+    id: 3,
+    title: "Tokenomics: JPGold Coin a digital token backed With Gold",
+    description: "JPGold Coin is a digital token backed by gold from JaPaul LTD., a gold manufacturing company in Ghana that aims to make gold ownership easy and affordable. Though it listed in 2022, the JPGC wa",
+    image: images.blog.blog3,
+    tag: "Product updates",
+    date: "Feb 11, 2025",
+    duration: "3 min",
+  },
+  {
+    id: 4,
+    title: "Tokenomics: JPGold Coin a digital token backed With Gold",
+    description: "JPGold Coin is a digital token backed by gold from JaPaul LTD., a gold manufacturing company in Ghana that aims to make gold ownership easy and affordable. Though it listed in 2022, the JPGC wa",
+    image: images.blog.blog4,
+    tag: "Product updates",
+    date: "Feb 11, 2025",
+    duration: "3 min",
+  },
+  {
+    id: 5,
+    title: "Tokenomics: JPGold Coin a digital token backed With Gold",
+    description: "JPGold Coin is a digital token backed by gold from JaPaul LTD., a gold manufacturing company in Ghana that aims to make gold ownership easy and affordable. Though it listed in 2022, the JPGC wa",
+    image: images.blog.blog5,
+    tag: "Product updates",
+    date: "Feb 11, 2025",
+    duration: "3 min",
+  },
+  {
+    id: 6,
+    title: "Tokenomics: JPGold Coin a digital token backed With Gold",
+    description: "JPGold Coin is a digital token backed by gold from JaPaul LTD., a gold manufacturing company in Ghana that aims to make gold ownership easy and affordable. Though it listed in 2022, the JPGC wa",
+    image: images.blog.blog6,
+    tag: "Product updates",
+    date: "Feb 11, 2025",
+    duration: "3 min",
+  },
+  {
+    id: 7,
+    title: "Tokenomics: JPGold Coin a digital token backed With Gold",
+    description: "JPGold Coin is a digital token backed by gold from JaPaul LTD., a gold manufacturing company in Ghana that aims to make gold ownership easy and affordable. Though it listed in 2022, the JPGC wa",
+    image: images.blog.blog7,
+    tag: "Product updates",
+    date: "Feb 11, 2025",
+    duration: "3 min",
+  },
+  {
+    id: 8,
+    title: "Tokenomics: JPGold Coin a digital token backed With Gold",
+    description: "JPGold Coin is a digital token backed by gold from JaPaul LTD., a gold manufacturing company in Ghana that aims to make gold ownership easy and affordable. Though it listed in 2022, the JPGC wa",
+    image: images.blog.blog8,
+    tag: "Product updates",
+    date: "Feb 11, 2025",
+    duration: "3 min",
   },
 ];
