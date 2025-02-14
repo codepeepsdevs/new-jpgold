@@ -7,9 +7,9 @@ import { blogData } from '@/constants';
 export default function Blog() {
     return (
         <div className="w-full flex justify-center bg-white dark:bg-bg-700 py-3 relative">
-            <div className="container flex flex-col gap-10 items-center justify-between">
+            <div className="container flex flex-col gap-4 md:gap-10 items-center justify-between">
                 {/* title  */}
-                <div className="w-full flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+                <div className="w-full flex flex-col md:flex-row justify-between items-start md:items-center gap-2 md:gap-4">
                     <h1 className='font-bold text-3xl md:text-5xl text-[#0B0B0D] dark:text-white'>Blog</h1>
                     <p className='text-black/80 dark:text-white/80 text-[18px] md:text-[28px]'>
                         Get the latest update on our featured articles
@@ -17,7 +17,7 @@ export default function Blog() {
                 </div>
 
                 {/* featured articles */}
-                <div className="w-full flex flex-col gap-8">
+                <div className="w-full flex flex-col gap-4 md:gap-8">
                     <h2 className='font-bold text-xl md:text-2xl text-[#0B0B0D] dark:text-white'>
                         Featured Articles
                     </h2>
