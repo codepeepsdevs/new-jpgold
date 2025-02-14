@@ -55,6 +55,7 @@ export default function ContactForm() {
             toast.success('Message sent successfully!');
             reset(); // Reset form after successful submission
         } catch (error) {
+            console.log(error);
             toast.error('Failed to send message. Please try again.');
         }
     };
