@@ -6,7 +6,7 @@ export default function LocationMap() {
     const theme = useTheme();
 
     return (
-        <div className="w-full relative space-y-5">
+        <div className="w-full md:w-5/6 mx-auto relative space-y-5">
             <div className="mx-auto relative z-10">
                 <div className="space-y-2">
                     <h2 className="text-[26px] font-bold text-[#050706] dark:text-white">
@@ -26,7 +26,7 @@ export default function LocationMap() {
                 />
                 </div>  */}
 
-            <div className="w-full h-[450px] relative rounded-lg overflow-hidden">
+            <div className="w-full h-[400px] relative rounded-lg overflow-hidden">
                 <Image
                     src={theme === 'dark' ? "/images/map-dark.png" : "/images/map.png"}
                     alt="JaPaul LTD Location Map"

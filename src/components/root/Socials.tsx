@@ -15,7 +15,7 @@ const Socials: FC<SocialsProps> = ({ isContactUs = false }) => {
           target="_blank"
           rel="noopener noreferrer"
         >
-          <item.logo className={`text-base xs:text-lg ${isContactUs ? "text-gold-200" : "text-text-200 dark:text-white "}`} />
+          <item.logo className={`text-base ${isContactUs ? "text-gold-200 xs:text-2xl" : "text-text-200 dark:text-white xs:text-lg"}`} />
         </a>
       ))}
     </div>

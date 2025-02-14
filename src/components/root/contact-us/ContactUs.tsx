@@ -40,13 +40,15 @@ export default function ContactUs() {
 
                     <Socials isContactUs={true} />
                 </div>
-            </div >
 
+            </div >
             <div className="dark:bg-[#171718] bg-[#F7F7F7] py-5 md:py-10 my-10">
                 <div className="container mx-auto">
                     <LocationMap />
                 </div>
             </div>
+
+
         </div >
     )
 }
