@@ -1,5 +1,5 @@
-const CartPage = () => {
-  return <div>CartPage</div>;
-};
+import Cart from '@/components/cart/Cart';
 
-export default CartPage;
+export default function CartPage() {
+  return <Cart />;
+} 

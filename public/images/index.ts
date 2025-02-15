@@ -1,6 +1,20 @@
 import logo from "./logo.png";
 import logoSvg from "./logo.svg";
+import logoDarkSvg from "./logoDarkSvg.svg";
 import jpgoldLogo from "./jpgoldLogo.png";
+import marketplaceHero from "./marketplace/market-hero.png";
+import nftGold from "./marketplace/nft-gold.png";
+import team1 from "./team/team1.png";
+import team2 from "./team/team2.png";
+import team3 from "./team/team3.png";
+import team4 from "./team/team4.png";
+import team5 from "./team/team5.png";
+import team6 from "./team/team6.png";
+import team7 from "./team/team7.png";
+import team8 from "./team/team8.png";
+import team9 from "./team/team9.png";
+import team10 from "./team/team10.png";
+import team11 from "./team/team11.png";
 
 import heroBg from "./root/home/heroBg.png";
 
@@ -55,18 +69,6 @@ import blog8 from "./root/blog/blog8.png";
 import blog9 from "./root/blog/blog9.png";
 
 import aboutHeroBg from "./root/about/about-hero-bg.png";
-
-import team1 from "./root/team/team1.png";
-import team2 from "./root/team/team2.png";
-import team3 from "./root/team/team3.png";
-import team4 from "./root/team/team4.png";
-import team5 from "./root/team/team5.png";
-import team6 from "./root/team/team6.png";
-import team7 from "./root/team/team7.png";
-import team8 from "./root/team/team8.png";
-import team9 from "./root/team/team9.png";
-import team10 from "./root/team/team10.png";
-import team11 from "./root/team/team11.png";
 
 const jpgc = {
   jpgcOne,
@@ -124,6 +126,7 @@ const about = {
   aboutHeroBg,
 };
 
+const marketplace = { marketplaceHero, nftGold };
 const blog = {
   blog1,
   blog2,
@@ -135,8 +138,6 @@ const blog = {
   blog8,
   blog9,
 };
-
-const marketplace = {};
 
 const team = {
   team1,
@@ -157,6 +158,7 @@ const cart = {};
 export default {
   logo,
   logoSvg,
+  logoDarkSvg,
   jpgoldLogo,
   home,
   about,
