@@ -1,31 +1,32 @@
 import classnames from "classnames";
 import SpinnerLoader from "./SpinnerLoader";
+import { cn } from "@/utils/cn";
 
 interface ButtonProps {
   placeholder: string;
-  onClick: () => void;
+  onClick?: () => void;
   type: "submit" | "button";
-  classNames?: string;
+  className?: string;
   disabled?: boolean;
   loading?: boolean;
 }
 
-const UserButton = ({
+const CustomButton = ({
   placeholder,
   onClick,
   type,
   disabled,
-  classNames,
   loading,
+  className,
 }: ButtonProps) => {
   return (
     <button
       onClick={onClick}
       type={type}
       disabled={disabled}
-      className={classnames(
-        "disabled:bg-bg-5200 disabled:text-text-3000 hover:opacity-90 rounded-full w-full flex items-center justify-center gap-3 bg-secondary px-3 py-4 text-black font-medium text-base lg:text-lg",
-        classNames
+      className={cn(
+        "disabled:bg-[#CA8E0E] hover:opacity-90 rounded w-full flex items-center justify-center",
+        className
       )}
     >
       {loading ? (
@@ -37,4 +38,4 @@ const UserButton = ({
   );
 };
 
-export default UserButton;
+export default CustomButton;

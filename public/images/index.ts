@@ -1,5 +1,6 @@
 import logo from "./logo.png";
 import logoSvg from "./logo.svg";
+import logoDarkSvg from "./logoDarkSvg.svg";
 import jpgoldLogo from "./jpgoldLogo.png";
 
 import heroBg from "./root/home/heroBg.png";
@@ -129,6 +130,7 @@ const cart = {};
 export default {
   logo,
   logoSvg,
+  logoDarkSvg,
   jpgoldLogo,
   home,
   about,
