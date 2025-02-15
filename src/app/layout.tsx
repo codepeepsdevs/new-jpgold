@@ -21,8 +21,23 @@ export default function WebLayout({
       <body className="">
         <ThemeProvider>
           <ReactQueryProvider>
+            <Toaster
+              position="top-center"
+              reverseOrder={false}
+              toastOptions={{
+                style: {
+                  border: "1px solid #E4E7EC",
+                  borderRadius: 15,
+                  padding: "16px",
+                  color: "#000",
+                  fontSize: 15,
+                  fontWeight: 400,
+                },
+                duration: 100,
+              }}
+            />
             <NextTopLoader color="#CC8F00" showSpinner={false} />
-            <main className="w-full ">{children}</main>
+            <main className="w-full no-scrollbar">{children}</main>
           </ReactQueryProvider>
         </ThemeProvider>
         <Toaster

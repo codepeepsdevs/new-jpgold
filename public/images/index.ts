@@ -1,5 +1,6 @@
 import logo from "./logo.png";
 import logoSvg from "./logo.svg";
+import logoDarkSvg from "./logoDarkSvg.svg";
 import jpgoldLogo from "./jpgoldLogo.png";
 import marketplaceHero from "./marketplace/market-hero.png";
 import nftGold from "./marketplace/nft-gold.png";
@@ -142,6 +143,7 @@ const cart = {};
 export default {
   logo,
   logoSvg,
+  logoDarkSvg,
   jpgoldLogo,
   home,
   about,
