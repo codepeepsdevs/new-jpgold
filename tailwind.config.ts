@@ -28,11 +28,26 @@ export default {
           600: "#FEF0D233",
           700: "#050706",
         },
+
         border: {
           100: "#D0D0D0",
           200: "#DCDCDC",
           300: "#DCDCDC4D",
           400: "#3D3D3D",
+        },
+
+        "bg-dark": {
+          400: "#1D1F1E",
+          500: "#1D1F1C",
+        },
+
+        gold: {
+          100: "#FEFEF1",
+          200: "#CA8E0E",
+        },
+
+        "gold-dark": {
+          100: "#464646",
         },
       },
       screens: {

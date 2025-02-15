@@ -1,5 +1,7 @@
+import MarketPlaceCmp from "@/components/marketplace/MarketPlaceCmp";
+
 const MarketplacePage = () => {
-  return <div>MarketplacePage</div>;
+  return <MarketPlaceCmp />;
 };
 
 export default MarketplacePage;
