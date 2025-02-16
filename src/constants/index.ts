@@ -309,14 +309,14 @@ export const SidebarData = [
   {
     id: 2,
     title: "JPGold Coin",
-    path: "/user/jpgoldcoin",
+    path: "/user/jpgoldcoin/swap",
     icon: HiOutlineCircleStack,
     iconActive: HiCircleStack,
   },
   {
     id: 3,
     title: "JPGold NFT",
-    path: "/user/jpgoldnft",
+    path: "/user/jpgoldnft/buy",
     icon: RiNftLine,
     iconActive: RiNftFill,
   },
@@ -355,7 +355,7 @@ export const SidebarData = [
   {
     id: 8,
     title: "My NFTs",
-    path: "/user/nfts",
+    path: "/user/nfts/all",
     icon: TbHexagonLetterN,
     iconActive: TbHexagonLetterNFilled,
   },
@@ -366,5 +366,58 @@ export const SidebarData = [
     path: "/user/profile",
     icon: FaRegCircleUser,
     iconActive: FaCircleUser,
+  },
+];
+
+export const HeadingData = [
+  {
+    id: 1,
+    title: "Dashboard",
+    path: "/user/dashboard",
+  },
+  {
+    id: 2,
+    title: "JPGold Coin",
+    path: "/user/jpgoldcoin",
+  },
+  {
+    id: 3,
+    title: "JPGold NFT",
+    path: "/user/jpgoldnft",
+  },
+
+  {
+    id: 4,
+    title: "Bridge",
+    path: "/user/bridge",
+  },
+  {
+    id: 5,
+    title: "Marketplace",
+    path: "/user/marketplace",
+  },
+
+  {
+    id: 6,
+    title: "Transactions",
+    path: "/user/transactions",
+  },
+
+  {
+    id: 7,
+    title: "Games",
+    path: "/user/games",
+  },
+
+  {
+    id: 8,
+    title: "My NFTs",
+    path: "/user/nfts",
+  },
+
+  {
+    id: 9,
+    title: "Profile",
+    path: "/user/profile",
   },
 ];

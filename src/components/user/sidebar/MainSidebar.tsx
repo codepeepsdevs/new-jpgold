@@ -38,10 +38,20 @@ const MainSidebar = () => {
 
       <div className="pt-2 pb-6 border-b border-[#E2E2E2] dark:border-[#313131] px-6 flex gap-2 flex-col w-full">
         {SidebarData.map((item) => {
-          const isActive =
-            item.path === "/"
-              ? pathname === item.path
-              : pathname.startsWith(item.path);
+          const isActive = (() => {
+            if (item.path === "/") {
+              return pathname === item.path;
+            }
+
+            // Split both paths and take first two segments
+            const currentPathSegments = pathname
+              .split("/")
+              .slice(0, 3)
+              .join("/");
+            const itemPathSegments = item.path.split("/").slice(0, 3).join("/");
+
+            return currentPathSegments === itemPathSegments;
+          })();
           return (
             <Link
               href={item.path}

@@ -1,8 +1,19 @@
 "use client";
 import classNames from "classnames";
 import Navbar from "./Navbar";
+import { HeadingData } from "@/constants";
+import { usePathname } from "next/navigation";
 
 const Content = ({ children }: { children: React.ReactNode }) => {
+  const pathname = usePathname();
+  const Heading = HeadingData.sort(
+    (a, b) => b.path.length - a.path.length
+  ).find((item) => {
+    if (Array.isArray(item.path)) {
+      return item.path.includes(pathname);
+    }
+    return pathname.startsWith(item.path); // Match paths with dynamic segments
+  });
   return (
     <div
       className={classNames(
@@ -10,8 +21,11 @@ const Content = ({ children }: { children: React.ReactNode }) => {
       )}
     >
       <Navbar />
-      <main className="h-full w-full px-4 lg:px-8 py-4 lg:py-8 bg-[#F3F3F3] dark:bg-[#161616]">
-        {children}
+      <main className="h-full w-full flex flex-col gap-4 px-4 lg:px-8 py-6 lg:py-8 bg-white sm:bg-[#F3F3F3] dark:bg-[#161616] sm:dark:bg-[#161616]">
+        <h1 className="sm:hidden text-2xl xl:text-3xl font-ibold text-[#282828] dark:text-white">
+          {Heading?.title}
+        </h1>{" "}
+        <div className="w-full">{children}</div>
       </main>
     </div>
   );

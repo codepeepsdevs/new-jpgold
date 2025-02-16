@@ -6,64 +6,12 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import Image from "next/image";
 import images from "@/public/images";
+import { HeadingData } from "@/constants";
 
 const Navbar = () => {
   const { user } = useUserStore();
   const { toggleMenu } = useUserLayoutStore();
   const pathname = usePathname();
-
-  const HeadingData = [
-    {
-      id: 1,
-      title: "Dashboard",
-      path: "/user/dashboard",
-    },
-    {
-      id: 2,
-      title: "JPGold Coin",
-      path: "/user/jpgoldcoin",
-    },
-    {
-      id: 3,
-      title: "JPGold NFT",
-      path: "/user/jpgoldnft",
-    },
-
-    {
-      id: 4,
-      title: "Bridge",
-      path: "/user/bridge",
-    },
-    {
-      id: 5,
-      title: "Marketplace",
-      path: "/user/marketplace",
-    },
-
-    {
-      id: 6,
-      title: "Transactions",
-      path: "/user/transactions",
-    },
-
-    {
-      id: 7,
-      title: "Games",
-      path: "/user/games",
-    },
-
-    {
-      id: 8,
-      title: "My NFTs",
-      path: "/user/nfts",
-    },
-
-    {
-      id: 9,
-      title: "Profile",
-      path: "/user/profile",
-    },
-  ];
 
   const Heading = HeadingData.sort(
     (a, b) => b.path.length - a.path.length
