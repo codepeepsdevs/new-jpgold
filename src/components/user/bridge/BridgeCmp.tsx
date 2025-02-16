@@ -30,7 +30,7 @@ export default function BridgeCmp() {
     const [amount, setAmount] = useState('500 SOL');
 
     return (
-        <div className="w-full dark:bg-[#0E0E0E] flex flex-col md:flex-row items-center justify-between gap-4">
+        <div className="w-full flex flex-col md:flex-row items-center justify-between gap-4 pb-10">
             <UserCard className="w-full md:w-1/2">
                 <div className="p-1 lg:p-5 space-y-6">
                     <h2 className="text-2xl font-bold text-[#0B0B0D] dark:text-white">Choose Blockchain</h2>
