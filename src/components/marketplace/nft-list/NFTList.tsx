@@ -254,9 +254,8 @@ const NFTList = () => {
               {sortOptions.find((option) => option.value === sortBy)?.label}
             </span>
             <IoChevronDown
-              className={`transform transition-transform ${
-                isSelectOpen ? "rotate-180" : ""
-              }`}
+              className={`transform transition-transform ${isSelectOpen ? "rotate-180" : ""
+                }`}
             />
           </button>
 
@@ -283,21 +282,19 @@ const NFTList = () => {
           <div className="hidden sm:flex items-center gap-1 bg-white dark:bg-black/20 p-1 rounded-lg border dark:border-none shadow-lg">
             <button
               onClick={() => setIsGridView(true)}
-              className={`p-2 rounded ${
-                isGridView
-                  ? "dark:bg-white bg-[#0A0C0F] dark:text-[#1C1B1F] text-white"
-                  : "text-[#1C1B1F] dark:text-[#DDDDDD]"
-              }`}
+              className={`p-2 rounded ${isGridView
+                ? "dark:bg-white bg-[#0A0C0F] dark:text-[#1C1B1F] text-white"
+                : "text-[#1C1B1F] dark:text-[#DDDDDD]"
+                }`}
             >
               <TbLayoutGrid size={20} />
             </button>
             <button
               onClick={() => setIsGridView(false)}
-              className={`p-2 rounded ${
-                !isGridView
-                  ? "dark:bg-white bg-[#0A0C0F] dark:text-[#1C1B1F] text-white"
-                  : "text-[#1C1B1F] dark:text-[#DDDDDD]"
-              }`}
+              className={`p-2 rounded ${!isGridView
+                ? "dark:bg-white bg-[#0A0C0F] dark:text-[#1C1B1F] text-white"
+                : "text-[#1C1B1F] dark:text-[#DDDDDD]"
+                }`}
             >
               <IoList size={20} />
             </button>
@@ -314,45 +311,47 @@ const NFTList = () => {
         </div>
       ) : (
         <div className="w-full border border-[#E2E2E2] dark:border-[#E2E2E2]/20  p-4 rounded-lg overflow-hidden">
-          <table className="w-full">
-            <thead>
-              {table.getHeaderGroups().map((headerGroup) => (
-                <tr
-                  key={headerGroup.id}
-                  className="border-b border-gray-200 dark:border-gray-700"
-                >
-                  {headerGroup.headers.map((header) => (
-                    <th
-                      key={header.id}
-                      className="text-left px-6 py-4 dark:text-white font-semibold"
-                    >
-                      {flexRender(
-                        header.column.columnDef.header,
-                        header.getContext()
-                      )}
-                    </th>
-                  ))}
-                </tr>
-              ))}
-            </thead>
-            <tbody>
-              {paginatedData.map((row) => (
-                <tr
-                  key={row.id}
-                  className="group border-b dark:text-white border-[#E2E2E2] cursor-pointer dark:border-[#E2E2E2]/20 hover:bg-[#FAFAFA] dark:hover:bg-[#FAFAFA]/10 transition-colors"
-                >
-                  {row.getVisibleCells().map((cell) => (
-                    <td key={cell.id} className="px-6 py-4 font-semibold">
-                      {flexRender(
-                        cell.column.columnDef.cell,
-                        cell.getContext()
-                      )}
-                    </td>
-                  ))}
-                </tr>
-              ))}
-            </tbody>
-          </table>
+          <div className="overflow-x-auto">
+            <table className="w-full border-collapse">
+              <thead>
+                {table.getHeaderGroups().map((headerGroup) => (
+                  <tr
+                    key={headerGroup.id}
+                    className="border-b border-gray-200 dark:border-gray-700"
+                  >
+                    {headerGroup.headers.map((header) => (
+                      <th
+                        key={header.id}
+                        className="text-left px-6 py-4 dark:text-white font-semibold"
+                      >
+                        {flexRender(
+                          header.column.columnDef.header,
+                          header.getContext()
+                        )}
+                      </th>
+                    ))}
+                  </tr>
+                ))}
+              </thead>
+              <tbody>
+                {paginatedData.map((row) => (
+                  <tr
+                    key={row.id}
+                    className="group border-b dark:text-white border-[#E2E2E2] cursor-pointer dark:border-[#E2E2E2]/20 hover:bg-[#FAFAFA] dark:hover:bg-[#FAFAFA]/10 transition-colors"
+                  >
+                    {row.getVisibleCells().map((cell) => (
+                      <td key={cell.id} className="px-6 py-4 font-semibold">
+                        {flexRender(
+                          cell.column.columnDef.cell,
+                          cell.getContext()
+                        )}
+                      </td>
+                    ))}
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
         </div>
       )}
 
