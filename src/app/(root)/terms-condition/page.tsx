@@ -1,5 +1,7 @@
+import TermsCondition from "@/components/root/TermsCondition";
+
 const TermsAndCondition = () => {
-  return <div>TermsAndCondition</div>;
+  return <TermsCondition />;
 };
 
 export default TermsAndCondition;

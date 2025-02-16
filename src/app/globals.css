@@ -58,22 +58,26 @@
 
 @font-face {
   font-family: "instrumental-sans-regular";
-  src: url("/fonts/instrumental-sans/InstrumentSans-Regular.ttf") format("truetype");
+  src: url("/fonts/instrumental-sans/InstrumentSans-Regular.ttf")
+    format("truetype");
 }
 
 @font-face {
   font-family: "instrumental-sans-medium";
-  src: url("/fonts/instrumental-sans/InstrumentSans-Medium.ttf") format("truetype");
+  src: url("/fonts/instrumental-sans/InstrumentSans-Medium.ttf")
+    format("truetype");
 }
 
 @font-face {
   font-family: "instrumental-sans-semiBold";
-  src: url("/fonts/instrumental-sans/InstrumentSans-Bold.ttf") format("truetype");
+  src: url("/fonts/instrumental-sans/InstrumentSans-SemiBold.ttf")
+    format("truetype");
 }
 
 @font-face {
   font-family: "instrumental-sans-bold";
-  src: url("/fonts/instrumental-sans/InstrumentSans-SemiBold.ttf") format("truetype");
+  src: url("/fonts/instrumental-sans/InstrumentSans-Bold.ttf")
+    format("truetype");
 }
 
 :root {

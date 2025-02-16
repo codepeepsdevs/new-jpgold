@@ -22,12 +22,13 @@ import {
   RVerifyTwoFa,
 } from "./auth.types";
 import { AxiosError, AxiosResponse } from "axios";
+import { ErrorResponse } from "../type";
 
 export const useLogin = (
-  onError: (error: AxiosError) => void,
+  onError: (error: AxiosError<ErrorResponse>) => void,
   onSuccess: (data: AxiosResponse<RLogin>) => void
 ) => {
-  return useMutation<AxiosResponse<RLogin>, AxiosError, ILogin>({
+  return useMutation<AxiosResponse<RLogin>, AxiosError<ErrorResponse>, ILogin>({
     mutationFn: loginRequest,
     onError,
     onSuccess,
@@ -35,10 +36,14 @@ export const useLogin = (
 };
 
 export const useRegister = (
-  onError: (error: AxiosError) => void,
+  onError: (error: AxiosError<ErrorResponse>) => void,
   onSuccess: (data: AxiosResponse<RRegister>) => void
 ) => {
-  return useMutation<AxiosResponse<RRegister>, AxiosError, IRegister>({
+  return useMutation<
+    AxiosResponse<RRegister>,
+    AxiosError<ErrorResponse>,
+    IRegister
+  >({
     mutationFn: registerRequest,
     onError,
     onSuccess,
@@ -46,10 +51,14 @@ export const useRegister = (
 };
 
 export const useVerifyEmail = (
-  onError: (error: AxiosError) => void,
+  onError: (error: AxiosError<ErrorResponse>) => void,
   onSuccess: (data: AxiosResponse<RVerifyEmail>) => void
 ) => {
-  return useMutation<AxiosResponse<RVerifyEmail>, AxiosError, IVerifyEmail>({
+  return useMutation<
+    AxiosResponse<RVerifyEmail>,
+    AxiosError<ErrorResponse>,
+    IVerifyEmail
+  >({
     mutationFn: verifyEmailRequest,
     onError,
     onSuccess,
@@ -57,10 +66,14 @@ export const useVerifyEmail = (
 };
 
 export const useVerifyTwoFa = (
-  onError: (error: AxiosError) => void,
+  onError: (error: AxiosError<ErrorResponse>) => void,
   onSuccess: (data: AxiosResponse<RVerifyTwoFa>) => void
 ) => {
-  return useMutation<AxiosResponse<RVerifyTwoFa>, AxiosError, IVerifyTwoFa>({
+  return useMutation<
+    AxiosResponse<RVerifyTwoFa>,
+    AxiosError<ErrorResponse>,
+    IVerifyTwoFa
+  >({
     mutationFn: verifyTwoFaRequest,
     onError,
     onSuccess,
@@ -68,12 +81,12 @@ export const useVerifyTwoFa = (
 };
 
 export const useForgotPassword = (
-  onError: (error: AxiosError) => void,
+  onError: (error: AxiosError<ErrorResponse>) => void,
   onSuccess: (data: AxiosResponse<RForgotPassword>) => void
 ) => {
   return useMutation<
     AxiosResponse<RForgotPassword>,
-    AxiosError,
+    AxiosError<ErrorResponse>,
     IForgotPassword
   >({
     mutationFn: forgotPasswordRequest,
@@ -83,14 +96,16 @@ export const useForgotPassword = (
 };
 
 export const useResetPassword = (
-  onError: (error: AxiosError) => void,
+  onError: (error: AxiosError<ErrorResponse>) => void,
   onSuccess: (data: AxiosResponse<RResetPassword>) => void
 ) => {
-  return useMutation<AxiosResponse<RResetPassword>, AxiosError, IResetPassword>(
-    {
-      mutationFn: resetPasswordRequest,
-      onError,
-      onSuccess,
-    }
-  );
+  return useMutation<
+    AxiosResponse<RResetPassword>,
+    AxiosError<ErrorResponse>,
+    IResetPassword
+  >({
+    mutationFn: resetPasswordRequest,
+    onError,
+    onSuccess,
+  });
 };

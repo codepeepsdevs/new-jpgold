@@ -1,4 +1,3 @@
-import classnames from "classnames";
 import SpinnerLoader from "./SpinnerLoader";
 import { cn } from "@/utils/cn";
 
@@ -25,7 +24,7 @@ const CustomButton = ({
       type={type}
       disabled={disabled}
       className={cn(
-        "disabled:bg-[#CA8E0E] hover:opacity-90 rounded w-full flex items-center justify-center",
+        "disabled:bg-[#CA8E0E] hover:opacity-90 rounded-lg w-full flex items-center justify-center",
         className
       )}
     >

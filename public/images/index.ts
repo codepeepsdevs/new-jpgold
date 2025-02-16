@@ -70,6 +70,8 @@ import blog9 from "./root/blog/blog9.png";
 
 import aboutHeroBg from "./root/about/about-hero-bg.png";
 
+import avatar from "./user/avatar.jpg";
+
 const jpgc = {
   jpgcOne,
   jpgcOneDark,
@@ -154,6 +156,9 @@ const team = {
 };
 
 const cart = {};
+const user = {
+  avatar,
+};
 
 export default {
   logo,
@@ -166,4 +171,5 @@ export default {
   cart,
   team,
   blog,
+  user,
 };

@@ -1,5 +1,7 @@
 // general response
 
+import { User } from "../type";
+
 interface IResponse {
   message: string;
   statusCode: number;
@@ -12,7 +14,7 @@ export interface ILogin {
 }
 
 export interface RLogin extends IResponse {
-  user: IUser;
+  user: User;
   token?: string;
 }
 
@@ -23,10 +25,8 @@ export interface IRegister {
   fullName: string;
 }
 
-export interface RRegister {
-  message: string;
-  user: IUser;
-  statusCode: number;
+export interface RRegister extends IResponse {
+  user: User;
 }
 
 // verify email
@@ -38,7 +38,7 @@ export interface IForgotPassword {
   email: string;
 }
 
-export interface RVerifyEmail extends IResponse {}
+export type RVerifyEmail = IResponse;
 
 // verify two fa
 export interface IVerifyTwoFa {
@@ -48,10 +48,10 @@ export interface IVerifyTwoFa {
 
 export interface RVerifyTwoFa extends IResponse {
   accessToken: string;
-  user: IUser;
+  user: User;
 }
 
-export interface RForgotPassword extends IResponse {}
+export type RForgotPassword = IResponse;
 
 export interface IResetPassword {
   token: string;
@@ -59,4 +59,4 @@ export interface IResetPassword {
   confirmPassword: string;
 }
 
-export interface RResetPassword extends IResponse {}
+export type RResetPassword = IResponse;

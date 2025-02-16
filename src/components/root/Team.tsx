@@ -1,149 +1,83 @@
-import React from 'react'
-import images from '../../../public/images'
-import Image, { StaticImageData } from 'next/image'
-import Link from 'next/link'
-import { FaLinkedin } from 'react-icons/fa'
-
-interface TeamMember {
-    name: string;
-    position: string;
-    linkedin: string;
-    image: string | StaticImageData;
-    about: string;
-}
-
-const teamMembers: TeamMember[] = [
-    {
-        name: "Jegede Paul Abiodun",
-        image: images.team.team1,
-        linkedin: "https://www.linkedin.com/in/jegede-paul-abiodun-9000000000/",
-        position: "Group Chairman",
-        about: "Mr. Abiodun Paul Jegede is the founder of Japaul Group of Companies and the current Chairman of the Board of Directors",
-    },
-    {
-        name: "Ricardo Valls",
-        image: images.team.team2,
-        linkedin: "https://www.linkedin.com/in/ricardo-valls-7000000000/",
-        position: "Professional Geoscientist – On Contract​",
-        about: "Ricardo Valls is a professional geologist with more than thirty-three years in the mining industry with extensive geological, geochemical, and mining experience, managerial skills, and a solid background in research techniques, and training of technical personnel.",
-    },
-    {
-        name: "Dr. Ludvig Kapllani",
-        image: images.team.team3,
-        linkedin: "https://www.linkedin.com/in/john-doe-0000000000/",
-        position: "Director Operations (on contract)",
-        about: "Dr. Kapllani is the co-founder of Matrix GeoTechnologies Ltd., with over 35 years’ experience in geophysical methodology and research gained over countless assignments spreading across North America, Europe, Africa, Asia, and South America.",
-    },
-
-    {
-        name: "Genc Kallfa",
-        image: images.team.team4,
-        linkedin: "https://www.linkedin.com/in/john-doe-0000000000/",
-        position: "Managing Director – Consulting",
-        about: "Mr. Kallfa has utilized his business experience from Switzerland, US, and Canada to develop Matrix GeoTechnologies Ltd into a leader in innovative thinking and solution driven enterprise.",
-    },
-    {
-        name: "Suhununu Mahama Arizini",
-        image: images.team.team5,
-        linkedin: "https://www.linkedin.com/in/john-doe-0000000000/",
-        position: "Director Legal Ghana",
-        about: "Suhununu Maha Arizini is a conscientious and versatile senior corporate administrator who started his legal career about three decades now. His passion for his career has endeared him seek more professional prowess in the business and mining sector.He is a dual citizen of Ghana and the United Kingdom.",
-    },
-    {
-        name: "Ethan Speijer",
-        image: images.team.team6,
-        linkedin: "https://www.linkedin.com/in/john-doe-0000000000/",
-        position: "General Manager, Commercial",
-        about: "Ethan Speijer has been an International Business Development Manager for more than 5 years",
-    },
-    {
-        name: "Amoo Olukunle Olanrewaju",
-        image: images.team.team7,
-        linkedin: "https://www.linkedin.com/in/john-doe-0000000000/",
-        position: "Consulting Geoscientist",
-        about: "Experienced President with a demonstrated history of working in the mining & metals industry. Skilled in Oil & Gas Exploration, Exploration Management, Geophysics, Export Finance, and Exploration Geologists.",
-    },
-    {
-        name: "Dr. Israel Ovirih",
-        image: images.team.team8,
-        linkedin: "https://www.linkedin.com/in/john-doe-0000000000/",
-        position: "Finance Consultant",
-        about: "Israel Ovirih founded Banklink Africa Group after over a decade stint with some of Nigerian leading Banks, including Oceanic and GTBank up unto the late 90’s",
-    },
-    {
-        name: "Hamza Khan",
-        image: images.team.team9,
-        linkedin: "https://www.linkedin.com/in/john-doe-0000000000/",
-        position: "Advisor & Top Blockchain Expert",
-        about: "Hamza Khan, Blockchain expert and ico analyst having 5-year experience in the crypto world. And an expert in Stellar Blockchain and worked with many icos and help them reach a successful position in the market.",
-    },
-    {
-        name: "Joshua A.T",
-        image: images.team.team10,
-        linkedin: "https://www.linkedin.com/in/john-doe-0000000000/",
-        position: "Business Development Consultant",
-        about: "For six years, Joshua A.T. has worked in various businesses development roles. She holds an MSc in Management Technology another MSc in Digital Innovation Management (in view). She provides consulting services to established companies, particularly those in the technology sector. Her areas of expertise include project management, product development, content production, business negotiations, sales, and brand communications.",
-    },
-    {
-        name: "Victoria Nkong",
-        image: images.team.team11,
-        linkedin: "https://www.linkedin.com/in/john-doe-0000000000/",
-        position: "Marketing consultant",
-        about: "She is a Multilingual Marketing & Communication Consultant, A Talent Manager, Events/TV Producer, Writer, Public Speaker C.E.O: QTABY EVENTS",
-    },
-]
+import React from "react";
+import Image from "next/image";
+import Link from "next/link";
+import { FaLinkedin } from "react-icons/fa";
+import { teamMembers } from "@/constants";
+import { TeamMemberProps } from "@/constants/types";
 
 export default function Team() {
-    return (
-        <div className="container mx-auto w-full flex justify-center bg-white dark:bg-bg-700 py-3 relative">
-            <div className="">
-                {/* title */}
-                <div className='w-full flex flex-col md:flex-row gap-2 text-center md:text-left justify-between items-center py-5'>
-                    <h1 className='dark:text-white text-3xl md:text-5xl font-bold text-text-200'>Meet the Team</h1>
-                    <p className='dark:text-white/80 text-[#131319] md:w-1/3'>We are committed to developing an outstanding product that not only meets but surpasses the needs and expectations of our users.</p>
-                </div>
+  return (
+    <div className="w-full">
+      <div className="container w-full flex flex-col max-md:justify-center max-md:items-center max-md:text-center gap-4 md:gap-6 lg:gap-8 py-10 sm:py-12">
+        {/* title */}
+        <div className="w-full flex max-md:flex-col items-center md:items-end justify-center md:justify-between gap-4 md:gap-8 lg:gap-10">
+          <div className="w-full 2xs:w-[90%] sm:w-[80%] md:w-[50%] lg:w-[55%] xl:w-[60%] 2xl:w-[65%]">
+            <h1 className="w-full lg:w-[90%] 2xl:w-[80%] text-[#050706] dark:text-white font-isemibold text-3xl lg:text-4xl xl:text-5xl">
+              Meet the Team{" "}
+            </h1>
+          </div>
 
-                {/* Team members grid */}
-                <div className='mt-4 mb-10 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8'>
-                    {teamMembers.map((member) => (
-                        <TeamMember key={member.name} {...member} />
-                    ))}
-                </div>
-            </div>
+          <p className="w-full 2xs:w-[90%] sm:w-[80%] md:w-[50%] lg:w-[45%] xl:w-[40%] 2xl:w-[35%] text-[#131319] dark:text-[#FFFFFFCC] text-sm lg:text-base xl:text-lg">
+            We are committed to developing an outstanding product that not only
+            meets but surpasses the needs and expectations of our users.
+          </p>
         </div>
-    );
+
+        {/* Team members grid */}
+        <div className="mt-6 mb-10 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6  xl:gap-8">
+          {teamMembers.map((member) => (
+            <TeamMember key={member.name} {...member} />
+          ))}
+        </div>
+      </div>
+    </div>
+  );
 }
 
-const TeamMember: React.FC<TeamMember> = ({ name, position, image, linkedin, about }) => {
-    return (
-        <div className='bg-white dark:bg-[#1C1C1E] rounded-lg p-6 md:p-10 pb-20 border border-[#CCCCCC] dark:border-none'>
-            <div className='flex flex-col gap-4'>
-                {/* Image and LinkedIn */}
-                <div className='relative'>
-                    <Image
-                        src={image}
-                        alt={name}
-                        width={130}
-                        height={130}
-                        className='rounded-lg object-cover'
-                    />
-
-                </div>
-
-                {/* Text content */}
-                <div className='space-y-2'>
-                    <div className='flex gap-2 items-center'>
-                        <h3 className='text-xl font-bold dark:text-white text-[#050706]'>{name}</h3>
-                        {linkedin && (
-                            <Link href={linkedin} target="_blank">
-                                <FaLinkedin className='text-[#050706] dark:text-white' size={20} />
-                            </Link>
-                        )}
-                    </div>
-                    <p className='text-sm text-[#6B6B6B] dark:text-white/80'>{position}</p>
-                    <p className='text-[#3C3C3C] dark:text-white line-clamp-4'>{about}</p>
-                </div>
-            </div>
+const TeamMember: React.FC<TeamMemberProps> = ({
+  name,
+  position,
+  image,
+  linkedin,
+  about,
+}) => {
+  return (
+    <div className="bg-white dark:bg-[#1D1F1C] rounded-lg p-6 md:p-10 pb-20 border border-[#CCCCCC] dark:border-[#00000033]">
+      <div className="flex flex-col gap-4">
+        {/* Image and LinkedIn */}
+        <div className="relative">
+          <Image
+            src={image}
+            alt={name}
+            width={130}
+            height={130}
+            className="w-28 2xs:w-32  rounded-lg object-cover"
+          />
         </div>
-    );
-}
+
+        {/* Text content */}
+        <div className="flex flex-col items-start justify-start text-left gap-2">
+          <div className="flex gap-2 items-center">
+            <h3 className="text-xl font-bold dark:text-white text-[#050706]">
+              {name}
+            </h3>
+            {linkedin && (
+              <Link href={linkedin} target="_blank">
+                <FaLinkedin
+                  className="text-[#050706] dark:text-white"
+                  size={20}
+                />
+              </Link>
+            )}
+          </div>
+          <p className="text-sm text-[#6B6B6B] dark:text-white/80">
+            {position}
+          </p>
+          <p className="mt-2 text-[#3C3C3C] dark:text-white line-clamp-4">
+            {about}
+          </p>
+        </div>
+      </div>
+    </div>
+  );
+};

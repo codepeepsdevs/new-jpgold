@@ -13,9 +13,10 @@ const Newsletter = () => {
 
         <div className="w-[95%] 2xs:w-[85%] xs:w-[75%] sm:w-[70%] md:w-[60%] xl:w-[45%] flex flex-col justify-center text-center items-center gap-5 xl:gap-6">
           <p className="text-xs 2xs:text-sm lg:text-base text-[#000000B2] dark:text-[#FFFFFFB2]">
-            Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do
-            eiusmod tempor. Lorem ipsum dolor sit amet, consectetur adipiscing
-            elit, sed do eiusmod tempor.
+            Stay updated with our latest insights, product updates, and tech
+            industry news. Get weekly curated content delivered straight to your
+            inbox, including coding tips, development best practices, and
+            emerging tech trends.
           </p>
           <div className="w-full flex items-center h-full sm:px-1 xl:px-3">
             <input

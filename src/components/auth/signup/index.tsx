@@ -11,12 +11,14 @@ import Link from "next/link";
 import CustomButton from "@/components/CustomButton";
 import useNavigate from "@/hooks/useNavigate";
 import classNames from "classnames";
-import { AxiosError, AxiosResponse } from "axios";
-import { RRegister } from "@/api/auth/auth.types";
 import { useRegister } from "@/api/auth/auth.queries";
 import SuccessToast from "@/components/toast/SuccessToast";
 import ErrorToast from "@/components/toast/ErrorToast";
 import { useTheme } from "@/store/theme.store";
+import { FaArrowRightLong } from "react-icons/fa6";
+import AuthButtons from "../AuthButtons";
+import { AxiosError } from "axios";
+import { ErrorResponse } from "@/api/type";
 
 const schema = yup.object().shape({
   fullName: yup.string().required("Full Name is required"),
@@ -41,15 +43,15 @@ const Signup = () => {
       password: "",
     },
     resolver: yupResolver(schema),
-    mode: "onChange",
+    mode: "onBlur",
   });
 
   const theme = useTheme();
   const navigate = useNavigate();
-  const { register, handleSubmit, formState, reset, setValue } = form;
+  const { register, handleSubmit, formState, reset } = form;
   const { errors, isValid } = formState;
 
-  const onError = (error: any) => {
+  const onError = (error: AxiosError<ErrorResponse>) => {
     const errorMessage = error?.response?.data?.message;
     const descriptions = Array.isArray(errorMessage)
       ? errorMessage
@@ -57,11 +59,13 @@ const Signup = () => {
 
     ErrorToast({
       title: "Error during registration",
-      descriptions,
+      descriptions: descriptions.filter(
+        (msg): msg is string => msg !== undefined
+      ),
     });
   };
 
-  const onSuccess = (data: AxiosResponse<RRegister>) => {
+  const onSuccess = () => {
     // const user = data?.data?.user;
 
     SuccessToast({
@@ -88,15 +92,61 @@ const Signup = () => {
             onClick={() => navigate("/", "replace")}
             src={theme === "light" ? images.logoSvg : images.logoDarkSvg}
             alt="logo"
+            className="cursor-pointer"
           />
           <div className="w-full bg-[#FFFFFF47] dark:text-white dark:bg-[#00000033] mt-10 flex items-center justify-center border border-[#D0D0D0] dark:border-[#E3E3E826] rounded-2xl py-10">
             <div className="w-[90%] sm:w-[80%] flex flex-col gap-6 items-center justify-center">
               {/* headers */}
               <div className="flex flex-col gap-1 text-center">
-                <h1 className="text-2xl font-ibold">Get Started!</h1>
-                <p className="text-sm dark:text-[#FFFFFFA6]">
-                  create an account
+                <h1 className="text-2xl xs:text-3xl font-ibold">
+                  Get Started!
+                </h1>
+                <p className="text-sm xs:text-base dark:text-[#FFFFFFA6]">
+                  Create an account
                 </p>
+              </div>
+
+              <div className="w-full flex flex-col gap-4">
+                <AuthButtons googleLogin={() => {}} facebookLogin={() => {}} />
+                <div
+                  onClick={() => navigate("/user/dashboard", "replace")}
+                  className="w-full flex items-center justify-center py-2.5 gap-2 border border-[#E6E6E6] dark:text-[#323232] bg-[#E6E6E6] rounded cursor-pointer"
+                >
+                  <p className="font-semibold text-sm">Continue Anonymously</p>
+                  <FaArrowRightLong />
+                </div>
+              </div>
+
+              <div className="w-full flex items-center justify-center self-center border-[#C2C2C2]">
+                <hr
+                  className={classNames(
+                    "flex-1 border-[#C2C2C2] dark:border-[#3D3D3D]",
+                    {
+                      // "border-[#2B2B2B]": dark,
+                      // "border-[#D7D7D7]": !dark,
+                    }
+                  )}
+                />
+                <span
+                  className={classNames(
+                    "px-3 font-bold text-xs md:text-sm text-[#757575] dark:[#757575]",
+                    {
+                      // "text-[#BBBBBB]": dark,
+                      // "text-[#D7D7D7]": !dark,
+                    }
+                  )}
+                >
+                  OR
+                </span>
+                <hr
+                  className={classNames(
+                    "flex-1 border-[#C2C2C2] dark:border-[#3D3D3D]",
+                    {
+                      // "border-[#2B2B2B]": dark,
+                      // "border-[#D7D7D7]": !dark,
+                    }
+                  )}
+                />
               </div>
 
               {/* form */}
@@ -149,7 +199,7 @@ const Signup = () => {
                   type="submit"
                   loading={isPending}
                   className={classNames({
-                    "py-3 mt-3 rounded-[5px]": true,
+                    "py-3.5 mt-3": true,
                     "bg-[#CA8E0E] text-white": isValid,
                     "bg-[#E6E6E6] text-[#323232]": !isValid,
                   })}

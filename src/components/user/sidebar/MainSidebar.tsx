@@ -1,0 +1,92 @@
+"use client";
+
+import Image from "next/image";
+import { usePathname } from "next/navigation";
+import React from "react";
+import Link from "next/link";
+import { SidebarData } from "../../../constants/index";
+import images from "../../../../public/images";
+import useNavigate from "@/hooks/useNavigate";
+import { IoClose } from "react-icons/io5";
+import useUserLayoutStore from "@/store/userLayout.store";
+import { useTheme } from "@/store/theme.store";
+import classNames from "classnames";
+import ThemeToggle from "../ThemeToggler";
+
+const MainSidebar = () => {
+  const navigate = useNavigate();
+  const pathname = usePathname();
+  const theme = useTheme();
+  const { toggleMenu } = useUserLayoutStore();
+
+  return (
+    <div className={`w-full h-full  overflow-auto relative no-scrollbar`}>
+      <div className="w-full flex items-center justify-between px-8 2xs:px-8 py-10 xs:py-8 ">
+        <Image
+          alt="logo"
+          src={theme === "light" ? images.logoSvg : images.logoDarkSvg}
+          className=" cursor-pointer w-32"
+          onClick={() => {
+            navigate("/", "push");
+          }}
+        />
+
+        <div className="lg:hidden flex justify-center items-center bg-[#EBEBEB] dark:bg-[#555555] text-[#4E4E4E] dark:text-white p-1.5 sm:p-2 rounded-full">
+          <IoClose className=" cursor-pointer text-xl" onClick={toggleMenu} />
+        </div>
+      </div>
+
+      <div className="pt-2 pb-6 border-b border-[#E2E2E2] dark:border-[#313131] px-6 flex gap-2 flex-col w-full">
+        {SidebarData.map((item) => {
+          const isActive =
+            item.path === "/"
+              ? pathname === item.path
+              : pathname.startsWith(item.path);
+          return (
+            <Link
+              href={item.path}
+              key={item.id}
+              onClick={toggleMenu}
+              className={classNames("flex items-center  gap-2.5 py-3 px-4", {
+                "rounded-lg bg-[#282828] ": isActive,
+                "": !isActive,
+              })}
+            >
+              {isActive ? (
+                <item.iconActive
+                  className={classNames(
+                    "text-xl text-[#E4AC29] dark:text-[#FFBF29]"
+                  )}
+                />
+              ) : (
+                <item.icon
+                  className={classNames(
+                    "text-xl text-[#1C1B1F] dark:text-white"
+                  )}
+                />
+              )}
+              <p
+                className={classNames("text-base", {
+                  "text-white font-semibold": isActive,
+                  "text-[#4E4E4E] dark:text-[#9E9E9E]": !isActive,
+                })}
+              >
+                {item.title}
+              </p>
+            </Link>
+          );
+        })}
+      </div>
+
+      <div className="my-20 mx-6 bg-[#EFEFEF] dark:bg-[#222222] rounded-lg flex justify-between items-center py-2.5 px-4">
+        <p className="font-semibold text-black dark:text-white text-base">
+          Theme
+        </p>
+
+        <ThemeToggle />
+      </div>
+    </div>
+  );
+};
+
+export default MainSidebar;

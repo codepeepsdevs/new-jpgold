@@ -1,5 +1,7 @@
-const Disclaimer = () => {
-  return <div>Disclaimer</div>;
+import Disclaimer from "@/components/root/Disclaimer";
+
+const DisclaimerPage = () => {
+  return <Disclaimer />;
 };
 
-export default Disclaimer;
+export default DisclaimerPage;

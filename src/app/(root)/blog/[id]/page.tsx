@@ -1,7 +1,5 @@
-import BlogDetail from '@/components/cards/BlogDetail';
+import BlogDetail from "@/components/root/blog/BlogDetail";
 
 export default function page() {
-
-    return <BlogDetail />
-
+  return <BlogDetail />;
 }

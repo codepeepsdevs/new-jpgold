@@ -6,7 +6,7 @@ import "swiper/css";
 import { teamMembers } from "@/constants";
 import TeamCard from "./TeamCard";
 import { FaChevronRight } from "react-icons/fa6";
-
+import useNavigate from "@/hooks/useNavigate";
 // const SwiperNavButtons = () => {
 //   const swiper = useSwiper();
 
@@ -29,6 +29,7 @@ import { FaChevronRight } from "react-icons/fa6";
 // };
 
 const Team = () => {
+  const navigate = useNavigate();
   return (
     <div className="w-full">
       <div className="container w-full flex flex-col  gap-6 md:gap-8">
@@ -88,7 +89,10 @@ const Team = () => {
 
           {/* <SwiperNavButtons /> */}
         </Swiper>
-        <button className="text-primary w-full bg-white dark:bg-[#050706]  2xs:w-fit border border-[#00000014] dark:border-white px-8 py-3.5 rounded-full flex items-center max-2xs:justify-center gap-2">
+        <button
+          onClick={() => navigate("/team")}
+          className="text-primary w-full bg-white dark:bg-[#050706]  2xs:w-fit border border-[#00000014] dark:border-white px-8 py-3.5 rounded-full flex items-center max-2xs:justify-center gap-2"
+        >
           <p className="font-semibold text-sm">Meet the Team</p>
           <FaChevronRight className="text-sm" />
         </button>

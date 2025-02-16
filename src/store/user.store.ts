@@ -1,19 +1,20 @@
+import { User } from "@/api/type";
 import { create } from "zustand";
 import { createJSONStorage, persist } from "zustand/middleware";
 
 interface States {
-  user: IUser | null;
+  user: User | null;
 }
 
 interface Actions {
-  setUser: (user: IUser | null) => void;
+  setUser: (user: User | null) => void;
 }
 
 const useUserStore = create(
   persist<States & Actions>(
     (set) => ({
       user: null,
-      setUser: (user: IUser | null) => set({ user }),
+      setUser: (user: User | null) => set({ user }),
     }),
     {
       name: "user",

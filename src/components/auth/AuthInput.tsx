@@ -1,8 +1,6 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
-
 "use client";
 
-import React, { useState, forwardRef } from "react";
+import React, { useState, forwardRef, InputHTMLAttributes } from "react";
 import { AiOutlineEyeInvisible } from "react-icons/ai";
 import { AiOutlineEye } from "react-icons/ai";
 import Image from "next/image";
@@ -20,7 +18,9 @@ type AuthInputProps = {
   disabled?: boolean;
   required?: boolean;
   containerStyles?: string;
-  [key: string]: any;
+  [
+    key: string
+  ]: InputHTMLAttributes<HTMLInputElement>[keyof InputHTMLAttributes<HTMLInputElement>];
 };
 
 const AuthInput = forwardRef<HTMLInputElement, AuthInputProps>(
@@ -52,7 +52,7 @@ const AuthInput = forwardRef<HTMLInputElement, AuthInputProps>(
           </label>
         </div>
         <div
-          className={`w-full flex gap-2 justify-center items-center bg-bg-2000 dark:bg-bg-2100 border  dark:border-[#3D3D3D] border-border-600 rounded py-3 px-3 ${containerStyles}`}
+          className={`w-full flex gap-2 justify-center items-center bg-transparent border  dark:border-[#3D3D3D] border-[#C5C5CA] rounded-lg py-3 px-3 ${containerStyles}`}
         >
           <input
             ref={ref}
@@ -97,5 +97,7 @@ const AuthInput = forwardRef<HTMLInputElement, AuthInputProps>(
     );
   }
 );
+
+AuthInput.displayName = "AuthInput";
 
 export default AuthInput;
