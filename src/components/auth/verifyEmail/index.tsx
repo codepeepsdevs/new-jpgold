@@ -2,27 +2,29 @@
 
 import { useVerifyEmail } from "@/api/auth/auth.queries";
 import useNavigate from "@/hooks/useNavigate";
-import { AxiosError } from "axios";
 import { useSearchParams } from "next/navigation";
-import { useEffect } from "react";
-import { toast } from "react-hot-toast";
+import { Suspense, useEffect } from "react";
 import SpinnerLoader from "@/components/SpinnerLoader";
 import SuccessToast from "@/components/toast/SuccessToast";
 import ErrorToast from "@/components/toast/ErrorToast";
+import { AxiosError } from "axios";
+import { ErrorResponse } from "@/api/type";
 
-const VerifyEmail = () => {
+const VerifyEmailContent = () => {
   const searchParams = useSearchParams();
   const token = searchParams.get("token");
   const navigate = useNavigate();
 
-  const onError = (error: any) => {
+  const onError = (error: AxiosError<ErrorResponse>) => {
     const descriptions = Array.isArray(error?.response?.data?.message)
       ? error?.response?.data?.message
       : [error?.response?.data?.message];
 
     ErrorToast({
       title: "Verification Failed",
-      descriptions,
+      descriptions: descriptions.filter(
+        (msg): msg is string => msg !== undefined
+      ),
     });
     navigate("/login", "replace");
   };
@@ -56,6 +58,20 @@ const VerifyEmail = () => {
   }
 
   return null;
+};
+
+const VerifyEmail = () => {
+  return (
+    <Suspense
+      fallback={
+        <div className="h-screen w-screen flex items-center justify-center">
+          <SpinnerLoader width={40} height={40} color="#CC8F00" />
+        </div>
+      }
+    >
+      <VerifyEmailContent />
+    </Suspense>
+  );
 };
 
 export default VerifyEmail;

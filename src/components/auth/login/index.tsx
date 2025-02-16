@@ -1,9 +1,8 @@
 "use client";
 
-import React, { useEffect } from "react";
 import Image from "next/image";
 import images from "@/public/images";
-import AuthButtons from "./AuthButtons";
+import AuthButtons from "../AuthButtons";
 import { FaArrowRightLong } from "react-icons/fa6";
 import classNames from "classnames";
 import { yupResolver } from "@hookform/resolvers/yup";
@@ -13,13 +12,13 @@ import AuthInput from "../AuthInput";
 import Link from "next/link";
 import CustomButton from "@/components/CustomButton";
 import useNavigate from "@/hooks/useNavigate";
-import { AxiosResponse } from "axios";
+import { AxiosError, AxiosResponse } from "axios";
 import { RLogin } from "@/api/auth/auth.types";
 import { useLogin } from "@/api/auth/auth.queries";
 import ErrorToast from "@/components/toast/ErrorToast";
 import useAuthEmailStore from "@/store/authEmail.store";
-import Cookies from "js-cookie";
 import { useTheme } from "@/store/theme.store";
+import { ErrorResponse } from "@/api/type";
 
 const schema = yup.object().shape({
   email: yup
@@ -42,26 +41,17 @@ const Login = () => {
       password: "",
     },
     resolver: yupResolver(schema),
-    mode: "onChange",
+    mode: "onBlur",
   });
-
-  useEffect(() => {
-    const accessToken = Cookies.get("accessToken");
-
-    console.log("accessztoken from login", accessToken);
-    if (accessToken) {
-      navigate("/user/dashboard", "replace");
-    }
-  }, []);
 
   const navigate = useNavigate();
   const { setAuthEmail } = useAuthEmailStore();
   const theme = useTheme();
 
-  const { register, handleSubmit, formState, reset, setValue } = form;
+  const { register, handleSubmit, formState, reset } = form;
   const { errors, isValid } = formState;
 
-  const onError = (error: any) => {
+  const onError = (error: AxiosError<ErrorResponse>) => {
     const errorMessage = error?.response?.data?.message;
     const descriptions = Array.isArray(errorMessage)
       ? errorMessage
@@ -69,7 +59,9 @@ const Login = () => {
 
     ErrorToast({
       title: "Error during login",
-      descriptions,
+      descriptions: descriptions.filter(
+        (msg): msg is string => msg !== undefined
+      ),
     });
   };
 
@@ -83,6 +75,8 @@ const Login = () => {
     } else {
       navigate("/two-factor-auth", "push");
     }
+
+    reset();
   };
 
   const { mutate: Login, isPending } = useLogin(onError, onSuccess);
@@ -94,18 +88,21 @@ const Login = () => {
   return (
     <div className="w-full flex justify-center">
       <div className="flex justify-center w-[90%] sm:w-[70%] md:w-[60%] lg:w-[45%] xl:w-[40%]">
-        <div className="w-full flex items-center flex-col">
+        <div className="w-full flex items-center flex-col ">
           <Image
             onClick={() => navigate("/", "replace")}
             src={theme === "light" ? images.logoSvg : images.logoDarkSvg}
             alt="logo"
+            className="cursor-pointer"
           />
           <div className="w-full bg-[#FFFFFF47] dark:text-white dark:bg-[#00000033] mt-10 flex items-center justify-center border border-[#D0D0D0] dark:border-[#E3E3E826] rounded-2xl py-10">
             <div className="w-[90%] sm:w-[80%] flex flex-col gap-6 items-center justify-center">
               {/* headers */}
               <div className="flex flex-col gap-1 text-center">
-                <h1 className="text-2xl font-ibold">Welcome Back!</h1>
-                <p className="text-sm dark:text-[#FFFFFFA6]">
+                <h1 className="text-2xl xs:text-3xl font-ibold">
+                  Welcome Back!
+                </h1>
+                <p className="text-sm xs:text-base dark:text-[#FFFFFFA6]">
                   Log in to your account
                 </p>
               </div>
@@ -113,7 +110,10 @@ const Login = () => {
               {/* buttons */}
               <div className="w-full flex flex-col gap-4">
                 <AuthButtons googleLogin={() => {}} facebookLogin={() => {}} />
-                <div className="w-full flex items-center justify-center py-2 gap-2 border border-[#E6E6E6] dark:text-[#323232] bg-[#E6E6E6] rounded cursor-pointer">
+                <div
+                  onClick={() => navigate("/user/dashboard", "replace")}
+                  className="w-full flex items-center justify-center py-2.5 gap-2 border border-[#E6E6E6] dark:text-[#323232] bg-[#E6E6E6] rounded cursor-pointer"
+                >
                   <p className="font-semibold text-sm">Continue Anonymously</p>
                   <FaArrowRightLong />
                 </div>
@@ -185,11 +185,11 @@ const Login = () => {
                 </Link>
                 {/* button */}
                 <CustomButton
-                  placeholder="Log in with Google"
+                  placeholder="Log in"
                   type="submit"
                   loading={isPending}
                   className={classNames({
-                    "py-3 mt-3 rounded-[5px]": true,
+                    "py-3.5 mt-3": true,
                     "bg-[#CA8E0E] text-white": isValid,
                     "bg-[#E6E6E6] text-[#323232]": !isValid,
                   })}

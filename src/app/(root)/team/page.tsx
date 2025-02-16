@@ -1,11 +1,7 @@
 import Team from "@/components/root/Team";
 
 const TeamPage = () => {
-  return (
-    <div>
-      <Team />
-    </div>
-  );
+  return <Team />;
 };
 
 export default TeamPage;

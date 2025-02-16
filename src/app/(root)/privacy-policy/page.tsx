@@ -1,5 +1,7 @@
+import PrivacyPolicy from "@/components/root/PrivacyPolicy";
+
 const PrivacyAndPolicy = () => {
-  return <div>PrivacyAndPolicy</div>;
+  return <PrivacyPolicy />;
 };
 
 export default PrivacyAndPolicy;

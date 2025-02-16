@@ -14,9 +14,10 @@ import useAuthEmailStore from "@/store/authEmail.store";
 import { useRouter } from "next/navigation";
 import useUserStore from "@/store/user.store";
 import Cookies from "js-cookie";
-import { AxiosResponse } from "axios";
+import { AxiosError, AxiosResponse } from "axios";
 import { RVerifyTwoFa } from "@/api/auth/auth.types";
 import { useTheme } from "@/store/theme.store";
+import { ErrorResponse } from "@/api/type";
 
 const TwoFa = () => {
   const navigate = useNavigate();
@@ -34,7 +35,7 @@ const TwoFa = () => {
     setCode(data);
   };
 
-  const onError = (error: any) => {
+  const onError = (error: AxiosError<ErrorResponse>) => {
     const errorMessage = error?.response?.data?.message;
     const descriptions = Array.isArray(errorMessage)
       ? errorMessage
@@ -42,7 +43,9 @@ const TwoFa = () => {
 
     ErrorToast({
       title: "Verification Failed",
-      descriptions,
+      descriptions: descriptions.filter(
+        (msg): msg is string => msg !== undefined
+      ),
     });
 
     navigate("/login", "replace");
@@ -68,7 +71,7 @@ const TwoFa = () => {
     if (!authEmail) {
       router.back();
     }
-  }, [authEmail, navigate]);
+  }, [authEmail, navigate, router]);
 
   if (!authEmail) {
     return null;
@@ -89,16 +92,17 @@ const TwoFa = () => {
             onClick={() => navigate("/", "replace")}
             src={theme === "light" ? images.logoSvg : images.logoDarkSvg}
             alt="logo"
+            className="cursor-pointer"
           />
 
           <div className="w-full bg-[#FFFFFF47] dark:text-white dark:bg-[#00000033] mt-10 flex items-center justify-center border border-[#D0D0D0] dark:border-[#E3E3E826] rounded-2xl py-10">
             <div className="w-[90%] sm:w-[80%] flex flex-col gap-6 items-center justify-center">
               {/* headers */}
               <div className="flex flex-col items-center gap-1 text-center">
-                <h1 className="w-[70%] flex self-center md:w-[40%] text-2xl font-ibold">
+                <h1 className="w-[70%] flex self-center md:w-[40%] text-2xl xs:text-3xl font-ibold">
                   Two-Factor Authentication
                 </h1>
-                <p className="w-[80%] text-sm dark:text-[#FFFFFFA6]">
+                <p className="w-[80%] text-sm xs:text-base dark:text-[#FFFFFFA6]">
                   Please check your email for the 6-digit security code to
                   continue
                 </p>
@@ -138,7 +142,7 @@ const TwoFa = () => {
                   loading={isPending}
                   disabled={!isValid}
                   className={classNames({
-                    "py-3 mt-3 rounded-[5px]": true,
+                    "py-3.5 mt-3": true,
                     "bg-[#CA8E0E] text-white": isValid,
                     "bg-[#E6E6E6] disabled:bg-[#E6E6E6] text-[#323232]":
                       !isValid,

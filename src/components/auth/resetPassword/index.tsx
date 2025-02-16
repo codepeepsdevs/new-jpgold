@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect } from "react";
+import React, { useEffect, Suspense } from "react";
 import * as yup from "yup";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { useForm } from "react-hook-form";
@@ -15,6 +15,9 @@ import SuccessToast from "@/components/toast/SuccessToast";
 import ErrorToast from "@/components/toast/ErrorToast";
 import { useSearchParams } from "next/navigation";
 import { useTheme } from "@/store/theme.store";
+import { AxiosError } from "axios";
+import { ErrorResponse } from "@/api/type";
+import SpinnerLoader from "@/components/SpinnerLoader";
 
 const schema = yup.object().shape({
   password: yup
@@ -29,14 +32,14 @@ const schema = yup.object().shape({
 
 type ResetPasswordFormData = yup.InferType<typeof schema>;
 
-const ResetPassword = () => {
+const ResetPasswordContent = () => {
   const form = useForm<ResetPasswordFormData>({
     defaultValues: {
       password: "",
       confirmPassword: "",
     },
     resolver: yupResolver(schema),
-    mode: "onChange",
+    mode: "onBlur",
   });
 
   const theme = useTheme();
@@ -44,7 +47,7 @@ const ResetPassword = () => {
   const searchParams = useSearchParams();
   const token = searchParams.get("token");
 
-  const onError = (error: any) => {
+  const onError = (error: AxiosError<ErrorResponse>) => {
     const errorMessage = error?.response?.data?.message;
     const descriptions = Array.isArray(errorMessage)
       ? errorMessage
@@ -52,7 +55,9 @@ const ResetPassword = () => {
 
     ErrorToast({
       title: "Password Reset Failed",
-      descriptions,
+      descriptions: descriptions.filter(
+        (msg): msg is string => msg !== undefined
+      ),
     });
 
     navigate("/login", "replace");
@@ -72,7 +77,7 @@ const ResetPassword = () => {
     onError,
     onSuccess
   );
-  const { register, handleSubmit, formState, reset, setValue } = form;
+  const { register, handleSubmit, formState, reset } = form;
   const { errors, isValid } = formState;
 
   const onSubmit = (formData: ResetPasswordFormData) => {
@@ -102,14 +107,17 @@ const ResetPassword = () => {
             onClick={() => navigate("/", "replace")}
             src={theme === "light" ? images.logoSvg : images.logoDarkSvg}
             alt="logo"
+            className="cursor-pointer"
           />
 
           <div className="w-full bg-[#FFFFFF47] dark:text-white dark:bg-[#00000033] mt-10 flex items-center justify-center border border-[#D0D0D0] dark:border-[#E3E3E826] rounded-2xl py-10">
             <div className="w-[90%] sm:w-[80%] flex flex-col gap-6 items-center justify-center">
               {/* headers */}
               <div className="flex flex-col gap-1 text-center">
-                <h1 className="text-2xl font-ibold">Change your password</h1>
-                <p className="text-sm w-[90%] flex self-center dark:text-[#FFFFFFA6]">
+                <h1 className="text-2xl xs:text-3xl font-ibold">
+                  Change your password
+                </h1>
+                <p className="text-sm xs:text-base w-[90%] flex self-center dark:text-[#FFFFFFA6]">
                   Enter a new password below to change your password
                 </p>
               </div>
@@ -148,7 +156,7 @@ const ResetPassword = () => {
                   type="submit"
                   loading={isPending}
                   className={classNames({
-                    "py-3 mt-3 rounded-[5px]": true,
+                    "py-3.5 mt-3": true,
                     "bg-[#CA8E0E] text-white": isValid,
                     "bg-[#E6E6E6] text-[#323232]": !isValid,
                   })}
@@ -159,6 +167,20 @@ const ResetPassword = () => {
         </div>
       </div>
     </div>
+  );
+};
+
+const ResetPassword = () => {
+  return (
+    <Suspense
+      fallback={
+        <div className="h-screen w-screen flex items-center justify-center">
+          <SpinnerLoader width={40} height={40} color="#CC8F00" />
+        </div>
+      }
+    >
+      <ResetPasswordContent />
+    </Suspense>
   );
 };
 

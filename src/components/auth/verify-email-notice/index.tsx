@@ -27,13 +27,16 @@ const VerifyEmailNotice = () => {
             <div className="w-[90%] sm:w-[80%] flex flex-col gap-6 items-center justify-center">
               {/* headers */}
               <div className="flex flex-col gap-3 text-center">
-                <h1 className="text-2xl font-ibold">Verify Your Email</h1>
-                <p className="text-sm dark:text-[#FFFFFFA6]">
-                  We've sent a verification link to your email address. Please
-                  check your inbox (and spam folder) to verify your account.
+                <h1 className="text-2xl xs:text-3xl font-ibold">
+                  Verify Your Email
+                </h1>
+                <p className="text-sm xs:text-base dark:text-[#FFFFFFA6]">
+                  We&apos;ve sent a verification link to your email address.
+                  Please check your inbox (and spam folder) to verify your
+                  account.
                 </p>
                 <div className="text-sm dark:text-[#FFFFFFA6]">
-                  <p>Didn't receive the email?</p>
+                  <p>Didn&apos;t receive the email?</p>
                   <p>Please check your spam folder or contact support.</p>
                 </div>
               </div>
@@ -43,7 +46,7 @@ const VerifyEmailNotice = () => {
                 type="button"
                 placeholder="Back to Login"
                 onClick={() => navigate("/login", "replace")}
-                className="bg-[#CA8E0E] text-white py-3 md:py-4 mt-3 rounded-[5px] w-full"
+                className="bg-[#CA8E0E] text-white py-3.5 md:py-4 mt-3 w-full"
               />
             </div>
           </div>

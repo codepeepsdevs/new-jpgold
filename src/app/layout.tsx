@@ -3,7 +3,7 @@ import "./globals.css";
 import { ThemeProvider } from "@/providers/ThemeProvider";
 import NextTopLoader from "nextjs-toploader";
 import ReactQueryProvider from "@/providers/ReactQueryProvider";
-import { Toaster } from 'react-hot-toast';
+import { Toaster } from "react-hot-toast";
 
 export const metadata: Metadata = {
   title: "JAPAUL GOLD",
@@ -33,23 +33,23 @@ export default function WebLayout({
                   fontSize: 15,
                   fontWeight: 400,
                 },
-                duration: 100,
+                duration: 1000,
               }}
             />
             <NextTopLoader color="#CC8F00" showSpinner={false} />
             <main className="w-full no-scrollbar">{children}</main>
           </ReactQueryProvider>
         </ThemeProvider>
-        <Toaster
+        {/* <Toaster
           position="top-right"
           toastOptions={{
             duration: 2000,
             style: {
-              background: '#333',
-              color: '#fff',
+              background: "#333",
+              color: "#fff",
             },
           }}
-        />
+        /> */}
       </body>
     </html>
   );

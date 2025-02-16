@@ -1,9 +1,13 @@
-interface IUserRole {
+export interface IUserRole {
   USER: "USER";
   ADMIN: "ADMIN";
 }
 
-interface IUser {
+export interface ErrorResponse {
+  message: string | string[];
+}
+
+export interface User {
   id: string;
   fullname: string;
   email: string;
@@ -16,4 +20,5 @@ interface IUser {
   isFacebookRegister: boolean;
   createdAt: string;
   updatedAt: string;
+  profileImage: string;
 }

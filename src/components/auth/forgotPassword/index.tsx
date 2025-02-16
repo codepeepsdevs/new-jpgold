@@ -14,6 +14,8 @@ import classNames from "classnames";
 import { useForgotPassword } from "@/api/auth/auth.queries";
 import ErrorToast from "@/components/toast/ErrorToast";
 import { useTheme } from "@/store/theme.store";
+import { AxiosError } from "axios";
+import { ErrorResponse } from "@/api/type";
 
 const schema = yup.object().shape({
   email: yup
@@ -30,13 +32,13 @@ const ForgotPassword = () => {
       email: "",
     },
     resolver: yupResolver(schema),
-    mode: "onChange",
+    mode: "onBlur",
   });
 
-  const { register, handleSubmit, formState, reset, setValue } = form;
+  const { register, handleSubmit, formState, reset } = form;
   const { errors, isValid } = formState;
 
-  const onError = (error: any) => {
+  const onError = (error: AxiosError<ErrorResponse>) => {
     const errorMessage = error?.response?.data?.message;
     const descriptions = Array.isArray(errorMessage)
       ? errorMessage
@@ -44,15 +46,18 @@ const ForgotPassword = () => {
 
     ErrorToast({
       title: "Password Reset Failed",
-      descriptions,
+      descriptions: descriptions.filter(
+        (msg): msg is string => msg !== undefined
+      ),
     });
   };
 
   const onSuccess = () => {
     setSentMessage("Password reset email sent successfully");
+    reset();
     setTimeout(() => {
       setSentMessage("");
-    }, 1000);
+    }, 5000);
   };
 
   const { mutate: sendResetPasswordEmail, isPending } = useForgotPassword(
@@ -77,13 +82,16 @@ const ForgotPassword = () => {
             onClick={() => navigate("/", "replace")}
             src={theme === "light" ? images.logoSvg : images.logoDarkSvg}
             alt="logo"
+            className="cursor-pointer"
           />
           <div className="w-full bg-[#FFFFFF47] dark:text-white dark:bg-[#00000033] mt-10 flex items-center justify-center border border-[#D0D0D0] dark:border-[#E3E3E826] rounded-2xl py-10">
             <div className="w-[90%] sm:w-[80%] flex flex-col gap-6 items-center justify-center">
               {/* headers */}
               <div className="flex flex-col gap-1 text-center">
-                <h1 className="text-2xl font-ibold">Forgot Password</h1>
-                <p className="text-sm dark:text-[#FFFFFFA6]">
+                <h1 className="text-2xl xs:text-3xl font-ibold">
+                  Forgot Password
+                </h1>
+                <p className="text-sm xs:text-base dark:text-[#FFFFFFA6]">
                   Enter your email address
                 </p>
               </div>
@@ -111,7 +119,7 @@ const ForgotPassword = () => {
                   type="submit"
                   loading={isPending}
                   className={classNames({
-                    "py-3 mt-3 rounded-[5px]": true,
+                    "py-3.5 mt-3": true,
                     "bg-[#CA8E0E] text-white": isValid,
                     "bg-[#E6E6E6] text-[#323232]": !isValid,
                   })}

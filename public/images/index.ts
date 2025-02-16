@@ -68,6 +68,10 @@ import blog7 from "./root/blog/blog7.png";
 import blog8 from "./root/blog/blog8.png";
 import blog9 from "./root/blog/blog9.png";
 
+import aboutHeroBg from "./root/about/about-hero-bg.png";
+
+import avatar from "./user/avatar.jpg";
+
 const jpgc = {
   jpgcOne,
   jpgcOneDark,
@@ -120,7 +124,9 @@ const home = {
   elements,
 };
 
-const about = {};
+const about = {
+  aboutHeroBg,
+};
 
 const marketplace = { marketplaceHero, nftGold };
 const blog = {
@@ -135,10 +141,24 @@ const blog = {
   blog9,
 };
 
-
-const team = { team1, team2, team3, team4, team5, team6, team7, team8, team9, team10, team11 };
+const team = {
+  team1,
+  team2,
+  team3,
+  team4,
+  team5,
+  team6,
+  team7,
+  team8,
+  team9,
+  team10,
+  team11,
+};
 
 const cart = {};
+const user = {
+  avatar,
+};
 
 export default {
   logo,
@@ -151,4 +171,5 @@ export default {
   cart,
   team,
   blog,
+  user,
 };

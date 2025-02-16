@@ -5,18 +5,21 @@ import Socials from "./Socials";
 import { footerLinks } from "@/constants";
 import Link from "next/link";
 import { useTheme } from "@/store/theme.store";
+import useNavigate from "@/hooks/useNavigate";
 
 const Footer = () => {
   const theme = useTheme();
+  const navigate = useNavigate();
 
   return (
     <div className="w-full flex justify-center bg-white dark:bg-bg-700 py-12 lg:py-16 border-t border-border-100 dark:border-border-400">
-      <div className="container flex max-md:gap-12 max-md:flex-col justify-between">
+      <div className="container flex max-lg:gap-12 max-lg:flex-col justify-between">
         <div className="flex flex-col gap-6 xs:gap-8">
           <Image
             alt="logo"
-            src={theme === "light" ? images.logoSvg : images.logo}
-            className="w-28 lg:w-32"
+            src={theme === "light" ? images.logoSvg : images.logoDarkSvg}
+            className="w-32 md:w-36 cursor-pointer"
+            onClick={() => navigate("/")}
           />
           <div className="flex flex-col gap-4 xs:gap-6">
             <Socials />
@@ -25,7 +28,7 @@ const Footer = () => {
             </p>
           </div>
         </div>
-        <div className="max-3xs:flex grid grid-cols-2 justify-between gap-3 3xs:gap-0 xs:gap-2 lg:gap-4 xl:gap-6 text-text-200 dark:text-white">
+        <div className="grid grid-cols-1 2xs:grid-cols-2 xs:grid-cols-3 justify-between  gap-3 3xs:gap-0 xs:gap-2 lg:gap-4 xl:gap-6 max-xs:!gap-y-10 text-text-200 dark:text-white">
           {footerLinks.map((item, index) => (
             <div key={index} className="flex flex-col gap-3">
               <h2 className="text-sm 2xs:text-base xs:text-lg font-semibold ">
