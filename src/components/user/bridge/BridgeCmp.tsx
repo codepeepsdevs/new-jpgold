@@ -1,7 +1,6 @@
 "use client"
 
 import UserCard from '@/components/UserCard'
-import Image from 'next/image'
 import { IoSwapVerticalSharp } from "react-icons/io5";
 import React, { useState } from 'react';
 import { SiSolana } from "react-icons/si";
