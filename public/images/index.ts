@@ -71,6 +71,8 @@ import blog9 from "./root/blog/blog9.png";
 import aboutHeroBg from "./root/about/about-hero-bg.png";
 
 import avatar from "./user/avatar.jpg";
+import gameDocIcon from "./user/gameDoc.png";
+import gameDocIconDark from "./user/gameDarkDoc.png";
 
 const jpgc = {
   jpgcOne,
@@ -158,6 +160,8 @@ const team = {
 const cart = {};
 const user = {
   avatar,
+  gameDocIcon,
+  gameDocIconDark,
 };
 
 export default {
