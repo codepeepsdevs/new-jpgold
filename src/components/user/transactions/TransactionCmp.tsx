@@ -234,13 +234,13 @@ const TransactionPage = () => {
                                 <div className="flex items-center justify-between pt-4 gap-2 border-gray-200 dark:border-gray-800">
                                     <button
                                         onClick={handleClearFilters}
-                                        className="text-base w-1/2 py-3 rounded-lg border border-[#D9D9D9] text-[#070707] hover:text-gray-700"
+                                        className="text-base w-1/2 py-3 rounded-lg border border-[#D9D9D9] text-[#070707] dark:text-white hover:text-gray-700"
                                     >
                                         Clear filters
                                     </button>
                                     <button
                                         onClick={handleApplyFilter}
-                                        className="py-3 w-1/2 bg-[#070707] dark:bg-gold-200 text-white dark:text-black rounded-lg hover:bg-gray-900 dark:hover:bg-gold-300"
+                                        className="py-3 w-1/2 bg-[#070707] dark:bg-gold-200 text-white dark:text-white rounded-lg hover:bg-gray-900 dark:hover:bg-gold-300"
                                     >
                                         Apply Filter
                                     </button>
