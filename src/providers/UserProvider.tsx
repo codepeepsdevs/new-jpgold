@@ -1,18 +1,24 @@
 "use client";
 
-import useNavigate from "@/hooks/useNavigate";
-import Cookies from "js-cookie";
+import { useGetUser } from "@/api/user/user.queries";
+import useUserStore from "@/store/user.store";
 import { useEffect } from "react";
 
-export function UserProvider({ children }: { children: React.ReactNode }) {
-  const accessToken = Cookies.get("accessToken");
-  const navigate = useNavigate();
+const UserProvider = ({ children }: { children: React.ReactNode }) => {
+  const { initializeAuth, isInitialized } = useUserStore();
+
+  // Initialize query in background without blocking
+  const { user, isError, isSuccess } = useGetUser();
 
   useEffect(() => {
-    if (accessToken) {
-      navigate("/user/dashboard", "replace");
+    if (isSuccess && !isError) {
+      initializeAuth(user);
+    } else {
+      initializeAuth(null);
     }
-  }, [accessToken, navigate]);
+  }, [initializeAuth, user, isSuccess, isError, isInitialized]);
 
   return <>{children}</>;
-}
+};
+
+export default UserProvider;
