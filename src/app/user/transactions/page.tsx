@@ -1,5 +1,7 @@
+import TransactionCmp from "@/components/user/transactions/TransactionCmp";
+
 const TransactionPage = () => {
-  return <div>TransactionPage</div>;
+  return <TransactionCmp />;
 };
 
 export default TransactionPage;
