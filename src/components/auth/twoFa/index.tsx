@@ -52,6 +52,7 @@ const TwoFa = () => {
   };
 
   const onSuccess = (data: AxiosResponse<RVerifyTwoFa>) => {
+    console.log("response data", data?.data);
     Cookies.set("accessToken", data?.data?.accessToken);
     setUser(data?.data?.user);
     SuccessToast({

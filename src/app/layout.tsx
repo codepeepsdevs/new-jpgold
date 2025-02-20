@@ -4,6 +4,7 @@ import { ThemeProvider } from "@/providers/ThemeProvider";
 import NextTopLoader from "nextjs-toploader";
 import ReactQueryProvider from "@/providers/ReactQueryProvider";
 import { Toaster } from "react-hot-toast";
+import UserProvider from "@/providers/UserProvider";
 
 export const metadata: Metadata = {
   title: "JAPAUL GOLD",
@@ -21,23 +22,26 @@ export default function WebLayout({
       <body className="">
         <ThemeProvider>
           <ReactQueryProvider>
-            <Toaster
-              position="top-center"
-              reverseOrder={false}
-              toastOptions={{
-                style: {
-                  border: "1px solid #E4E7EC",
-                  borderRadius: 15,
-                  padding: "16px",
-                  color: "#000",
-                  fontSize: 15,
-                  fontWeight: 400,
-                },
-                duration: 1000,
-              }}
-            />
-            <NextTopLoader color="#CC8F00" showSpinner={false} />
-            <main className="w-full no-scrollbar">{children}</main>
+            <UserProvider>
+              <Toaster
+                position="top-center"
+                reverseOrder={false}
+                toastOptions={{
+                  style: {
+                    border: "1px solid #E4E7EC",
+                    borderRadius: 15,
+                    padding: "16px",
+                    color: "#000",
+                    fontSize: 15,
+                    fontWeight: 400,
+                  },
+                  duration: 1000,
+                }}
+              />
+
+              <NextTopLoader color="#CC8F00" showSpinner={false} />
+              <main className="w-full no-scrollbar">{children}</main>
+            </UserProvider>
           </ReactQueryProvider>
         </ThemeProvider>
         {/* <Toaster
