@@ -1,4 +1,5 @@
 import { AuthApple, AuthFacebook, AuthGoogle, CheckCircle } from "./auth";
+import { UploadIcon } from "./profile";
 import { toastSuccessIcon, toastErrorIcon } from "./toast";
 
 const home = {};
@@ -13,6 +14,8 @@ const team = {};
 
 const cart = {};
 
+const profile = { UploadIcon };
+
 export default {
   home,
   about,
@@ -22,4 +25,5 @@ export default {
   auth,
   toastSuccessIcon,
   toastErrorIcon,
+  profile,
 };

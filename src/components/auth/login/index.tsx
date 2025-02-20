@@ -73,7 +73,12 @@ const Login = () => {
     if (!user.isEmailVerified) {
       navigate("/verify-email-notice", "push");
     } else {
-      navigate("/two-factor-auth", "push");
+      if (user.enableTwofactorAuth) {
+        navigate("/two-factor-auth", "push");
+      } else {
+        const redirectPath = "/user/dashboard";
+        navigate(redirectPath, "replace");
+      }
     }
 
     reset();

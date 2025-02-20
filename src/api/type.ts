@@ -21,4 +21,6 @@ export interface User {
   createdAt: string;
   updatedAt: string;
   profileImage: string;
+  web3Nickname?: string;
+  enableTwofactorAuth: boolean;
 }
