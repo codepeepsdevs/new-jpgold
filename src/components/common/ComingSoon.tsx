@@ -16,8 +16,8 @@ const ComingSoon = ({ title, description, Icon }: ComingSoonProps) => {
     const isDark = theme === 'dark';
 
     return (
-        <div className="w-full min-h-[60vh] bg-white dark:bg-[#0E0E0E] flex items-center justify-center md:p-4">
-            <div className="max-w-lg w-full rounded-2xl md:p-8 text-center shadow-sm">
+        <div className="w-full min-h-[70vh] bg-white dark:bg-[#0E0E0E] flex items-center justify-center md:p-4">
+            <div className="max-w-lg w-full rounded-2xl md:p-8 text-center">
                 <div className="relative w-36 h-36 mx-auto mb-6 bg-[#FBF9E9] dark:bg-[#1A1A1A] rounded-full flex items-center justify-center p-4">
                     {Icon ? (
                         <Image

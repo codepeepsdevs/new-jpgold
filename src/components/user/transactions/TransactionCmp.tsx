@@ -182,7 +182,7 @@ const TransactionPage = () => {
                     <input
                         type="text"
                         placeholder="Search transaction ID"
-                        className="w-full md:w-1/2 pl-10 pr-4 py-2 md:py-4 bg-white dark:bg-[#151515] border border-gray-200 dark:border-gray-800 rounded-lg text-[#050706] dark:text-white placeholder-gray-400"
+                        className="w-full md:w-1/2 pl-10 pr-4 py-2 md:py-4 bg-white dark:bg-[#151515] border border-[#C5C5CA] dark:border-[#3D3D3D] rounded-lg text-[#050706] dark:text-white placeholder-gray-400"
                         value={searchText}
                         onChange={(e) => setSearchText(e.target.value)}
                     />
@@ -190,7 +190,7 @@ const TransactionPage = () => {
                 <div className="relative">
                     <button
                         onClick={() => setShowFilter(!showFilter)}
-                        className="flex items-center gap-2 px-4 py-2 md:py-4 bg-white dark:bg-[#151515] border border-gray-200 dark:border-gray-800 rounded-lg text-[#050706] dark:text-white"
+                        className="flex items-center gap-2 px-4 py-2 md:py-4 bg-white dark:bg-[#151515] border border-[#C5C5CA] dark:border-[#3D3D3D] rounded-lg text-[#050706] dark:text-white"
                     >
                         <IoFilter />
                         Filter
@@ -198,12 +198,12 @@ const TransactionPage = () => {
 
                     {/* Filter Modal */}
                     {showFilter && (
-                        <div className="absolute right-0 top-12 w-80 bg-white dark:bg-[#151515] border border-gray-200 dark:border-gray-800 rounded-lg shadow-lg z-50">
-                            <div className="p-4 border-b border-gray-200 dark:border-gray-800 flex justify-between items-center">
+                        <div className="absolute right-0 top-12 w-80 bg-white dark:bg-[#151515] dark:border-[#3D3D3D] rounded-lg shadow-lg z-50">
+                            <div className="p-4 flex justify-between items-center">
                                 <h3 className="text-base font-medium text-[#050706] dark:text-white">Filter By</h3>
                                 <button
                                     onClick={() => setShowFilter(false)}
-                                    className="text-gray-400 hover:text-gray-600"
+                                    className="text-[#4E4E4E] bg-[#EBEBEB] hover:text-[#4E4E4E] rounded-full p-1"
                                 >
                                     <IoClose size={20} />
                                 </button>
@@ -218,7 +218,7 @@ const TransactionPage = () => {
                                         <select
                                             value={selectedType}
                                             onChange={(e) => setSelectedType(e.target.value)}
-                                            className="w-full p-2 bg-white dark:bg-[#151515] border border-gray-200 dark:border-gray-800 rounded-lg text-[#050706] dark:text-white appearance-none"
+                                            className="w-full p-2 bg-white dark:bg-[#151515] border border-[#ECECEC] dark:border-[#3D3D3D] rounded-lg text-[#050706] dark:text-white appearance-none"
                                         >
                                             <option value="">All Types</option>
                                             {transactionTypes.map((type) => (
@@ -231,10 +231,10 @@ const TransactionPage = () => {
                                     </div>
                                 </div>
 
-                                <div className="flex items-center justify-between pt-4 gap-2 border-gray-200 dark:border-gray-800">
+                                <div className="flex items-center justify-between pt-4 gap-2 dark:border-[#3D3D3D]">
                                     <button
                                         onClick={handleClearFilters}
-                                        className="text-base w-1/2 py-3 rounded-lg border border-[#D9D9D9] text-[#070707] dark:text-white hover:text-gray-700"
+                                        className="text-base w-1/2 py-3 rounded-lg border border-[#ECECEC] text-[#070707] dark:text-white hover:text-gray-700"
                                     >
                                         Clear filters
                                     </button>
@@ -251,13 +251,13 @@ const TransactionPage = () => {
                 </div>
             </div>
 
-            <div className="bg-white dark:bg-[#151515] rounded-lg border border-gray-200 dark:border-gray-800 w-full overflow-hidden">
+            <div className="bg-white dark:bg-[#151515] rounded-lg border border-[#E3E3E8] dark:border-[#3D3D3D] w-full overflow-hidden">
                 <div className="overflow-x-auto w-full">
                     <div className="inline-block min-w-full align-middle">
                         <table className="min-w-full">
                             <thead>
                                 {table.getHeaderGroups().map((headerGroup) => (
-                                    <tr key={headerGroup.id} className="border-b border-gray-200 dark:border-gray-800">
+                                    <tr key={headerGroup.id} className="border-b border-[#E3E3E8] dark:border-[#3D3D3D]">
                                         {headerGroup.headers.map((header) => (
                                             <th key={header.id} className="px-6 py-4 text-left text-base font-medium text-[#00000099] dark:text-[#FFFFFFB2]">
                                                 {flexRender(header.column.columnDef.header, header.getContext())}
@@ -271,7 +271,7 @@ const TransactionPage = () => {
                                     <tr
                                         key={row.id}
                                         className={`
-                                            border-b border-gray-200 dark:border-gray-800 last:border-0
+                                             dark:border-[#3D3D3D] last:border-0
                                             ${row.index % 2 === 0 ? 'bg-[#FAFAFA] dark:bg-[#151515]' : 'bg-white dark:bg-[#1A1A1A]'}
                                         `}
                                     >
@@ -287,24 +287,24 @@ const TransactionPage = () => {
                     </div>
                 </div>
 
-                <div className="flex items-center justify-between px-6 py-4 border-t border-gray-200 dark:border-gray-800">
+                <div className="flex items-center justify-between px-6 py-4 border-t border-[#E3E3E8] dark:border-[#3D3D3D]">
                     <div className="flex items-center gap-2">
                         <button
                             onClick={() => table.previousPage()}
                             disabled={!table.getCanPreviousPage()}
-                            className="px-3 py-1 text-base text-gray-500 disabled:opacity-50"
+                            className="px-3 py-1 text-base text-[#3D3D3D] disabled:opacity-50"
                         >
                             Previous
                         </button>
                         <button
                             onClick={() => table.nextPage()}
                             disabled={!table.getCanNextPage()}
-                            className="px-3 py-1 text-base text-gray-500 disabled:opacity-50"
+                            className="px-3 py-1 text-base text-[#3D3D3D] disabled:opacity-50"
                         >
                             Next
                         </button>
                     </div>
-                    <span className="text-base text-gray-500">
+                    <span className="text-base text-[#3D3D3D]">
                         Page {table.getState().pagination.pageIndex + 1} of {table.getPageCount()}
                     </span>
                 </div>
