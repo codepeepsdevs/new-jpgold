@@ -231,7 +231,7 @@ const TransactionPage = () => {
 
           {/* Filter Modal */}
           {showFilter && (
-            <div className="absolute right-0 top-12 w-80 bg-white dark:bg-[#151515] dark:border-[#3D3D3D] rounded-lg shadow-lg z-50">
+            <div className="absolute right-0 top-16 w-80 bg-white dark:bg-[#151515] dark:border-[#3D3D3D] rounded-lg shadow-lg z-50">
               <div className="p-4 flex justify-between items-center">
                 <h3 className="text-base font-medium text-[#050706] dark:text-white">
                   Filter By

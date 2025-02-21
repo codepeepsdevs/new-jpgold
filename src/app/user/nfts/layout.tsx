@@ -1,11 +1,11 @@
-import JpgoldnftNav from "@/components/user/jpgoldnft/JpgoldnftNav";
+import NftsNav from "@/components/user/nfts/NftsNav";
 
-export default function JpgoldnftLayout({
+export default function NftsLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
   return (
     <div className="flex flex-col gap-8">
-      <JpgoldnftNav />
+      <NftsNav />
       <div className="w-full">{children}</div>
     </div>
   );
