@@ -14,6 +14,7 @@ interface NFTCardProps {
   imageUrl: string | StaticImageData;
   verified?: boolean;
   myNFT?: boolean;
+  isUser?: boolean;
 }
 
 const NFTCard: FC<NFTCardProps> = ({
@@ -23,6 +24,7 @@ const NFTCard: FC<NFTCardProps> = ({
   imageUrl,
   verified = false,
   myNFT,
+  isUser
 }) => {
   const router = useRouter();
   const [isHovered, setIsHovered] = useState(false);
@@ -45,12 +47,20 @@ const NFTCard: FC<NFTCardProps> = ({
 
   const handleBuyNow = (e: React.MouseEvent) => {
     e.stopPropagation(); // Prevent double navigation
-    router.push(`/marketplace/${id}`);
+    if (isUser) {
+      router.push(`/user/marketplace/${id}`);
+    } else {
+      router.push(`/marketplace/${id}`);
+    }
   };
 
   const handleCardClick = () => {
     if (!myNFT) {
-      router.push(`/marketplace/${id}`);
+      if (isUser) {
+        router.push(`/user/marketplace/${id}`);
+      } else {
+        router.push(`/marketplace/${id}`);
+      }
     } else {
       setSelectedNFT({ id, amount, price, imageUrl, verified, myNFT, name: `JPNFT #${id}` });
       setIsModalOpen(true);

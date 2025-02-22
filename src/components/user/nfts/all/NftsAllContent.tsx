@@ -15,6 +15,7 @@ interface NFT {
   price: number;
   amount: number;
   myNFT: boolean;
+  verified: boolean;
 }
 
 const nftListData: NFT[] = [
@@ -25,6 +26,7 @@ const nftListData: NFT[] = [
     price: 1000,
     amount: 1,
     myNFT: true,
+    verified: true,
   },
   {
     id: 2,
@@ -33,6 +35,7 @@ const nftListData: NFT[] = [
     price: 1455.92,
     amount: 1,
     myNFT: true,
+    verified: true,
   },
   {
     id: 3,
@@ -41,6 +44,7 @@ const nftListData: NFT[] = [
     price: 1455.92,
     amount: 1,
     myNFT: true,
+    verified: true,
   },
   {
     id: 4,
@@ -49,6 +53,7 @@ const nftListData: NFT[] = [
     price: 1455.92,
     amount: 1,
     myNFT: true,
+    verified: true,
   },
   {
     id: 5,
@@ -57,6 +62,7 @@ const nftListData: NFT[] = [
     price: 1114.53,
     amount: 1,
     myNFT: true,
+    verified: true,
   },
 ];
 
