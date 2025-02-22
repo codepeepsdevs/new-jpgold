@@ -6,13 +6,14 @@ import { FC, useState } from "react";
 import { useCartStore } from "@/store/useCartStore";
 import { BiTrash } from "react-icons/bi";
 import { useRouter } from "next/navigation";
-
+import SellNFTModal from "@/components/modals/SellNFTModal";
 interface NFTCardProps {
   id: number;
   amount: number;
   price: number;
   imageUrl: string | StaticImageData;
   verified?: boolean;
+  myNFT?: boolean;
 }
 
 const NFTCard: FC<NFTCardProps> = ({
@@ -21,10 +22,15 @@ const NFTCard: FC<NFTCardProps> = ({
   price,
   imageUrl,
   verified = false,
+  myNFT,
 }) => {
   const router = useRouter();
   const [isHovered, setIsHovered] = useState(false);
   const { addItem, removeItem, items } = useCartStore();
+
+  const [selectedNFT, setSelectedNFT] = useState<any | null>(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+
 
   const isInCart = items.some((item) => item.id === id);
 
@@ -43,7 +49,12 @@ const NFTCard: FC<NFTCardProps> = ({
   };
 
   const handleCardClick = () => {
-    router.push(`/marketplace/${id}`);
+    if (!myNFT) {
+      router.push(`/marketplace/${id}`);
+    } else {
+      setSelectedNFT({ id, amount, price, imageUrl, verified, myNFT, name: `JPNFT #${id}` });
+      setIsModalOpen(true);
+    }
   };
 
   return (
@@ -89,44 +100,62 @@ const NFTCard: FC<NFTCardProps> = ({
           </span>
         </div>
 
-        <hr />
 
-        {isHovered ? (
-          <div className="w-full flex justify-between items-center gap-2">
-            <button
-              onClick={handleBuyNow}
-              className="w-5/6 bg-gold-200 p-3 font-medium text-white rounded-lg"
-            >
-              Buy ($
-              {price.toLocaleString("en-US", { minimumFractionDigits: 2 })})
-            </button>
-            <button
-              onClick={handleCartClick}
-              className={`w-1/6 bg-black/5 dark:bg-white/5 h-fit hover:bg-primary-600 p-4 rounded-lg transition-colors duration-200`}
-            >
-              <div className="top-0 h-full rounded-r-lg flex items-center justify-center">
-                {isInCart ? (
-                  <BiTrash
-                    className="text-red-500 dark:text-red-500"
-                    size={25}
-                  />
-                ) : (
-                  <MdOutlineShoppingCart
-                    className={"text-black dark:text-white"}
-                    size={25}
-                  />
-                )}
+        {!myNFT && (
+
+          <>
+            <hr />
+            {isHovered ? (
+              <div className="w-full flex justify-between items-center gap-2">
+                <button
+                  onClick={handleBuyNow}
+                  className="w-5/6 bg-gold-200 p-3 font-medium text-white rounded-lg"
+                >
+                  Buy ($
+                  {price.toLocaleString("en-US", { minimumFractionDigits: 2 })})
+                </button>
+                <button
+                  onClick={handleCartClick}
+                  className={`w-1/6 bg-black/5 dark:bg-white/5 h-fit hover:bg-primary-600 p-4 rounded-lg transition-colors duration-200`}
+                >
+                  <div className="top-0 h-full rounded-r-lg flex items-center justify-center">
+                    {isInCart ? (
+                      <BiTrash
+                        className="text-red-500 dark:text-red-500"
+                        size={25}
+                      />
+                    ) : (
+                      <MdOutlineShoppingCart
+                        className={"text-black dark:text-white"}
+                        size={25}
+                      />
+                    )}
+                  </div>
+                </button>
               </div>
-            </button>
-          </div>
-        ) : (
-          <div className="w-full flex justify-between items-center gap-2">
-            <button className="dark:text-white text-xl p-4 font-bold">
-              ${price.toLocaleString("en-US", { minimumFractionDigits: 2 })}
-            </button>
-          </div>
+            ) : (
+              <div className="w-full flex justify-between items-center gap-2">
+                <button className="dark:text-white text-xl p-4 font-bold">
+                  ${price.toLocaleString("en-US", { minimumFractionDigits: 2 })}
+                </button>
+              </div>
+            )}
+
+          </>
         )}
       </div>
+
+      {selectedNFT && (
+        <SellNFTModal
+          nft={selectedNFT}
+          isOpen={isModalOpen}
+          onClose={() => {
+            setIsModalOpen(false);
+            setSelectedNFT(null);
+          }}
+        />
+      )}
+
     </div>
   );
 };

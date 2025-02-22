@@ -74,6 +74,7 @@ import avatar from "./user/avatar.jpg";
 import gameDocIcon from "./user/gameDoc.png";
 import gameDocIconDark from "./user/gameDarkDoc.png";
 import coin from "./user/coin.png";
+import tokenOwner from "./user/tokenOwner.png";
 
 const jpgc = {
   jpgcOne,
@@ -164,6 +165,7 @@ const user = {
   gameDocIcon,
   gameDocIconDark,
   coin,
+  tokenOwner,
 };
 
 export default {
