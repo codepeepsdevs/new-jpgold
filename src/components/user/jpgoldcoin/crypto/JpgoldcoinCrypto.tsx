@@ -219,7 +219,7 @@ const JpgoldcoinCrypto = () => {
               </div>
             </div>
 
-            <button className="w-full bg-black font-bold dark:bg-gold-200 text-white py-3 rounded-full transition-colors">
+            <button className="w-full bg-black font-bold dark:bg-gold-200 text-white py-4 rounded-full transition-colors">
               Pay with CoinGate
             </button>
           </div>

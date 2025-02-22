@@ -271,7 +271,7 @@ const JpgoldcoinSwap = () => {
               </div>
             </div>
 
-            <button className="w-full bg-black dark:bg-gold-200 text-white dark:text-black py-3 rounded-full hover:bg-gray-900 dark:hover:bg-gold-300 transition-colors">
+            <button className="w-full bg-black dark:bg-gold-200 text-white dark:text-black py-4 rounded-full hover:bg-gray-900 dark:hover:bg-gold-300 transition-colors">
               Swap
             </button>
           </div>
