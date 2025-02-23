@@ -8,6 +8,8 @@ import Image from "next/image";
 import images from "@/public/images";
 import { HeadingData } from "@/constants";
 
+import WalletButton from "../WalletButton";
+
 const Navbar = () => {
   const { user } = useUserStore();
   const { toggleMenu } = useUserLayoutStore();
@@ -19,7 +21,7 @@ const Navbar = () => {
     if (Array.isArray(item.path)) {
       return item.path.includes(pathname);
     }
-    return pathname.startsWith(item.path); // Match paths with dynamic segments
+    return pathname.startsWith(item.path);
   });
 
   return (
@@ -32,7 +34,7 @@ const Navbar = () => {
       <div className="flex items-center gap-6">
         <div
           onClick={toggleMenu}
-          className="flex lg:hidden justify-center items-center text-[#1C1B1F] dark:text-white text-center text-3xl"
+          className="flex lg:hidden justify-center items-center text-[#1C1B1F] dark:text-white text-center text-2xl 2xs:text-3xl"
         >
           <FiMenu />
         </div>
@@ -41,18 +43,13 @@ const Navbar = () => {
         </h1>
       </div>
 
-      <div className="flex text-sm items-center space-x-4">
-        <button
-          onClick={() => {}}
-          className="px-6 py-2.5 text-center rounded-full  text-[#0C0C0C] dark:text-white border border-black dark:border-white"
-        >
-          Connect Wallet
-        </button>
-        <div className="h-10 w-[1px] bg-[#EAEAEA] dark:bg-[#3D3D3D]"></div>
+      <div className="flex text-sm items-center space-x-2.5 2xs:space-x-4">
+        <WalletButton />
+        <div className="h-7 2xs:h-9 w-[1px] bg-[#EAEAEA] dark:bg-[#3D3D3D]"></div>
 
         <Link
           href="/user/profile"
-          className="relative uppercase flex justify-center items-center rounded-full bg-[#356505] w-10 xs:w-12 h-10 xs:h-12 text-center text-white text-base font-semibold"
+          className="relative uppercase flex justify-center items-center rounded-full bg-[#356505] w-9 2xs:w-10 xs:w-12 h-9 2xs:h-10 xs:h-12 text-center text-white text-base font-semibold"
         >
           {user ? (
             user?.profileImage ? (

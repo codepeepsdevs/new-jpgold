@@ -1,7 +1,6 @@
 "use client";
 
-import { useState } from "react";
-import Image, { StaticImageData } from "next/image";
+import { StaticImageData } from "next/image";
 import Link from "next/link";
 import UserCard from "@/components/UserCard";
 import { IoWalletOutline } from "react-icons/io5";

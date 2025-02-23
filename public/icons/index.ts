@@ -7,6 +7,9 @@ import nftTotal from "./dashboard/total.png";
 import nftListed from "./dashboard/listed.png";
 import nftWallet from "./dashboard/wallet.png";
 
+import ethIcon from "./coin/ethereum.png";
+import solIcon from "./coin/solana.png";
+
 const home = {};
 
 const auth = { AuthApple, AuthFacebook, AuthGoogle, CheckCircle };
@@ -21,6 +24,8 @@ const cart = {};
 
 const profile = { UploadIcon };
 
+const coin = { ethIcon, solIcon };
+
 const dashboard = { nftWorth, nftTotal, nftListed, nftWallet };
 
 export default {
@@ -34,4 +39,5 @@ export default {
   toastErrorIcon,
   profile,
   dashboard,
+  coin,
 };

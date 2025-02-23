@@ -1,3 +1,4 @@
+import { PublicKey } from "@solana/web3.js";
 import { StaticImageData } from "next/image";
 
 export interface User {
@@ -14,4 +15,11 @@ export interface TeamMemberProps {
   linkedin: string;
   image: string | StaticImageData;
   about: string;
+}
+
+export interface CivicWalletProps {
+  account: {
+    address?: string;
+  };
+  publicKey?: PublicKey;
 }
