@@ -83,7 +83,14 @@ const sortOptions = [
   { value: "recently-created", label: "Recently created" },
 ];
 
-const NFTList = () => {
+type NFTListProps = {
+  isUser?: boolean;
+};
+
+const NFTList = ({ isUser = false }: NFTListProps) => {
+
+  console.log({ isUser })
+
   const [isGridView, setIsGridView] = useState(true);
   const [sortBy, setSortBy] = useState("price-low-high");
   const [isSelectOpen, setIsSelectOpen] = useState(false);
@@ -169,7 +176,7 @@ const NFTList = () => {
           <div className="flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
             <button
               onClick={() =>
-                router.push(`/marketplace/${info.row.original.id}`)
+                isUser ? router.push(`/user/marketplace/${info.row.original.id}`) : router.push(`/marketplace/${info.row.original.id}`)
               }
               className="bg-[#CC8F00] font-semibold text-white px-6 py-2 rounded hover:bg-[#B37E00] transition-colors"
             >
@@ -227,7 +234,8 @@ const NFTList = () => {
   return (
     <section className="w-full py-8">
       {/* Header Controls */}
-      <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between p-2 bg-[#F6F6F6] dark:bg-[#1D1F1E] rounded-lg mb-6">
+      {/* <div className={`flex flex-col gap-3 md:flex-row md:items-center md:justify-between p-2 bg-[#F6F6F6] dark:bg-[#1D1F1E] rounded-lg mb-6`}> */}
+      <div className={`flex flex-col gap-3 md:flex-row md:items-center md:justify-between p-2 bg-transparent rounded-lg mb-6`}>
         <div className="relative w-full md:w-1/2">
           <div className="flex items-center gap-2 bg-white dark:bg-[#1C1C1E] border border-[#D5D5DD] dark:border-[#717179] rounded-lg px-4 py-3">
             <IoSearch size={20} className="text-gray-500 dark:text-[#4E4E4E]" />
@@ -306,7 +314,7 @@ const NFTList = () => {
       {isGridView ? (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
           {paginatedData.map((row) => (
-            <NFTCard key={row.original.id} {...row.original} />
+            <NFTCard key={row.original.id} {...row.original} isUser={isUser} />
           ))}
         </div>
       ) : (

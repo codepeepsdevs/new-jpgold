@@ -1,5 +1,7 @@
+import MarketPlaceUser from "@/components/user/marketplace/MarketPlaceUser";
+
 const MarketplacePage = () => {
-  return <div>MarketplacePage</div>;
+  return <MarketPlaceUser />;
 };
 
 export default MarketplacePage;
