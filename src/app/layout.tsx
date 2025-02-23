@@ -5,6 +5,7 @@ import NextTopLoader from "nextjs-toploader";
 import ReactQueryProvider from "@/providers/ReactQueryProvider";
 import { Toaster } from "react-hot-toast";
 import UserProvider from "@/providers/UserProvider";
+import AppWalletProvider from "@/providers/AppWalletProvider";
 
 export const metadata: Metadata = {
   title: "JAPAUL GOLD",
@@ -19,41 +20,32 @@ export default function WebLayout({
 }>) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <body className="">
+      <body suppressHydrationWarning>
         <ThemeProvider>
-          <ReactQueryProvider>
-            <UserProvider>
-              <Toaster
-                position="top-center"
-                reverseOrder={false}
-                toastOptions={{
-                  style: {
-                    border: "1px solid #E4E7EC",
-                    borderRadius: 15,
-                    padding: "16px",
-                    color: "#000",
-                    fontSize: 15,
-                    fontWeight: 400,
-                  },
-                  duration: 1000,
-                }}
-              />
-
-              <NextTopLoader color="#CC8F00" showSpinner={false} />
-              <main className="w-full no-scrollbar">{children}</main>
-            </UserProvider>
-          </ReactQueryProvider>
+          <AppWalletProvider>
+            <ReactQueryProvider>
+              <UserProvider>
+                <Toaster
+                  position="top-center"
+                  reverseOrder={false}
+                  toastOptions={{
+                    style: {
+                      border: "1px solid #E4E7EC",
+                      borderRadius: 15,
+                      padding: "16px",
+                      color: "#000",
+                      fontSize: 15,
+                      fontWeight: 400,
+                    },
+                    duration: 1000,
+                  }}
+                />
+                <NextTopLoader color="#CC8F00" showSpinner={false} />
+                <main className="w-full no-scrollbar">{children}</main>
+              </UserProvider>
+            </ReactQueryProvider>
+          </AppWalletProvider>
         </ThemeProvider>
-        {/* <Toaster
-          position="top-right"
-          toastOptions={{
-            duration: 2000,
-            style: {
-              background: "#333",
-              color: "#fff",
-            },
-          }}
-        /> */}
       </body>
     </html>
   );

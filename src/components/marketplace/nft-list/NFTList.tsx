@@ -88,8 +88,7 @@ type NFTListProps = {
 };
 
 const NFTList = ({ isUser = false }: NFTListProps) => {
-
-  console.log({ isUser })
+  console.log({ isUser });
 
   const [isGridView, setIsGridView] = useState(true);
   const [sortBy, setSortBy] = useState("price-low-high");
@@ -176,7 +175,9 @@ const NFTList = ({ isUser = false }: NFTListProps) => {
           <div className="flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
             <button
               onClick={() =>
-                isUser ? router.push(`/user/marketplace/${info.row.original.id}`) : router.push(`/marketplace/${info.row.original.id}`)
+                isUser
+                  ? router.push(`/user/marketplace/${info.row.original.id}`)
+                  : router.push(`/marketplace/${info.row.original.id}`)
               }
               className="bg-[#CC8F00] font-semibold text-white px-6 py-2 rounded hover:bg-[#B37E00] transition-colors"
             >
@@ -189,7 +190,7 @@ const NFTList = ({ isUser = false }: NFTListProps) => {
         ),
       }),
     ],
-    [columnHelper, router]
+    [columnHelper, router, isUser]
   );
 
   const table = useReactTable({
@@ -235,7 +236,9 @@ const NFTList = ({ isUser = false }: NFTListProps) => {
     <section className="w-full py-8">
       {/* Header Controls */}
       {/* <div className={`flex flex-col gap-3 md:flex-row md:items-center md:justify-between p-2 bg-[#F6F6F6] dark:bg-[#1D1F1E] rounded-lg mb-6`}> */}
-      <div className={`flex flex-col gap-3 md:flex-row md:items-center md:justify-between p-2 bg-transparent rounded-lg mb-6`}>
+      <div
+        className={`flex flex-col gap-3 md:flex-row md:items-center md:justify-between p-2 bg-transparent rounded-lg mb-6`}
+      >
         <div className="relative w-full md:w-1/2">
           <div className="flex items-center gap-2 bg-white dark:bg-[#1C1C1E] border border-[#D5D5DD] dark:border-[#717179] rounded-lg px-4 py-3">
             <IoSearch size={20} className="text-gray-500 dark:text-[#4E4E4E]" />
@@ -262,8 +265,9 @@ const NFTList = ({ isUser = false }: NFTListProps) => {
               {sortOptions.find((option) => option.value === sortBy)?.label}
             </span>
             <IoChevronDown
-              className={`transform transition-transform ${isSelectOpen ? "rotate-180" : ""
-                }`}
+              className={`transform transition-transform ${
+                isSelectOpen ? "rotate-180" : ""
+              }`}
             />
           </button>
 
@@ -290,19 +294,21 @@ const NFTList = ({ isUser = false }: NFTListProps) => {
           <div className="hidden sm:flex items-center gap-1 bg-white dark:bg-black/20 p-1 rounded-lg border dark:border-none shadow-lg">
             <button
               onClick={() => setIsGridView(true)}
-              className={`p-2 rounded ${isGridView
-                ? "dark:bg-white bg-[#0A0C0F] dark:text-[#1C1B1F] text-white"
-                : "text-[#1C1B1F] dark:text-[#DDDDDD]"
-                }`}
+              className={`p-2 rounded ${
+                isGridView
+                  ? "dark:bg-white bg-[#0A0C0F] dark:text-[#1C1B1F] text-white"
+                  : "text-[#1C1B1F] dark:text-[#DDDDDD]"
+              }`}
             >
               <TbLayoutGrid size={20} />
             </button>
             <button
               onClick={() => setIsGridView(false)}
-              className={`p-2 rounded ${!isGridView
-                ? "dark:bg-white bg-[#0A0C0F] dark:text-[#1C1B1F] text-white"
-                : "text-[#1C1B1F] dark:text-[#DDDDDD]"
-                }`}
+              className={`p-2 rounded ${
+                !isGridView
+                  ? "dark:bg-white bg-[#0A0C0F] dark:text-[#1C1B1F] text-white"
+                  : "text-[#1C1B1F] dark:text-[#DDDDDD]"
+              }`}
             >
               <IoList size={20} />
             </button>

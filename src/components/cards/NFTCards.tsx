@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
+
 "use client";
 
 import { MdOutlineShoppingCart, MdVerified } from "react-icons/md";
@@ -7,6 +9,7 @@ import { useCartStore } from "@/store/useCartStore";
 import { BiTrash } from "react-icons/bi";
 import { useRouter } from "next/navigation";
 import SellNFTModal from "@/components/modals/SellNFTModal";
+
 interface NFTCardProps {
   id: number;
   amount: number;
@@ -24,7 +27,7 @@ const NFTCard: FC<NFTCardProps> = ({
   imageUrl,
   verified = false,
   myNFT,
-  isUser
+  isUser,
 }) => {
   const router = useRouter();
   const [isHovered, setIsHovered] = useState(false);
@@ -32,7 +35,6 @@ const NFTCard: FC<NFTCardProps> = ({
 
   const [selectedNFT, setSelectedNFT] = useState<any | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
-
 
   const isInCart = items.some((item) => item.id === id);
 
@@ -62,7 +64,15 @@ const NFTCard: FC<NFTCardProps> = ({
         router.push(`/marketplace/${id}`);
       }
     } else {
-      setSelectedNFT({ id, amount, price, imageUrl, verified, myNFT, name: `JPNFT #${id}` });
+      setSelectedNFT({
+        id,
+        amount,
+        price,
+        imageUrl,
+        verified,
+        myNFT,
+        name: `JPNFT #${id}`,
+      });
       setIsModalOpen(true);
     }
   };
@@ -110,9 +120,7 @@ const NFTCard: FC<NFTCardProps> = ({
           </span>
         </div>
 
-
         {!myNFT && (
-
           <>
             <hr />
             {isHovered ? (
@@ -150,7 +158,6 @@ const NFTCard: FC<NFTCardProps> = ({
                 </button>
               </div>
             )}
-
           </>
         )}
       </div>
@@ -165,7 +172,6 @@ const NFTCard: FC<NFTCardProps> = ({
           }}
         />
       )}
-
     </div>
   );
 };

@@ -126,3 +126,43 @@
   background-size: 100% 100%;
   z-index: 10;
 }
+
+.wallet-adapter-modal {
+  @apply !bg-black/10;
+}
+
+.wallet-adapter-modal-wrapper {
+  @apply !bg-white dark:!bg-[#1A1B1F] !shadow-lg dark:!shadow-none border dark:!border-[#2C2D31];
+}
+
+.wallet-adapter-modal-button-close {
+  @apply !bg-[#F0F0F0] dark:!bg-[#2C2D31];
+}
+
+.wallet-adapter-modal-button-close svg {
+  @apply !text-[#606565] dark:!text-[#989DAC] !fill-current;
+}
+
+.wallet-adapter-modal-title {
+  @apply !text-black dark:!text-white;
+}
+
+.wallet-adapter-modal-list {
+  @apply !bg-inherit;
+}
+
+.wallet-adapter-modal-list-more-icon-rotate {
+  @apply !text-black dark:!text-white;
+}
+
+.wallet-adapter-button {
+  @apply !text-black dark:!text-white !bg-inherit;
+}
+
+.wallet-adapter-modal-list-more {
+  @apply !text-black dark:!text-white;
+}
+
+.wallet-adapter-modal-list-more svg {
+  @apply !fill-current text-black dark:text-white;
+}

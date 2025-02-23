@@ -4,7 +4,6 @@ import Link from "next/link";
 import { FaArrowLeft } from "react-icons/fa6";
 import NFTPreview from "@/components/marketplace/NFTPreview";
 import { useParams } from "next/navigation";
-import UserCard from "@/components/UserCard";
 import images from "@/public/images";
 import OrderSummary from "@/components/cart/OrderSummary";
 
