@@ -32,7 +32,7 @@ const JpgoldnftFractionalize = () => {
                 <input
                   type="number"
                   placeholder="35.00"
-                  className="w-full p-3 bg-white dark:bg-[#151515] border border-[#E3E3E8] dark:border-[#292929] rounded-lg text-[#050706] dark:text-white placeholder-gray-400"
+                  className="w-full p-3 bg-white dark:bg-[#151515] border !border-[#E3E3E8] dark:border-[#292929] !rounded-lg text-[#050706] dark:text-white placeholder-gray-400"
                 />
               </div>
 
@@ -41,7 +41,7 @@ const JpgoldnftFractionalize = () => {
                 <input
                   type="number"
                   placeholder="10.00"
-                  className="w-full p-3 bg-white dark:bg-[#151515] border border-[#E3E3E8] dark:border-[#292929] rounded-lg text-[#050706] dark:text-white placeholder-gray-400"
+                  className="w-full p-3 bg-white dark:bg-[#151515] border !border-[#E3E3E8] dark:border-[#292929] !rounded-lg text-[#050706] dark:text-white placeholder-gray-400"
                 />
               </div>
             </div>

@@ -114,7 +114,7 @@ const JpgoldcoinCrypto = () => {
                   type="text"
                   value={amount}
                   onChange={(e) => setAmount(e.target.value)}
-                  className="text-3xl font-bold bg-transparent focus:outline-none text-[#050706] dark:text-white w-32 text-center"
+                  className="text-3xl font-bold !bg-transparent focus:outline-none text-[#050706] dark:text-white w-32 text-center !border !border-[#E6E6E6] dark:!border-[#292929] !rounded-lg"
                 />
               </div>
               <div className="flex items-center w-fit mx-auto justify-center gap-2 mt-2 border border-[#E6E6E6] dark:border-[#3D3D3D] dark:bg-[#1A1A1A] px-4 py-2 rounded-2xl">

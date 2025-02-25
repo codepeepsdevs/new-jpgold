@@ -99,12 +99,12 @@ const JpgoldcoinSwap = () => {
                   You&apos;re paying
                 </label>
                 <div className="p-4 rounded-lg space-y-4">
-                  <div className="flex items-center justify-between">
+                  <div className="flex items-center justify-between space-x-2">
                     <input
                       type="number"
                       value={payingAmount}
                       onChange={(e) => setPayingAmount(e.target.value)}
-                      className="text-xl md:text-3xl font-bold bg-transparent focus:outline-none text-[#050706] dark:text-white w-full"
+                      className="text-xl md:text-3xl font-bold !bg-transparent focus:outline-none text-[#050706] dark:text-white w-full !border !border-[#E6E6E6] dark:!border-[#292929] !rounded-lg"
                     />
                     <div className="relative">
                       <button
@@ -169,12 +169,12 @@ const JpgoldcoinSwap = () => {
                   You&apos;re receiving
                 </label>
                 <div className="p-4 rounded-lg space-y-4">
-                  <div className="flex items-center justify-between">
+                  <div className="flex items-center justify-between space-x-2">
                     <input
                       type="number"
                       value={receivingAmount}
                       onChange={(e) => setReceivingAmount(e.target.value)}
-                      className="text-xl md:text-3xl font-medium bg-transparent focus:outline-none text-[#050706] dark:text-white w-full"
+                      className="text-xl md:text-3xl font-medium !bg-transparent focus:outline-none text-[#050706] dark:text-white w-full !border !border-[#E6E6E6] dark:!border-[#292929] !rounded-lg"
                     />
                     <div className="relative">
                       <button

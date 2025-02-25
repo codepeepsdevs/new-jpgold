@@ -32,7 +32,7 @@ const JpgoldnftTransfer = () => {
               <input
                 type="text"
                 placeholder="0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48"
-                className="w-full p-3 bg-white dark:bg-[#151515] border border-gray-200 dark:border-gray-800 rounded-lg text-[#050706] dark:text-white placeholder-gray-400"
+                className="w-full p-3 bg-white dark:bg-[#151515] border !border-[#E3E3E8] dark:border-[#292929] !rounded-lg text-[#050706] dark:text-white placeholder-gray-400"
               />
             </div>
 
@@ -41,7 +41,7 @@ const JpgoldnftTransfer = () => {
               <input
                 type="email"
                 placeholder="oguntadejames@gmail.com"
-                className="w-full p-3 bg-white dark:bg-[#151515] border border-gray-200 dark:border-gray-800 rounded-lg text-[#050706] dark:text-white placeholder-gray-400"
+                className="w-full p-3 bg-white dark:bg-[#151515] border !border-[#E3E3E8] dark:border-[#292929] !rounded-lg text-[#050706] dark:text-white placeholder-gray-400"
               />
             </div>
 
