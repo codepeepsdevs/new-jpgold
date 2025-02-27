@@ -56,28 +56,28 @@ const Navbar = () => {
         </div>
 
         {/* Right Section */}
-        <div className="flex items-center lg:gap-4 xl:gap-6 lg:justify-between">
-          <div className="w-fit  relative flex justify-center items-center p-0">
+        <div className="flex items-center gap-2.5 lg:gap-4 xl:gap-6 lg:justify-between">
+          <div className="relative flex justify-center items-center">
             <MdOutlineShoppingCart
               onClick={() => {
                 navigate("/cart");
               }}
-              className="w-fit cursor-pointer text-2xl text-black dark:text-white"
+              className="cursor-pointer text-2xl text-black dark:text-white"
             />
             {items && items.length > 0 && (
-              <span className="relative -top-2 right-3 text-[8px] bg-bg-100 text-white font-semibold flex justify-center items-center text-center w-4 h-4 rounded-full">
+              <span className="absolute -top-1 -right-1 text-[8px] bg-bg-100 text-white font-semibold flex justify-center items-center text-center w-4 h-4 rounded-full">
                 {items.length}
               </span>
             )}
           </div>
           <Link
             href={"/login"}
-            className="max-md:hidden text-sm lg:text-base font-semibold text-text-200 dark:text-white"
+            className="ml-2 max-md:hidden text-sm lg:text-base font-semibold text-text-200 dark:text-white"
           >
             Login
           </Link>
           <Link
-            className="max-md:hidden ml-4 lg:ml-2 px-4 lg:px-6 py-2 lg:py-2.5 rounded-lg lg:rounded-xl bg-black dark:bg-white text-white dark:text-black font-semibold text-sm lg:text-base"
+            className="max-md:hidden ml-3 lg:ml-2 px-4 lg:px-6 py-2 lg:py-2.5 rounded-lg lg:rounded-xl bg-black dark:bg-white text-white dark:text-black font-semibold text-sm lg:text-base"
             href={"/user/dashboard"}
           >
             Dashboard
