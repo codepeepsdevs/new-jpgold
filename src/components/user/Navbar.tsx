@@ -45,6 +45,7 @@ const Navbar = () => {
 
       <div className="flex text-sm items-center space-x-2.5 2xs:space-x-4">
         <WalletButton />
+
         <div className="h-7 2xs:h-9 w-[1px] bg-[#EAEAEA] dark:bg-[#3D3D3D]"></div>
 
         <Link

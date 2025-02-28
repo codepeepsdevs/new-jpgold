@@ -3,11 +3,13 @@
 import { LuCopy } from "react-icons/lu";
 import { MdOutlineChangeCircle } from "react-icons/md";
 import { VscDebugDisconnect } from "react-icons/vsc";
-import { useWallet } from "@civic/multichain-connect-react-core";
 import { useMemo } from "react";
 import toast from "react-hot-toast";
-import { useSolanaWalletAdapterModal } from "@civic/multichain-connect-react-solana-wallet-adapter";
-import { CivicWalletProps } from "@/constants/types";
+import useWeb3ModalStore from "@/store/web3Modal.store";
+import { useAccount, useDisconnect as useEthDisconnect } from "wagmi";
+import { useWallet as useSolanaWallet } from "@solana/wallet-adapter-react";
+import { useConnectModal } from "@rainbow-me/rainbowkit";
+import { useWalletModal } from "@solana/wallet-adapter-react-ui";
 
 interface DisconnectModalProps {
   isOpen: boolean;
@@ -18,21 +20,74 @@ export default function Web3DisconnectModal({
   isOpen,
   onClose,
 }: DisconnectModalProps) {
-  const { openConnectModal: openSolanaConnectModal } =
-    useSolanaWalletAdapterModal();
+  const { setConnectModalOpen, setDisconnectModalOpen, chain, setChain } =
+    useWeb3ModalStore();
 
-  const { wallet, chain, disconnect } = useWallet();
-  const account = useMemo(() => {
-    let address = null;
-    if (!wallet) return null;
-    if (chain === "ethereum") {
-      address = (wallet as CivicWalletProps).account.address as string;
+  // Ethereum wallet connection
+  const { address: ethAddress } = useAccount();
+  const { disconnect: disconnectEth } = useEthDisconnect();
+
+  const { openConnectModal } = useConnectModal();
+  const { setVisible } = useWalletModal();
+
+  const { publicKey, disconnect: disconnectSolana } = useSolanaWallet();
+
+  // Get the appropriate address based on chain type
+  const walletAddress = useMemo(() => {
+    if (chain.type === "ethereum") {
+      return ethAddress;
+    } else if (chain.type === "solana" && publicKey) {
+      return publicKey.toBase58();
     }
-    if (chain === "solana") {
-      address = (wallet as CivicWalletProps).publicKey?.toBase58();
+    return "";
+  }, [chain.type, ethAddress, publicKey]);
+
+  const handleCopyAddress = () => {
+    if (walletAddress) {
+      navigator.clipboard.writeText(walletAddress);
+      toast.success("Address copied to clipboard");
+      onClose();
     }
-    return address;
-  }, [wallet, chain]);
+  };
+
+  const handleChainChange = () => {
+    onClose();
+    setConnectModalOpen(true);
+  };
+
+  const handleDisconnect = () => {
+    if (chain.type === "ethereum") {
+      disconnectEth();
+    } else if (chain.type === "solana") {
+      disconnectSolana();
+    }
+    onClose();
+  };
+
+  const onChainSelect = () => {
+    console.log("Chain selected:", chain);
+    setChain(chain);
+
+    // Close our custom modal first
+    setDisconnectModalOpen(false);
+
+    // Small delay to ensure our modal is closed first
+    setTimeout(() => {
+      if (chain.type === "ethereum") {
+        console.log("Opening Ethereum modal");
+        openConnectModal?.();
+      } else if (chain.type === "solana") {
+        console.log("Attempting to open Solana modal");
+        // Check if setVisible is available
+        if (setVisible) {
+          console.log("Setting Solana modal visible to true");
+          setVisible(true);
+        } else {
+          console.error("setVisible is not available from useWalletModal()");
+        }
+      }
+    }, 100);
+  };
 
   if (!isOpen) return null;
 
@@ -61,50 +116,57 @@ export default function Web3DisconnectModal({
           </button>
 
           <div className="p-6 text-black dark:text-white">
-            <h4 className="mb-5 mt-10 text-center text-xl xs:text-2xl font-bold"></h4>
+            <h4 className="mb-5 mt-10 text-center text-xl xs:text-2xl font-bold">
+              {chain.type === "ethereum" ? "Ethereum Wallet" : "Solana Wallet"}
+            </h4>
+
+            <div className="mb-4 text-center text-sm">
+              <span className="font-mono px-3 py-1 bg-gray-100 dark:bg-gray-800 rounded">
+                {walletAddress
+                  ? `${walletAddress.slice(0, 6)}...${walletAddress.slice(-4)}`
+                  : "Not connected"}
+              </span>
+            </div>
 
             <div className="text-sm xs:text-base flex flex-col items-center gap-2">
               <button
                 type="button"
-                onClick={() => {
-                  if (account) {
-                    toast.dismiss();
-                    navigator.clipboard.writeText(account);
-                    toast.success("Copied to clipboard");
-                    onClose();
-                  }
-                }}
-                className="w-full flex items-center  border-0 bg-transparent hover:bg-[#F7F7F7] dark:hover:bg-[#F7F7F733] rounded-lg  py-2 px-2 cursor-pointer"
+                onClick={handleCopyAddress}
+                className="w-full flex items-center border-0 bg-transparent hover:bg-[#F7F7F7] dark:hover:bg-[#F7F7F733] rounded-lg py-2 px-2 cursor-pointer"
               >
-                <LuCopy className="mr-2.5 text-xl" />{" "}
+                <LuCopy className="mr-2.5 text-xl" />
                 <span className="mr-2.5">
-                  Copy {chain === "ethereum" ? "Wallet Address" : "Public Key"}
+                  Copy{" "}
+                  {chain.type === "ethereum" ? "Wallet Address" : "Public Key"}
                 </span>
               </button>
 
-              {chain === "solana" && (
+              <button
+                type="button"
+                onClick={handleChainChange}
+                className="w-full flex items-center border-0 bg-transparent hover:bg-[#F7F7F7] dark:hover:bg-[#F7F7F733] rounded-lg py-1.5 px-2 cursor-pointer"
+              >
+                <MdOutlineChangeCircle className="mr-2.5 text-xl" />
+                <span className="mr-2.5">Change Chain</span>
+              </button>
+
+              {chain.type === "solana" && (
                 <button
                   type="button"
-                  onClick={() => {
-                    openSolanaConnectModal?.();
-                    onClose();
-                  }}
-                  className="w-full flex items-center  border-0 bg-transparent hover:bg-[#F7F7F7] dark:hover:bg-[#F7F7F733] rounded-lg  py-1.5 px-2 cursor-pointer"
+                  onClick={onChainSelect}
+                  className="w-full flex items-center border-0 bg-transparent hover:bg-[#F7F7F7] dark:hover:bg-[#F7F7F733] rounded-lg py-1.5 px-2 cursor-pointer"
                 >
-                  <MdOutlineChangeCircle className="mr-2.5 text-xl" />{" "}
+                  <MdOutlineChangeCircle className="mr-2.5 text-xl" />
                   <span className="mr-2.5">Change Wallet</span>
                 </button>
               )}
 
               <button
                 type="button"
-                onClick={() => {
-                  disconnect?.();
-                  onClose();
-                }}
-                className="w-full flex items-center  border-0 bg-transparent hover:bg-[#F7F7F7] dark:hover:bg-[#F7F7F733] rounded-lg  py-1.5 px-2 cursor-pointer"
+                onClick={handleDisconnect}
+                className="w-full flex items-center border-0 bg-transparent hover:bg-[#F7F7F7] dark:hover:bg-[#F7F7F733] rounded-lg py-1.5 px-2 cursor-pointer"
               >
-                <VscDebugDisconnect className="mr-2.5 text-xl" />{" "}
+                <VscDebugDisconnect className="mr-2.5 text-xl" />
                 <span className="mr-2.5">Disconnect Wallet</span>
               </button>
             </div>

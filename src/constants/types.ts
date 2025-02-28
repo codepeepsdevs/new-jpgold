@@ -1,4 +1,3 @@
-import { PublicKey } from "@solana/web3.js";
 import { StaticImageData } from "next/image";
 
 export interface User {
@@ -17,9 +16,14 @@ export interface TeamMemberProps {
   about: string;
 }
 
-export interface CivicWalletProps {
-  account: {
-    address?: string;
-  };
-  publicKey?: PublicKey;
+export enum SupportedChains {
+  Solana = "solana",
+  Ethereum = "ethereum",
+  Unknown = "unknown",
+}
+
+export interface Chain {
+  id?: number;
+  name: string;
+  type: SupportedChains;
 }
