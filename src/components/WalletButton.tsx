@@ -1,35 +1,58 @@
 "use client";
 
-import { useWallet } from "@civic/multichain-connect-react-core";
-
 import { useMemo } from "react";
 import useWeb3ModalStore from "@/store/web3Modal.store";
 import images from "@/public/images";
 import Image from "next/image";
 import { IoSettingsSharp } from "react-icons/io5";
-import { CivicWalletProps } from "@/constants/types";
+import { useAccount } from "wagmi";
+import { useWallet } from "@solana/wallet-adapter-react";
 
 const WalletButtons = () => {
-  const { connected, wallet, chain } = useWallet();
-  const { setConnectModalOpen, setDisconnectModalOpen } = useWeb3ModalStore();
+  const { setConnectModalOpen, setDisconnectModalOpen, chain } =
+    useWeb3ModalStore();
 
-  const account = useMemo(() => {
-    let address = null;
-    if (!wallet) return null;
-    if (chain === "ethereum") {
-      address = (wallet as CivicWalletProps).account.address as string;
-    }
-    if (chain === "solana") {
-      address = (wallet as CivicWalletProps).publicKey?.toBase58();
-    }
-    return address;
-  }, [wallet, chain]);
+  // Ethereum wallet connection
+  const { address: ethAddress, isConnected: isEthConnected } = useAccount();
 
-  console.log(wallet);
+  // Solana wallet connection
+  const { publicKey, connected: isSolConnected } = useWallet();
+
+  const walletInfo = useMemo(() => {
+    if (chain.type === "ethereum" && isEthConnected) {
+      return {
+        address: ethAddress,
+        connected: isEthConnected,
+      };
+    } else if (chain.type === "solana" && isSolConnected && publicKey) {
+      return {
+        address: publicKey.toBase58(),
+        connected: isSolConnected,
+      };
+    }
+
+    return {
+      address: null,
+      connected: false,
+    };
+  }, [chain, ethAddress, isEthConnected, publicKey, isSolConnected]);
+
+  const handleConnect = () => {
+    setConnectModalOpen(true);
+  };
+
+  const handleDisconnect = () => {
+    setDisconnectModalOpen(true);
+  };
+
+  const shortenAddress = (address: string) => {
+    if (!address) return "";
+    return `${address.slice(0, 6)}...${address.slice(-4)}`;
+  };
 
   return (
     <div>
-      {connected ? (
+      {walletInfo.connected ? (
         <div className="flex items-center gap-2">
           <button
             onClick={() => {}}
@@ -40,19 +63,14 @@ const WalletButtons = () => {
                 src={images.user.avatar}
                 alt="avatar"
                 fill
-                objectFit="cover"
-                className="w-fit h-fit rounded-full"
+                className="w-fit h-fit rounded-full object-cover"
               />
             </span>
-            <span className="">
-              {account ? `${account.slice(0, 6)}...${account.slice(-4)}` : ""}
-            </span>
+            <span>{shortenAddress(walletInfo.address as string)}</span>
           </button>
 
           <button
-            onClick={() => {
-              setDisconnectModalOpen(true);
-            }}
+            onClick={handleDisconnect}
             className="flex items-center justify-center p-2.5 text-center rounded-full text-black dark:text-white border border-[#E6E6E6] dark:border-[#3D3D3D]"
           >
             <IoSettingsSharp className="text-lg xs:text-xl" />
@@ -60,9 +78,7 @@ const WalletButtons = () => {
         </div>
       ) : (
         <button
-          onClick={() => {
-            setConnectModalOpen(true);
-          }}
+          onClick={handleConnect}
           className="px-6 py-2.5 text-center rounded-full text-[#0C0C0C] dark:text-white border border-black dark:border-white"
         >
           Connect Wallet

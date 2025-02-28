@@ -1,29 +1,19 @@
 "use client";
+import { Chain } from "@/constants/types";
 import icons from "@/public/icons";
-import { BaseChain, Chain } from "@civic/multichain-connect-react-core";
-import { SupportedChains } from "@civic/multichain-connect-react-core";
 import Image from "next/image";
-import React, { useMemo } from "react";
 
 const iconsData = {
   ethereum: icons.coin.ethIcon,
   solana: icons.coin.solIcon,
 };
 
-interface ChainElementProps<
-  T extends SupportedChains,
-  S extends BaseChain,
-  E extends BaseChain
-> {
-  chain: Chain<T, S, E>;
-  onChainSelect: (chain: Chain<T, S, E>) => void;
+interface ChainElementProps {
+  chain: Chain;
+  onChainSelect: (chain: Chain) => void;
 }
 
-function ChainElement<
-  T extends SupportedChains,
-  S extends BaseChain,
-  E extends BaseChain
->({ chain, onChainSelect }: ChainElementProps<T, S, E>) {
+function ChainElement({ chain, onChainSelect }: ChainElementProps) {
   return (
     <li className="flex items-center ">
       <button
@@ -44,127 +34,51 @@ function ChainElement<
   );
 }
 
-interface ChainSelectorContentProps<
-  T extends SupportedChains,
-  S extends BaseChain,
-  E extends BaseChain
-> {
-  chains: Chain<T, S, E>[];
-  onChainSelect: (chain: Chain<T, S, E>) => void;
+interface ChainSelectorContentProps {
+  chains: Chain[];
+  onChainSelect: (chain: Chain) => void;
 }
 
-function ChainSelectorContent<
-  T extends SupportedChains,
-  S extends BaseChain,
-  E extends BaseChain
->({ chains, onChainSelect }: ChainSelectorContentProps<T, S, E>) {
-  const [activeTab, setActiveTab] = React.useState("mainnet");
-
-  const hasTestnetChains = useMemo(
-    () => chains.filter((chain) => chain.testnet === true)?.length >= 1,
-    [chains]
-  );
-  const hasMainnetChains = useMemo(
-    () => chains.filter((chain) => chain.testnet !== true)?.length >= 1,
-    [chains]
-  );
-
+function ChainSelectorContent({
+  chains,
+  onChainSelect,
+}: ChainSelectorContentProps) {
   return (
     <div className="p-6 text-black dark:text-white">
       <h4 className="mb-5 mt-5 text-center text-xl xs:text-2xl font-bold">
         Select Network
       </h4>
 
-      {hasMainnetChains && hasTestnetChains ? (
-        <div>
-          <div className=" border-b border-dark/20 dark:border-white/20 -mx-6">
-            <div className="flex justify-center">
-              <button
-                className={`px-3 py-1.5 text-base xs:text-lg font-semibold relative ${
-                  activeTab === "mainnet" ? " border-b-2 border-primary" : ""
-                }`}
-                onClick={() => setActiveTab("mainnet")}
-              >
-                Mainnet
-              </button>
-              {hasTestnetChains && (
-                <button
-                  className={`px-3 py-1.5 text-base xs:text-lg font-semibold relative ${
-                    activeTab === "testnet" ? " border-b-2 border-primary" : ""
-                  }`}
-                  onClick={() => setActiveTab("testnet")}
-                >
-                  Testnet
-                </button>
-              )}
-            </div>
-          </div>
-
-          <div className="mt-6">
-            {activeTab === "mainnet" && (
-              <ul className=" p-0 m-0">
-                {chains
-                  .filter((chain) => !chain.testnet)
-                  .map((chain) => (
-                    <ChainElement
-                      key={chain.name}
-                      chain={chain}
-                      onChainSelect={onChainSelect}
-                    />
-                  ))}
-              </ul>
-            )}
-            {activeTab === "testnet" && (
-              <ul className=" p-0 m-0">
-                {chains
-                  .filter((chain) => chain.testnet)
-                  .map((chain) => (
-                    <ChainElement
-                      key={chain.name}
-                      chain={chain}
-                      onChainSelect={onChainSelect}
-                    />
-                  ))}
-              </ul>
-            )}
-          </div>
+      {chains && chains.length > 0 && (
+        <div className="mt-6">
+          <ul className="mb-5 p-0 m-0">
+            {chains.map((chain) => (
+              <ChainElement
+                key={chain.name}
+                chain={chain}
+                onChainSelect={onChainSelect}
+              />
+            ))}
+          </ul>
         </div>
-      ) : (
-        <ul className="mb-5 p-0 m-0">
-          {chains.map((chain) => (
-            <ChainElement
-              key={chain.name}
-              chain={chain}
-              onChainSelect={onChainSelect}
-            />
-          ))}
-        </ul>
       )}
     </div>
   );
 }
 
-interface ChainSelectorModalProps<
-  T extends SupportedChains,
-  S extends BaseChain,
-  E extends BaseChain
-> {
-  chains: Chain<T, S, E>[];
+interface ChainSelectorModalProps {
+  chains: Chain[];
   isOpen: boolean;
   onClose: () => void;
-  onChainSelect: (chain: Chain<T, S, E>) => void;
+  onChainSelect: (chain: Chain) => void;
 }
 
-export default function Web3ConnectModal<
-  T extends SupportedChains,
-  S extends BaseChain,
-  E extends BaseChain
->({
+export default function Web3ConnectModal({
   chains,
   isOpen,
   onClose,
   onChainSelect,
-}: ChainSelectorModalProps<T, S, E>) {
+}: ChainSelectorModalProps) {
   if (!isOpen) return null;
 
   return (
