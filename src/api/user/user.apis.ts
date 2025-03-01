@@ -3,14 +3,14 @@ import { IToggleTwoFactorAuth, IUpdateUser, RUpdateUser } from "./user.types";
 import { AxiosResponse } from "axios";
 
 export const getUser = () => {
-  return request({ url: `/user` });
+  return request({ url: `/v1/user` });
 };
 
 export const updateUserRequest = async (
   formdata: IUpdateUser
 ): Promise<AxiosResponse<RUpdateUser>> => {
   return request({
-    url: "/user/update",
+    url: "/v1/user/update",
     method: "put",
     data: formdata,
   });
@@ -18,7 +18,7 @@ export const updateUserRequest = async (
 
 export const ToggleTwoFactorAuthRequest = (formdata: IToggleTwoFactorAuth) => {
   return request({
-    url: "/user/toggle-two-factor-auth",
+    url: "/v1/user/toggle-two-factor-auth",
     method: "post",
     data: formdata,
   });

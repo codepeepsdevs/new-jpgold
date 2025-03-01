@@ -1,11 +1,7 @@
 // general response
 
+import { IResponse } from "@/constants/types";
 import { User } from "../type";
-
-interface IResponse {
-  message: string;
-  statusCode: number;
-}
 
 // Login
 export interface ILogin {
@@ -15,7 +11,7 @@ export interface ILogin {
 
 export interface RLogin extends IResponse {
   user: User;
-  token?: string;
+  accessToken?: string;
 }
 
 // Register

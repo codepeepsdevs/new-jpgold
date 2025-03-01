@@ -6,9 +6,11 @@ import { footerLinks } from "@/constants";
 import Link from "next/link";
 import { useTheme } from "@/store/theme.store";
 import useNavigate from "@/hooks/useNavigate";
+import useUserStore from "@/store/user.store";
 
 const Footer = () => {
   const theme = useTheme();
+  const { setAnonymous } = useUserStore();
   const navigate = useNavigate();
 
   return (
@@ -24,7 +26,7 @@ const Footer = () => {
           <div className="flex flex-col gap-4 xs:gap-6">
             <Socials />
             <p className="text-text-200 dark:text-white text-xs 2xs:text-sm xs:text-base w-[90%]">
-              JaPaul LTD, Plot 2, McAethy Hills SVD, Accra, Ghana
+              Japaul LTD, Plot 2, Mcaethy Hills SVD, Accra, Ghana{" "}
             </p>
           </div>
         </div>
@@ -38,7 +40,15 @@ const Footer = () => {
                 {item.links.map((link, index) => {
                   if (link.type === "internal") {
                     return (
-                      <Link key={index} href={link.path}>
+                      <Link
+                        onClick={() => {
+                          if (link.title === "Dashboard") {
+                            setAnonymous(true);
+                          }
+                        }}
+                        key={index}
+                        href={link.path}
+                      >
                         {link.title}
                       </Link>
                     );

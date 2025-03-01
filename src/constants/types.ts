@@ -1,5 +1,10 @@
 import { StaticImageData } from "next/image";
 
+export interface IResponse {
+  message: string;
+  statusCode: number;
+}
+
 export interface User {
   id: string;
   email: string;

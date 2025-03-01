@@ -36,16 +36,6 @@ const data = [
     date: "Feb 11, 2025",
     duration: "3 min",
   },
-  {
-    id: 4,
-    title: "Tokenomics: JPGold Coin a digital token backed With Gold",
-    description:
-      "JPGold Coin is a digital token backed by gold from JaPaul LTD., a gold manufacturing company in Ghana that aims to make gold ownership easy and affordable. Though it listed in 2022, the JPGC wa",
-    image: images.blog.blog5,
-    tag: "Product updates",
-    date: "Feb 11, 2025",
-    duration: "3 min",
-  },
 ];
 
 const Updates = () => {
@@ -64,7 +54,7 @@ const Updates = () => {
           </Link>
         </div>
 
-        <div className="w-full grid gap-y-8 xs:gap-y-10 xl:gap-y-12 grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-x-4 md:gap-x-4">
+        <div className="w-full grid gap-y-8 xs:gap-y-10 xl:gap-y-12 grid-cols-1 sm:grid-cols-2 xl:grid-cols-3  gap-x-4 md:gap-x-4">
           {data.map((item, index) => (
             <motion.div
               key={index}
