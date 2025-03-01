@@ -11,10 +11,10 @@ import {
   RToggleTwoFactorAuth,
   RUpdateUser,
 } from "./user.types";
-import { User } from "../type";
+import { ErrorResponse, User } from "../type";
 
 export const useGetUser = () => {
-  const { data, isError, isSuccess } = useQuery({
+  const { data, isError, isSuccess, error } = useQuery({
     queryKey: ["user"],
     queryFn: getUser,
     // Run in the background
@@ -30,15 +30,18 @@ export const useGetUser = () => {
   });
   const user: User = data?.data;
 
-  console.log("user from backend", user);
-  return { user, isError, isSuccess };
+  return { user, isError, isSuccess, error };
 };
 
 export const useUpdateUser = (
-  onError: (error: AxiosError) => void,
+  onError: (error: AxiosError<ErrorResponse>) => void,
   onSuccess: (data: AxiosResponse<RUpdateUser>) => void
 ) => {
-  return useMutation<AxiosResponse<RUpdateUser>, AxiosError, IUpdateUser>({
+  return useMutation<
+    AxiosResponse<RUpdateUser>,
+    AxiosError<ErrorResponse>,
+    IUpdateUser
+  >({
     mutationFn: updateUserRequest,
     onError,
     onSuccess,
@@ -46,12 +49,12 @@ export const useUpdateUser = (
 };
 
 export const useToggleTwoFactorAuth = (
-  onError: (error: AxiosError) => void,
+  onError: (error: AxiosError<ErrorResponse>) => void,
   onSuccess: (data: AxiosResponse<RToggleTwoFactorAuth>) => void
 ) => {
   return useMutation<
     AxiosResponse<RToggleTwoFactorAuth>,
-    AxiosError,
+    AxiosError<ErrorResponse>,
     IToggleTwoFactorAuth
   >({
     mutationFn: ToggleTwoFactorAuthRequest,

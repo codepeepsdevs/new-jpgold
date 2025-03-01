@@ -1,23 +1,16 @@
-// update user
-
-interface IResponse {
-  message: string;
-  statusCode: number;
-}
+import { IResponse } from "@/constants/types";
 
 export interface IUpdateUser {
   fullname: string;
   phoneNumber: string;
 }
 
-export interface RUpdateUser {
+export interface RUpdateUser extends IResponse {
   fullname: string;
   phoneNumber: string;
 }
 
-export interface RToggleTwoFactorAuth extends IResponse {
-  message: string;
-}
+export type RToggleTwoFactorAuth = IResponse;
 
 export interface IToggleTwoFactorAuth {
   enable: boolean;

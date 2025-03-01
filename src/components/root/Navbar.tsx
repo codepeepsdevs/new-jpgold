@@ -10,10 +10,12 @@ import { useTheme } from "@/store/theme.store";
 import { useState } from "react";
 import { IoCloseOutline } from "react-icons/io5";
 import { useCartStore } from "@/store/useCartStore";
+import useUserStore from "@/store/user.store";
 
 const Navbar = () => {
   const { items } = useCartStore();
   const navigate = useNavigate();
+  const { setAnonymous } = useUserStore();
   const theme = useTheme();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
@@ -77,6 +79,9 @@ const Navbar = () => {
             Login
           </Link>
           <Link
+            onClick={() => {
+              setAnonymous(true);
+            }}
             className="max-md:hidden ml-3 lg:ml-2 px-4 lg:px-6 py-2 lg:py-2.5 rounded-lg lg:rounded-xl bg-black dark:bg-white text-white dark:text-black font-semibold text-sm lg:text-base"
             href={"/user/dashboard"}
           >
@@ -124,7 +129,6 @@ const Navbar = () => {
             ))}
           </div>
           <div className="flex flex-col gap-4 mt-6 2xs:mt-10">
-            {" "}
             <Link
               href={"/login"}
               className="px-6 py-3 rounded-lg 2xs:rounded-xl border border-black dark:border-white bg-white dark:bg-transparent text-black dark:text-white font-semibold text-base text-center"
@@ -135,7 +139,10 @@ const Navbar = () => {
             <Link
               className="px-6 py-3 rounded-lg 2xs:rounded-xl border border-black dark:border-white bg-black dark:bg-white text-white dark:text-black font-semibold text-base text-center"
               href={"/user/dashboard"}
-              onClick={() => setIsMenuOpen(false)}
+              onClick={() => {
+                setAnonymous(true);
+                setIsMenuOpen(false);
+              }}
             >
               Dashboard
             </Link>

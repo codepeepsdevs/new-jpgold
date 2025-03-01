@@ -1,4 +1,4 @@
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import {
   forgotPasswordRequest,
   loginRequest,
@@ -28,10 +28,14 @@ export const useLogin = (
   onError: (error: AxiosError<ErrorResponse>) => void,
   onSuccess: (data: AxiosResponse<RLogin>) => void
 ) => {
+  const queryClient = useQueryClient();
   return useMutation<AxiosResponse<RLogin>, AxiosError<ErrorResponse>, ILogin>({
     mutationFn: loginRequest,
     onError,
-    onSuccess,
+    onSuccess: (data) => {
+      queryClient.invalidateQueries({ queryKey: ["user"] });
+      onSuccess(data);
+    },
   });
 };
 
@@ -69,6 +73,8 @@ export const useVerifyTwoFa = (
   onError: (error: AxiosError<ErrorResponse>) => void,
   onSuccess: (data: AxiosResponse<RVerifyTwoFa>) => void
 ) => {
+  const queryClient = useQueryClient();
+
   return useMutation<
     AxiosResponse<RVerifyTwoFa>,
     AxiosError<ErrorResponse>,
@@ -76,7 +82,10 @@ export const useVerifyTwoFa = (
   >({
     mutationFn: verifyTwoFaRequest,
     onError,
-    onSuccess,
+    onSuccess: (data) => {
+      queryClient.invalidateQueries({ queryKey: ["user"] });
+      onSuccess(data);
+    },
   });
 };
 

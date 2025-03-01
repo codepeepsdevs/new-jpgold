@@ -12,12 +12,16 @@ import useUserLayoutStore from "@/store/userLayout.store";
 import { useTheme } from "@/store/theme.store";
 import classNames from "classnames";
 import ThemeToggle from "../ThemeToggler";
+import useUserStore from "@/store/user.store";
 
 const MainSidebar = () => {
   const navigate = useNavigate();
   const pathname = usePathname();
   const theme = useTheme();
   const { toggleMenu } = useUserLayoutStore();
+  const { anonymous } = useUserStore();
+
+  const hiddenPathsWhenAnonymous = ["/user/profile", "/logout"];
 
   return (
     <div className="w-full h-full flex flex-col overflow-hidden">
@@ -41,6 +45,9 @@ const MainSidebar = () => {
       <div className="flex-1 overflow-y-auto no-scrollbar">
         <div className="pt-2 pb-6 border-b border-[#E2E2E2] dark:border-[#313131] px-6 flex gap-2 flex-col w-full">
           {SidebarData.map((item) => {
+            if (anonymous && hiddenPathsWhenAnonymous.includes(item.path)) {
+              return null;
+            }
             const isActive = (() => {
               if (item.path === "/") {
                 return pathname === item.path;

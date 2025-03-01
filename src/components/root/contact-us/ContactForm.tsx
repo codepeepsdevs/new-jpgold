@@ -73,7 +73,9 @@ export default function ContactForm() {
     <div
       style={{
         boxShadow:
-          typeof window !== "undefined" && window.innerWidth > 1024
+          typeof window !== "undefined" &&
+          theme === "light" &&
+          window.innerWidth > 1024
             ? `0px 0px 0px 4.13px #F3F4F7,
              0px 0px 0px 3.61px #F9F9FB,
              0px 0px 0px 1.03px #E4E5E999,

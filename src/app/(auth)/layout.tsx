@@ -1,5 +1,6 @@
 import Copyright from "@/components/root/Copyright";
 import Footer from "@/components/root/Footer";
+import { AuthProtectionProvider } from "@/providers/AuthProtectionProvider";
 
 export default function AuthLayout({
   children,
@@ -7,10 +8,12 @@ export default function AuthLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <main className="w-full no-scrollbar">
-      <div> {children}</div>
-      <Footer />
-      <Copyright />
-    </main>
+    <AuthProtectionProvider>
+      <main className="w-full no-scrollbar">
+        <div> {children}</div>
+        <Footer />
+        <Copyright />
+      </main>
+    </AuthProtectionProvider>
   );
 }

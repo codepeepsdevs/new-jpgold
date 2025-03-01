@@ -2,7 +2,6 @@ import axios from "axios";
 import Cookies from "js-cookie";
 
 const api = process.env.NEXT_PUBLIC_BACKEND_API;
-// const apiKey = process.env.NEXT_PUBLIC_BACKEND_API_KEY;
 
 export const client = axios.create({
   baseURL: `${api}`,
@@ -10,8 +9,6 @@ export const client = axios.create({
 
 export const request = ({ ...options }) => {
   const token = Cookies.get("accessToken");
-
-  console.log("token", token);
   if (token) {
     client.defaults.headers.common.Authorization = `Bearer ${token}`;
   }

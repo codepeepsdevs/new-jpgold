@@ -8,6 +8,7 @@ interface States {
   user: User | null;
   isInitialized: boolean;
   isLoggedIn: boolean;
+  anonymous: boolean;
 }
 
 interface Actions {
@@ -15,6 +16,7 @@ interface Actions {
   initializeAuth: (user: User | null) => void;
   checkToken: () => Promise<boolean>;
   setIsLoggedIn: (state: boolean) => void;
+  setAnonymous: (state: boolean) => void;
 }
 
 const useUserStore = create(
@@ -23,10 +25,11 @@ const useUserStore = create(
       user: null,
       isLoggedIn: false,
       isInitialized: false,
+      anonymous: false,
       setUser: (user: User | null) => set({ user }),
       setInitialized: (initialized: boolean) =>
         set({ isInitialized: initialized }),
-
+      setAnonymous: (state: boolean) => set({ anonymous: state }),
       setIsLoggedIn: (state: boolean) => set({ isLoggedIn: state }),
       initializeAuth: async (user: User | null) => {
         const token = Cookies.get("accessToken");

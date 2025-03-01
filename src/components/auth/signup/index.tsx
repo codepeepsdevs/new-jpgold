@@ -19,6 +19,8 @@ import { FaArrowRightLong } from "react-icons/fa6";
 import AuthButtons from "../AuthButtons";
 import { AxiosError } from "axios";
 import { ErrorResponse } from "@/api/type";
+import useUserStore from "@/store/user.store";
+import { getReturnPath } from "@/utils/utilityFunctions";
 
 const schema = yup.object().shape({
   fullName: yup.string().required("Full Name is required"),
@@ -36,6 +38,14 @@ const schema = yup.object().shape({
 type SignupFormData = yup.InferType<typeof schema>;
 
 const Signup = () => {
+  const returnPath = getReturnPath();
+
+  const handleAnonymousLogin = () => {
+    setAnonymous(true);
+    navigate(returnPath, "replace");
+  };
+
+  const { setAnonymous } = useUserStore();
   const form = useForm<SignupFormData>({
     defaultValues: {
       fullName: "",
@@ -107,9 +117,9 @@ const Signup = () => {
               </div>
 
               <div className="w-full flex flex-col gap-4">
-                <AuthButtons googleLogin={() => {}} facebookLogin={() => {}} />
+                <AuthButtons />
                 <div
-                  onClick={() => navigate("/user/dashboard", "replace")}
+                  onClick={handleAnonymousLogin}
                   className="w-full flex items-center justify-center py-2.5 gap-2 border border-[#E6E6E6] dark:text-[#323232] bg-[#E6E6E6] rounded cursor-pointer"
                 >
                   <p className="font-semibold text-sm">Continue Anonymously</p>

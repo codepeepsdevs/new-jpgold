@@ -18,13 +18,15 @@ import { AxiosError, AxiosResponse } from "axios";
 import { RVerifyTwoFa } from "@/api/auth/auth.types";
 import { useTheme } from "@/store/theme.store";
 import { ErrorResponse } from "@/api/type";
+import { getReturnPath } from "@/utils/utilityFunctions";
 
 const TwoFa = () => {
+  const returnPath = getReturnPath();
   const navigate = useNavigate();
   const router = useRouter();
 
   const { authEmail } = useAuthEmailStore();
-  const { setUser } = useUserStore();
+  const { setUser, setAnonymous, setIsLoggedIn } = useUserStore();
 
   const [code, setCode] = useState<string>("");
   const [isValid, setIsValid] = useState<boolean>(false);
@@ -47,22 +49,22 @@ const TwoFa = () => {
         (msg): msg is string => msg !== undefined
       ),
     });
-
-    navigate("/login", "replace");
   };
 
   const onSuccess = (data: AxiosResponse<RVerifyTwoFa>) => {
-    console.log("response data", data?.data);
-    Cookies.set("accessToken", data?.data?.accessToken);
+    const user = data?.data?.user;
+    const token = data?.data?.accessToken;
     setUser(data?.data?.user);
     SuccessToast({
       title: "Two-Factor Authentication Complete",
       description:
         "Your identity has been verified successfully. Welcome back!",
     });
-    const redirectPath = "/user/dashboard";
-
-    navigate(redirectPath, "replace");
+    Cookies.set("accessToken", token);
+    setUser(user);
+    setIsLoggedIn(true);
+    setAnonymous(false);
+    navigate(returnPath, "replace");
     setCode("");
   };
 
@@ -99,17 +101,17 @@ const TwoFa = () => {
           <div className="w-full bg-[#FFFFFF47] dark:text-white dark:bg-[#00000033] mt-10 flex items-center justify-center border border-[#D0D0D0] dark:border-[#E3E3E826] rounded-2xl py-10">
             <div className="w-[90%] sm:w-[80%] flex flex-col gap-6 items-center justify-center">
               {/* headers */}
-              <div className="flex flex-col items-center gap-1 text-center">
-                <h1 className="w-[70%] flex self-center md:w-[40%] text-2xl xs:text-3xl font-ibold">
+              <div className="w-full flex flex-col items-center justify-center gap-1 text-center">
+                <h1 className="w-[90%] xs:w-[70%]  text-2xl xs:text-3xl font-ibold">
                   Two-Factor Authentication
                 </h1>
-                <p className="w-[80%] text-sm xs:text-base dark:text-[#FFFFFFA6]">
+                <p className="w-[90%] xs:w-[80%] text-sm xs:text-base dark:text-[#FFFFFFA6]">
                   Please check your email for the 6-digit security code to
                   continue
                 </p>
               </div>
 
-              <div className="flex mt-5 flex-col justify-start items-start w-full gap-4">
+              <div className="flex mt-5 flex-col justify-center items-center w-full gap-4">
                 <OtpInput
                   value={code}
                   onChange={(props) => {

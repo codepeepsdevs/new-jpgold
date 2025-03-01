@@ -149,10 +149,10 @@ const Heroarea = () => {
               ground-breaking stable-coin.
             </p>
           </div>
-          <div className="flex items-center gap-3">
+          <div className="z-50 flex items-center gap-3">
             <button
               onClick={() => {
-                navigate("");
+                navigate("/user/jpgoldcoin/swap");
               }}
               className="py-3.5 px-12 rounded-xl font-bold text-base bg-primary text-white text-center"
             >
@@ -160,7 +160,9 @@ const Heroarea = () => {
             </button>
 
             <button
-              onClick={() => {}}
+              onClick={() => {
+                window.open(`https://whitepaper.jpgoldcoin.app/`, "_blank");
+              }}
               className="flex items-center justify-center py-3.5 px-12 rounded-xl bg-white text-primary text-center"
             >
               <p className="font-bold text-base">Whitepaper</p>

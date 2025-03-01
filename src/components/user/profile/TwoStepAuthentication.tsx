@@ -1,4 +1,5 @@
 "use client";
+import { ErrorResponse } from "@/api/type";
 import { useToggleTwoFactorAuth } from "@/api/user/user.queries";
 import { RToggleTwoFactorAuth } from "@/api/user/user.types";
 import useUserStore from "@/store/user.store";
@@ -18,7 +19,7 @@ const TwoStepAuthentication = () => {
     setChecked(user?.enableTwofactorAuth ?? false);
   }, [user]);
 
-  const onError = (error: AxiosError) => {
+  const onError = (error: AxiosError<ErrorResponse>) => {
     console.log(error);
   };
 

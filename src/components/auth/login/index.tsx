@@ -19,6 +19,9 @@ import ErrorToast from "@/components/toast/ErrorToast";
 import useAuthEmailStore from "@/store/authEmail.store";
 import { useTheme } from "@/store/theme.store";
 import { ErrorResponse } from "@/api/type";
+import useUserStore from "@/store/user.store";
+import Cookies from "js-cookie";
+import { getReturnPath } from "@/utils/utilityFunctions";
 
 const schema = yup.object().shape({
   email: yup
@@ -35,6 +38,13 @@ const schema = yup.object().shape({
 type LoginFormData = yup.InferType<typeof schema>;
 
 const Login = () => {
+  const returnPath = getReturnPath();
+
+  const handleAnonymousLogin = () => {
+    setAnonymous(true);
+    navigate(returnPath, "replace");
+  };
+
   const form = useForm<LoginFormData>({
     defaultValues: {
       email: "",
@@ -46,6 +56,7 @@ const Login = () => {
 
   const navigate = useNavigate();
   const { setAuthEmail } = useAuthEmailStore();
+  const { setAnonymous, setUser, setIsLoggedIn } = useUserStore();
   const theme = useTheme();
 
   const { register, handleSubmit, formState, reset } = form;
@@ -66,8 +77,8 @@ const Login = () => {
   };
 
   const onSuccess = (data: AxiosResponse<RLogin>) => {
-    console.log(data);
     const user = data?.data?.user;
+    const token = data?.data?.accessToken;
     setAuthEmail(user?.email);
 
     if (!user.isEmailVerified) {
@@ -75,9 +86,12 @@ const Login = () => {
     } else {
       if (user.enableTwofactorAuth) {
         navigate("/two-factor-auth", "push");
-      } else {
-        const redirectPath = "/user/dashboard";
-        navigate(redirectPath, "replace");
+      } else if (!user.enableTwofactorAuth && token) {
+        Cookies.set("accessToken", token);
+        setUser(user);
+        setIsLoggedIn(true);
+        setAnonymous(false);
+        navigate(returnPath, "replace");
       }
     }
 
@@ -114,9 +128,9 @@ const Login = () => {
 
               {/* buttons */}
               <div className="w-full flex flex-col gap-4">
-                <AuthButtons googleLogin={() => {}} facebookLogin={() => {}} />
+                <AuthButtons />
                 <div
-                  onClick={() => navigate("/user/dashboard", "replace")}
+                  onClick={handleAnonymousLogin}
                   className="w-full flex items-center justify-center py-2.5 gap-2 border border-[#E6E6E6] dark:text-[#323232] bg-[#E6E6E6] rounded cursor-pointer"
                 >
                   <p className="font-semibold text-sm">Continue Anonymously</p>

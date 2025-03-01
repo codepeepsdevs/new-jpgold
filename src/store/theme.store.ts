@@ -4,6 +4,7 @@ import { persist } from "zustand/middleware";
 type ThemeStore = {
   theme: "light" | "dark";
   setTheme: () => void;
+  setThemeMode: (theme: "light" | "dark") => void;
 };
 
 const useStore = create<ThemeStore>()(
@@ -14,6 +15,7 @@ const useStore = create<ThemeStore>()(
         set((state) => ({
           theme: state.theme === "dark" ? "light" : "dark",
         })),
+      setThemeMode: (theme) => set({ theme }),
     }),
     {
       name: "theme-storage",
@@ -23,3 +25,4 @@ const useStore = create<ThemeStore>()(
 
 export const useTheme = () => useStore((state) => state.theme);
 export const useSetTheme = () => useStore((state) => state.setTheme);
+export const useSetThemeMode = () => useStore((state) => state.setThemeMode);

@@ -10,6 +10,8 @@ import {
   IoExtensionPuzzleSharp,
   IoList,
   IoLogoLinkedin,
+  IoLogOut,
+  IoLogOutOutline,
 } from "react-icons/io5";
 import { FaCircleUser, FaRegCircleUser, FaXTwitter } from "react-icons/fa6";
 import images from "../../public/images";
@@ -24,6 +26,10 @@ import {
 } from "react-icons/md";
 import { HiCircleStack, HiOutlineCircleStack } from "react-icons/hi2";
 import { TbHexagonLetterN, TbHexagonLetterNFilled } from "react-icons/tb";
+import {
+  METAL_PRICE_BASES,
+  METAL_PRICE_UNITS,
+} from "@/api/metal-price/metal-price.types";
 
 export const navItems = [
   { id: 1, title: "Home", path: "/" },
@@ -92,9 +98,9 @@ export const footerLinks = [
       },
       {
         id: 3,
-        title: "Launch App",
-        type: "external",
-        path: "https:// jpgoldcoin.app",
+        title: "Dashboard",
+        type: "internal",
+        path: "/user/dashboard",
       },
     ],
   },
@@ -367,6 +373,13 @@ export const SidebarData = [
     icon: FaRegCircleUser,
     iconActive: FaCircleUser,
   },
+  {
+    id: 10,
+    title: "Logout",
+    path: "/logout",
+    icon: IoLogOutOutline,
+    iconActive: IoLogOut,
+  },
 ];
 
 export const HeadingData = [
@@ -419,5 +432,73 @@ export const HeadingData = [
     id: 9,
     title: "Profile",
     path: "/user/profile",
+  },
+];
+
+export const metal_price_bases = [
+  {
+    value: METAL_PRICE_BASES.USD,
+    label: "USD",
+    symbol: "$",
+  },
+  {
+    value: METAL_PRICE_BASES.NGN,
+    label: "NGN",
+    symbol: "₦",
+  },
+  {
+    value: METAL_PRICE_BASES.EUR,
+    label: "EUR",
+    symbol: "€",
+  },
+  {
+    value: METAL_PRICE_BASES.GBP,
+    label: "GBP",
+    symbol: "£",
+  },
+  {
+    value: METAL_PRICE_BASES.JPY,
+    label: "JPY",
+    symbol: "¥",
+  },
+  {
+    value: METAL_PRICE_BASES.CAD,
+    label: "CAD",
+    symbol: "$",
+  },
+  {
+    value: METAL_PRICE_BASES.AUD,
+    label: "AUD",
+    symbol: "$",
+  },
+  {
+    value: METAL_PRICE_BASES.CNY,
+    label: "CNY",
+    symbol: "¥",
+  },
+  {
+    value: METAL_PRICE_BASES.INR,
+    label: "INR",
+    symbol: "₹",
+  },
+  {
+    value: METAL_PRICE_BASES.CHF,
+    label: "CHF",
+    symbol: "₣",
+  },
+];
+
+export const metal_price_units = [
+  {
+    value: METAL_PRICE_UNITS.TROY_OUNCE,
+    label: "TROY OUNCE",
+  },
+  {
+    value: METAL_PRICE_UNITS.GRAM,
+    label: "GRAM",
+  },
+  {
+    value: METAL_PRICE_UNITS.KILOGRAM,
+    label: "KILOGRAM",
   },
 ];

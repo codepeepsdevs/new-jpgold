@@ -5,6 +5,7 @@ import {
   PhantomWalletAdapter,
   SolflareWalletAdapter,
   TorusWalletAdapter,
+  WalletConnectWalletAdapter,
 } from "@solana/wallet-adapter-wallets";
 import { WalletAdapterNetwork } from "@solana/wallet-adapter-base";
 import { useMemo } from "react";
@@ -24,6 +25,15 @@ const SolanaWalletProvider = ({ children }: { children: React.ReactNode }) => {
       new PhantomWalletAdapter(),
       new SolflareWalletAdapter(),
       new TorusWalletAdapter(),
+      new WalletConnectWalletAdapter({
+        network,
+        options: {
+          projectId: process.env.NEXT_PUBLIC_WALLET_CONNECT_PROJECT_ID!,
+          metadata: {
+            name: "Japaul Gold",
+          },
+        },
+      }),
     ];
 
     const mainEndpoint = clusterApiUrl(network);
