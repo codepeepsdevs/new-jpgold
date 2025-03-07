@@ -275,7 +275,7 @@ const JpgoldcoinFiatComponent = () => {
   };
 
   return (
-    <div className="flex flex-col md:flex-row lg:flex-col xl:flex-row gap-4">
+    <div className="overflow-x-hidden flex flex-col md:flex-row lg:flex-col xl:flex-row gap-4">
       <UserCard className="w-full md:w-1/2 lg:w-full xl:w-1/2">
         <div className="md:p-5 space-y-6">
           <h2 className="text-2xl font-bold dark:text-white">
