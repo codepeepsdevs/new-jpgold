@@ -75,6 +75,10 @@ import gameDocIcon from "./user/gameDoc.png";
 import gameDocIconDark from "./user/gameDarkDoc.png";
 import coin from "./user/coin.png";
 import tokenOwner from "./user/tokenOwner.png";
+import paymentFailed from "./payment/paymentFailed.png";
+import paymentSuccess from "./payment/paymentSuccess.png";
+
+import cryptomus from "./user/payments/cryptomus.svg";
 
 const jpgc = {
   jpgcOne,
@@ -160,12 +164,22 @@ const team = {
 };
 
 const cart = {};
+const userPayments = {
+  cryptomus,
+};
+
 const user = {
   avatar,
   gameDocIcon,
   gameDocIconDark,
   coin,
   tokenOwner,
+  userPayments,
+};
+
+const payment = {
+  paymentSuccess,
+  paymentFailed,
 };
 
 export default {
@@ -180,4 +194,5 @@ export default {
   team,
   blog,
   user,
+  payment,
 };

@@ -31,11 +31,17 @@ import {
   METAL_PRICE_UNITS,
 } from "@/api/metal-price/metal-price.types";
 
+export const dynamicFrontendUrl =
+  typeof window !== "undefined"
+    ? `${window.location.protocol}//${window.location.host}`
+    : "";
+
 export const navItems = [
   { id: 1, title: "Home", path: "/" },
   { id: 2, title: "About Us", path: "/about-us" },
   { id: 3, title: "Market Place", path: "/marketplace" },
   { id: 4, title: "Blog", path: "/blog" },
+  { id: 4, title: "Bridge", path: "/bridge" },
   { id: 3, title: "Contact Us", path: "/contact-us" },
 ];
 
@@ -330,7 +336,7 @@ export const SidebarData = [
   {
     id: 4,
     title: "Bridge",
-    path: "/user/bridge",
+    path: "/bridge",
     icon: MdOutlineSwapHorizontalCircle,
     iconActive: MdSwapHorizontalCircle,
   },
@@ -399,11 +405,6 @@ export const HeadingData = [
     path: "/user/jpgoldnft",
   },
 
-  {
-    id: 4,
-    title: "Bridge",
-    path: "/user/bridge",
-  },
   {
     id: 5,
     title: "Marketplace",

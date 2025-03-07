@@ -3,7 +3,7 @@ import { useState, useEffect } from "react";
 import Image from "next/image";
 import images from "../../../public/images";
 import Toggler from "../Toggler";
-import { useGetMetalGoldPrice } from "@/api/metal-price/metal-price.queries";
+import { useGetMetalPriceForTickerBar } from "@/api/metal-price/metal-price.queries";
 import { metal_price_bases, metal_price_units } from "@/constants";
 
 const Tickerbar = () => {
@@ -12,7 +12,7 @@ const Tickerbar = () => {
   const [prevPrice, setPrevPrice] = useState<number | null>(null);
   const [currentPrice, setCurrentPrice] = useState<number | null>(null);
 
-  const { res, isLoading, isError } = useGetMetalGoldPrice({
+  const { res, isLoading, isError } = useGetMetalPriceForTickerBar({
     base: selectedBase,
     unit: selectedUnit,
   });

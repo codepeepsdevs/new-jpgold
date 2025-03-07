@@ -6,6 +6,7 @@ import ReactQueryProvider from "@/providers/ReactQueryProvider";
 import { Toaster } from "react-hot-toast";
 import UserProvider from "@/providers/UserProvider";
 import AppWalletProvider from "@/providers/AppWalletProvider";
+import "react-loading-skeleton/dist/skeleton.css";
 
 export const metadata: Metadata = {
   title: "JAPAUL GOLD",

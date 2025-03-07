@@ -2,7 +2,7 @@
 
 "use client";
 import { useTheme } from "@/store/theme.store";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, useMemo } from "react";
 
 // Define type for window with google property
 declare global {
@@ -22,87 +22,8 @@ const LOCATION = {
 // Your Google Maps API key
 const API_KEY = process.env.NEXT_PUBLIC_MAP_API_KEY!;
 
-export default function LocationMap() {
-  const theme = useTheme();
-  const mapRef = useRef<HTMLDivElement>(null);
-  const [mapLoaded, setMapLoaded] = useState(false);
-  const [mapError, setMapError] = useState(false);
-
-  // Load the Google Maps API script
-  useEffect(() => {
-    // Skip if already loaded
-    if (window.google?.maps) {
-      setMapLoaded(true);
-      return;
-    }
-
-    // Skip if already trying to load
-    if (document.querySelector('script[src*="maps.googleapis.com"]')) {
-      return;
-    }
-
-    // Create a callback function that Google Maps will call when loaded
-    window.initMap = () => {
-      setMapLoaded(true);
-    };
-
-    const script = document.createElement("script");
-    script.src = `https://maps.googleapis.com/maps/api/js?key=${API_KEY}&callback=initMap`;
-    script.async = true;
-    script.defer = true;
-    script.onerror = () => {
-      setMapError(true);
-    };
-
-    document.head.appendChild(script);
-
-    // Cleanup function to remove the global callback
-    return () => {
-      if (window.initMap) {
-        delete window.initMap;
-      }
-    };
-  }, []);
-
-  // Initialize the map once the script is loaded
-  useEffect(() => {
-    if (!mapLoaded || !mapRef.current || !window.google?.maps) return;
-
-    try {
-      const mapOptions = {
-        center: LOCATION,
-        zoom: 15,
-        mapTypeId: window.google.maps.MapTypeId.ROADMAP,
-        styles: theme === "dark" ? darkMapStyle : lightMapStyle,
-      };
-
-      const map = new window.google.maps.Map(mapRef.current, mapOptions);
-
-      // Add a marker for the location
-      const marker = new window.google.maps.Marker({
-        position: LOCATION,
-        map: map,
-        title: "JaPaul LTD",
-      });
-
-      // Add an info window with the address
-      const infoWindow = new window.google.maps.InfoWindow({
-        content: `<div><strong>JaPaul LTD</strong><br>${LOCATION.address}</div>`,
-      });
-
-      marker.addListener("click", () => {
-        infoWindow.open(map, marker);
-      });
-
-      // Open info window by default
-      infoWindow.open(map, marker);
-    } catch (err) {
-      console.error("Error initializing map:", err);
-      setMapError(true);
-    }
-  }, [mapLoaded, theme]);
-
-  // Map styles for light and dark themes
+// Map styles for light and dark themes
+const createMapStyles = () => {
   const lightMapStyle: any[] = []; // Default Google Maps style
   const darkMapStyle: any[] = [
     { elementType: "geometry", stylers: [{ color: "#242f3e" }] },
@@ -184,6 +105,92 @@ export default function LocationMap() {
       stylers: [{ color: "#17263c" }],
     },
   ];
+
+  return { lightMapStyle, darkMapStyle };
+};
+
+export default function LocationMap() {
+  const theme = useTheme();
+  const mapRef = useRef<HTMLDivElement>(null);
+  const [mapLoaded, setMapLoaded] = useState(false);
+  const [mapError, setMapError] = useState(false);
+
+  // Use useMemo to prevent recreation of map styles on every render
+  const { lightMapStyle, darkMapStyle } = useMemo(() => createMapStyles(), []);
+
+  // Load the Google Maps API script
+  useEffect(() => {
+    // Skip if already loaded
+    if (window.google?.maps) {
+      setMapLoaded(true);
+      return;
+    }
+
+    // Skip if already trying to load
+    if (document.querySelector('script[src*="maps.googleapis.com"]')) {
+      return;
+    }
+
+    // Create a callback function that Google Maps will call when loaded
+    window.initMap = () => {
+      setMapLoaded(true);
+    };
+
+    const script = document.createElement("script");
+    script.src = `https://maps.googleapis.com/maps/api/js?key=${API_KEY}&callback=initMap`;
+    script.async = true;
+    script.defer = true;
+    script.onerror = () => {
+      setMapError(true);
+    };
+
+    document.head.appendChild(script);
+
+    // Cleanup function to remove the global callback
+    return () => {
+      if (window.initMap) {
+        delete window.initMap;
+      }
+    };
+  }, []);
+
+  // Initialize map when loaded
+  useEffect(() => {
+    if (!mapLoaded || !mapRef.current || !window.google?.maps) return;
+
+    try {
+      const mapOptions = {
+        center: LOCATION,
+        zoom: 15,
+        mapTypeId: window.google.maps.MapTypeId.ROADMAP,
+        styles: theme === "dark" ? darkMapStyle : lightMapStyle,
+      };
+
+      const map = new window.google.maps.Map(mapRef.current, mapOptions);
+
+      // Add a marker for the location
+      const marker = new window.google.maps.Marker({
+        position: LOCATION,
+        map: map,
+        title: "JaPaul LTD",
+      });
+
+      // Add an info window with the address
+      const infoWindow = new window.google.maps.InfoWindow({
+        content: `<div><strong>JaPaul LTD</strong><br>${LOCATION.address}</div>`,
+      });
+
+      marker.addListener("click", () => {
+        infoWindow.open(map, marker);
+      });
+
+      // Open info window by default
+      infoWindow.open(map, marker);
+    } catch (err) {
+      console.error("Error initializing map:", err);
+      setMapError(true);
+    }
+  }, [mapLoaded, theme, darkMapStyle, lightMapStyle]);
 
   return (
     <div className="w-full relative space-y-5">

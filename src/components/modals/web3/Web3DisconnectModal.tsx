@@ -10,6 +10,7 @@ import { useAccount, useDisconnect as useEthDisconnect } from "wagmi";
 import { useWallet as useSolanaWallet } from "@solana/wallet-adapter-react";
 import { useConnectModal } from "@rainbow-me/rainbowkit";
 import { useWalletModal } from "@solana/wallet-adapter-react-ui";
+import { useGetTokenBalance } from "@/api/jpgc/jpgc.queries";
 
 interface DisconnectModalProps {
   isOpen: boolean;
@@ -49,6 +50,16 @@ export default function Web3DisconnectModal({
       onClose();
     }
   };
+
+  const { value } = useGetTokenBalance({
+    chain:
+      chain.type === "ethereum"
+        ? "evm"
+        : chain.type === "solana"
+        ? "solana"
+        : "",
+    recipient: walletAddress || "",
+  });
 
   const handleChainChange = () => {
     onClose();
@@ -116,15 +127,16 @@ export default function Web3DisconnectModal({
           </button>
 
           <div className="p-6 text-black dark:text-white">
-            <h4 className="mb-5 mt-10 text-center text-xl xs:text-2xl font-bold">
+            <h4 className="mb-2 mt-10 text-center text-xl xs:text-2xl font-bold">
               {chain.type === "ethereum" ? "Ethereum Wallet" : "Solana Wallet"}
             </h4>
 
-            <div className="mb-4 text-center text-sm">
+            <div className="flex items-center justify-center mb-4 text-center text-sm">
               <span className="font-mono px-3 py-1 bg-gray-100 dark:bg-gray-800 rounded">
                 {walletAddress
                   ? `${walletAddress.slice(0, 6)}...${walletAddress.slice(-4)}`
-                  : "Not connected"}
+                  : "Not connected"}{" "}
+                {value && `- ${value.toLocaleString()} JPGC`}
               </span>
             </div>
 
