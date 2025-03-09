@@ -5,7 +5,18 @@ const nextConfig: NextConfig = {
     styledComponents: true,
   },
   images: {
-    domains: ["res.cloudinary.com", "cdn.sanity.io"],
+    remotePatterns: [
+      {
+        protocol: "https",
+        hostname: "res.cloudinary.com",
+        pathname: "**",
+      },
+      {
+        protocol: "https",
+        hostname: "cdn.sanity.io",
+        pathname: "**",
+      },
+    ],
   },
 };
 

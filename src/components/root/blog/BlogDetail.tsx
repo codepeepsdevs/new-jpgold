@@ -16,7 +16,7 @@ export default function BlogDetail() {
   // Get category IDs for related posts query - only do this after blog is loaded
   const categoryIds = blog?.categories?.map((cat) => cat._id) || [];
 
-  // Fetch related posts - only after we have categoryIds
+  // Only call useRelatedBlogs when blog data is actually loaded
   const {
     relatedBlogs,
     isLoading: relatedLoading,
@@ -173,58 +173,61 @@ export default function BlogDetail() {
       </div>
 
       {/* More Posts Section with data from Sanity */}
-      <div className="mt-10 md:mt-16 py-10 md:py-16 bg-[#FBF9E9] dark:bg-[#171718]">
-        <div className="container w-[90%]">
-          <h2 className="text-2xl md:text-3xl font-bold dark:text-white mb-8">
-            More posts like this
-          </h2>
+      {/* More Posts Section - Only show when not loading the main blog */}
+      {!isLoading && blog && (
+        <div className="mt-10 md:mt-16 py-10 md:py-16 bg-[#FBF9E9] dark:bg-[#171718]">
+          <div className="container w-[90%]">
+            <h2 className="text-2xl md:text-3xl font-bold dark:text-white mb-8">
+              More posts like this
+            </h2>
 
-          {relatedLoading ? (
-            <p className="text-gray-600 dark:text-gray-400">
-              Loading related posts...
-            </p>
-          ) : relatedError ? (
-            <p className="text-gray-600 dark:text-gray-400">
-              Error loading related posts
-            </p>
-          ) : relatedBlogs.length === 0 ? (
-            <p className="text-gray-600 dark:text-gray-400">
-              No related posts found
-            </p>
-          ) : (
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              {relatedBlogs.map((post) => (
-                <div key={post._id} className="flex flex-col">
-                  <Link href={`/blog/${post._id}`}>
-                    <div className="relative w-full h-72 rounded-t-lg overflow-hidden">
-                      <Image
-                        src={
-                          post.mainImage
-                            ? urlFor(post.mainImage).url()
-                            : "/placeholder.jpg"
-                        }
-                        alt={post.title}
-                        fill
-                        className="object-cover rounded-t-lg"
-                      />
-                    </div>
-                  </Link>
-                  <div className="flex flex-col gap-2 bg-white dark:bg-[#3D3D3D] rounded-b-lg p-4">
+            {relatedLoading ? (
+              <p className="text-gray-600 dark:text-gray-400">
+                Loading related posts...
+              </p>
+            ) : relatedError ? (
+              <p className="text-gray-600 dark:text-gray-400">
+                Error loading related posts
+              </p>
+            ) : relatedBlogs.length === 0 ? (
+              <p className="text-gray-600 dark:text-gray-400">
+                No related posts found
+              </p>
+            ) : (
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                {relatedBlogs.map((post) => (
+                  <div key={post._id} className="flex flex-col">
                     <Link href={`/blog/${post._id}`}>
-                      <h3 className="text-lg font-semibold text-[#0B0B0D] dark:text-white transition-colors line-clamp-2">
-                        {post.title}
-                      </h3>
+                      <div className="relative w-full h-72 rounded-t-lg overflow-hidden">
+                        <Image
+                          src={
+                            post.mainImage
+                              ? urlFor(post.mainImage).url()
+                              : "/placeholder.jpg"
+                          }
+                          alt={post.title}
+                          fill
+                          className="object-cover rounded-t-lg"
+                        />
+                      </div>
                     </Link>
-                    <p className="text-sm font-medium text-[#060809] dark:text-[#D9D9D9] line-clamp-2">
-                      {post.excerpt || ""}
-                    </p>
+                    <div className="flex flex-col gap-2 bg-white dark:bg-[#3D3D3D] rounded-b-lg p-4">
+                      <Link href={`/blog/${post._id}`}>
+                        <h3 className="text-lg font-semibold text-[#0B0B0D] dark:text-white transition-colors line-clamp-2">
+                          {post.title}
+                        </h3>
+                      </Link>
+                      <p className="text-sm font-medium text-[#060809] dark:text-[#D9D9D9] line-clamp-2">
+                        {post.excerpt || ""}
+                      </p>
+                    </div>
                   </div>
-                </div>
-              ))}
-            </div>
-          )}
+                ))}
+              </div>
+            )}
+          </div>
         </div>
-      </div>
+      )}
     </div>
   );
 }
