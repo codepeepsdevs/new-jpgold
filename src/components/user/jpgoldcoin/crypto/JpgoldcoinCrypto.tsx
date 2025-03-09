@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import UserCard from "@/components/UserCard";
 import Image, { StaticImageData } from "next/image";
 import { IoSwapVertical } from "react-icons/io5";
@@ -66,6 +66,13 @@ const JpgoldcoinCrypto = () => {
   const [showPaymentDropdown, setShowPaymentDropdown] = useState(false);
   const [showChainDropdown, setShowChainDropdown] = useState(false);
   const [quantity, setQuantity] = useState<string>("0");
+
+  useEffect(() => {
+    const option = chainOptions.find((item) => item.value === chain.type);
+    if (option) {
+      setSelectedChain(option);
+    }
+  }, [chain]);
 
   // Ethereum wallet connection
   const { address: ethAddress, isConnected: isEthConnected } = useAccount();
@@ -139,7 +146,7 @@ const JpgoldcoinCrypto = () => {
       });
       return;
     }
-    window.open(data.data.url);
+    window.location.href = data.data.url;
   };
 
   const {
@@ -166,16 +173,13 @@ const JpgoldcoinCrypto = () => {
         return;
     }
 
+    localStorage.setItem("redirect-path", "crypto");
+
     checkout({
       amount: formatNumberWithoutExponential(total, 3),
       walletAddress: walletInfo.address,
       quantity: Number(quantity),
-      network:
-        chain.type === "ethereum"
-          ? "evm"
-          : chain.type === "solana"
-          ? "solana"
-          : "",
+      network: chain.type,
       url_return: `${dynamicFrontendUrl}/user/jpgoldcoin/crypto`,
       url_success: `${dynamicFrontendUrl}/payment/success`,
     });
@@ -203,12 +207,6 @@ const JpgoldcoinCrypto = () => {
             <div className="text-center space-y-4">
               <div className="flex items-center justify-center gap-1">
                 <div className="flex items-center justify-center">
-                  {/* <Image
-                    src={images.user.coin}
-                    alt="jpgoldnft"
-                    width={20}
-                    height={20}
-                  /> */}
                   <input
                     type="text"
                     value={quantity}

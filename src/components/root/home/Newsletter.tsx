@@ -41,6 +41,7 @@ const Newsletter = () => {
     isError,
   } = useSubscribeNewsletter(onError, onSuccess);
   const loading = isPending && !isError;
+
   return (
     <div className="w-full flex bg-[#F7F7F7] dark:bg-[#1D1F1C] pt-24 pb-32 lg:pt-28 lg:pb-28 xl:pt-32 xl:pb-32">
       <div className="container  flex flex-col justify-center items-center gap-4 sm:gap-6 xl:gap-8">

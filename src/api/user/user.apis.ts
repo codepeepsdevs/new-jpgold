@@ -1,5 +1,13 @@
 import { request } from "@/utils/axios-utils";
-import { IToggleTwoFactorAuth, IUpdateUser, RUpdateUser } from "./user.types";
+import {
+  IUpdateProfileImage,
+  IToggleTwoFactorAuth,
+  IUpdateUser,
+  RUpdateUser,
+  RUpdateProfileImage,
+  IChangePassword,
+  RChangePassword,
+} from "./user.types";
 import { AxiosResponse } from "axios";
 
 export const getUser = () => {
@@ -10,7 +18,27 @@ export const updateUserRequest = async (
   formdata: IUpdateUser
 ): Promise<AxiosResponse<RUpdateUser>> => {
   return request({
-    url: "/v1/user/update",
+    url: "/v1/user/edit-profile",
+    method: "put",
+    data: formdata,
+  });
+};
+
+export const updateProfileImageRequest = async ({
+  formdata,
+}: IUpdateProfileImage): Promise<AxiosResponse<RUpdateProfileImage>> => {
+  return request({
+    url: "/v1/user/updateProfileImage",
+    method: "put",
+    data: formdata,
+  });
+};
+
+export const changePasswordRequest = async (
+  formdata: IChangePassword
+): Promise<AxiosResponse<RChangePassword>> => {
+  return request({
+    url: "/v1/user/change-password",
     method: "put",
     data: formdata,
   });

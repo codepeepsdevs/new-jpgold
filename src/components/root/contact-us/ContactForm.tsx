@@ -2,10 +2,15 @@
 
 import { useForm } from "react-hook-form";
 import Image from "next/image";
-import toast from "react-hot-toast";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
 import { useTheme } from "@/store/theme.store";
+import { useContactUs } from "@/api/contact-us/contact-us.queries";
+import SuccessToast from "@/components/toast/SuccessToast";
+import { ErrorResponse } from "@/api/type";
+import { AxiosError } from "axios";
+import ErrorToast from "@/components/toast/ErrorToast";
+import SpinnerLoader from "@/components/SpinnerLoader";
 
 interface ContactFormInputs {
   fullName: string;
@@ -57,16 +62,39 @@ export default function ContactForm() {
     mode: "onBlur",
   });
 
+  const onError = (error: AxiosError<ErrorResponse>) => {
+    const errorMessage = error?.response?.data?.message;
+    const descriptions = Array.isArray(errorMessage)
+      ? errorMessage
+      : [errorMessage];
+
+    ErrorToast({
+      title: "Error sending message",
+      descriptions: descriptions.filter(
+        (msg): msg is string => msg !== undefined
+      ),
+    });
+  };
+
+  const onSuccess = () => {
+    SuccessToast({
+      title: "Message Sent",
+      description:
+        "We will reach out to you shortly! Thank you for contacting us🎉.",
+    });
+
+    reset();
+  };
+
+  const {
+    mutate: contactUs,
+    isPending,
+    isError,
+  } = useContactUs(onError, onSuccess);
+  const loading = isPending && !isError;
+
   const onSubmit = async (data: ContactFormInputs) => {
-    try {
-      // Handle form submission here
-      console.log("Form data:", data);
-      toast.success("Message sent successfully!");
-      reset(); // Reset form after successful submission
-    } catch (error) {
-      console.log(error);
-      toast.error("Failed to send message. Please try again.");
-    }
+    contactUs(data);
   };
 
   return (
@@ -97,7 +125,7 @@ export default function ContactForm() {
 
       <form
         onSubmit={handleSubmit(onSubmit)}
-        className="space-y-4 w-full lg:w-[90%] mx-auto"
+        className="space-y-4 w-full lg:w-[90%] mx-auto text-black dark:text-white"
       >
         {/* Full Name */}
         <div>
@@ -172,7 +200,11 @@ export default function ContactForm() {
           type="submit"
           className="w-full bg-[#CC8F00] text-white py-4 rounded-lg hover:bg-[#B37E00] transition-colors"
         >
-          Submit
+          {loading ? (
+            <SpinnerLoader width={25} height={25} color="#FFB845" />
+          ) : (
+            "Submit"
+          )}{" "}
         </button>
       </form>
     </div>

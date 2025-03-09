@@ -51,8 +51,8 @@ const VerifyEmailContent = () => {
 
   if (isPending) {
     return (
-      <div className="h-screen w-screen flex items-center justify-center">
-        <SpinnerLoader width={40} height={40} color="#CC8F00" />
+      <div className="fixed inset-0 flex flex-col  items-center justify-center bg-white dark:bg-black z-50 min-h-screen">
+        <SpinnerLoader width={85} height={80} color="#FFB845" />
       </div>
     );
   }
@@ -64,8 +64,8 @@ const VerifyEmail = () => {
   return (
     <Suspense
       fallback={
-        <div className="h-screen w-screen flex items-center justify-center">
-          <SpinnerLoader width={40} height={40} color="#CC8F00" />
+        <div className="fixed inset-0 flex flex-col  items-center justify-center bg-white dark:bg-black z-50 min-h-screen">
+          <SpinnerLoader width={85} height={80} color="#FFB845" />
         </div>
       }
     >

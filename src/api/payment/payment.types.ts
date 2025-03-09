@@ -1,10 +1,10 @@
-import { IResponse } from "@/constants/types";
+import { IResponse, SupportedChains } from "@/constants/types";
 
 export interface IStripeCheckout {
   amount: number;
   walletAddress: string;
   quantity: number;
-  network: string;
+  network: SupportedChains;
   successUrl: string;
   cancelUrl: string;
 }
@@ -17,7 +17,7 @@ export interface ICryptomusCheckout {
   amount: string;
   walletAddress: string;
   quantity: number;
-  network: string;
+  network: SupportedChains;
   url_return: string;
   url_success: string;
 }

@@ -52,12 +52,7 @@ export default function Web3DisconnectModal({
   };
 
   const { value } = useGetTokenBalance({
-    chain:
-      chain.type === "ethereum"
-        ? "evm"
-        : chain.type === "solana"
-        ? "solana"
-        : "",
+    chain: chain.type,
     recipient: walletAddress || "",
   });
 

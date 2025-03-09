@@ -3,19 +3,26 @@
 import * as yup from "yup";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { useForm } from "react-hook-form";
+import useUserStore from "@/store/user.store";
+import { AxiosError } from "axios";
+import { ErrorResponse } from "@/api/type";
+import ErrorToast from "@/components/toast/ErrorToast";
+import SuccessToast from "@/components/toast/SuccessToast";
+import { useUpdateUser } from "@/api/user/user.queries";
 
 const PersonalDetails = () => {
+  const { user } = useUserStore();
   const schema = yup.object().shape({
-    fullName: yup.string().required("Full name is required"),
-    Web3Nickname: yup.string().optional(),
+    fullname: yup.string().required("Full name is required"),
+    web3Nickname: yup.string().optional(),
   });
 
   type personalDetailsFormData = yup.InferType<typeof schema>;
 
   const form = useForm<personalDetailsFormData>({
     defaultValues: {
-      fullName: "Bruce Wayne",
-      Web3Nickname: "",
+      fullname: user?.fullname,
+      web3Nickname: user?.web3Nickname,
     },
     resolver: yupResolver(schema),
     mode: "onBlur",
@@ -24,8 +31,36 @@ const PersonalDetails = () => {
   const { register, handleSubmit, formState } = form;
   const { errors } = formState;
 
+  const onError = (error: AxiosError<ErrorResponse>) => {
+    const errorMessage = error?.response?.data?.message;
+    const descriptions = Array.isArray(errorMessage)
+      ? errorMessage
+      : [errorMessage];
+
+    ErrorToast({
+      title: "Error updating",
+      descriptions: descriptions.filter(
+        (msg): msg is string => msg !== undefined
+      ),
+    });
+  };
+
+  const onSuccess = () => {
+    SuccessToast({
+      title: "Personal details updated",
+      description: "Profile details has been updated! 🎉.",
+    });
+  };
+
+  const {
+    mutate: update,
+    isPending,
+    isError,
+  } = useUpdateUser(onError, onSuccess);
+  const loading = isPending && !isError;
+
   const onSubmit = (data: personalDetailsFormData) => {
-    console.log(data);
+    update(data);
   };
 
   return (
@@ -46,7 +81,14 @@ const PersonalDetails = () => {
           type="submit"
           className="hidden cursor-pointer rounded-3xl py-2 px-6 md:flex items-center gap-2 border border-[#9D9D9]"
         >
-          Save Changes
+          {loading ? (
+            <div className="flex items-center gap-2">
+              <div className="animate-spin h-4 w-4 border-2 border-t-transparent border-[#9D9D9D] rounded-full"></div>
+              <p className="font-semibold">Saving...</p>
+            </div>
+          ) : (
+            <p className=""> Save Changes</p>
+          )}
         </button>
       </div>
 
@@ -57,14 +99,14 @@ const PersonalDetails = () => {
           </label>
           <input
             type="text"
-            id="fullName"
-            {...register("fullName")}
+            id="fullname"
+            {...register("fullname")}
             className="px-4 py-2 w-full bg-transparent rounded border border-[#D9D9D9] outline-none"
           />
 
-          {errors.fullName ? (
+          {errors.fullname ? (
             <p className="flex self-start text-red-500 font-semibold mt-0.5 text-xs md:text-sm">
-              {errors.fullName?.message}
+              {errors.fullname?.message}
             </p>
           ) : null}
         </div>
@@ -76,13 +118,13 @@ const PersonalDetails = () => {
           <input
             type="text"
             id="Web3Nickname"
-            {...register("Web3Nickname")}
+            {...register("web3Nickname")}
             className="px-4 py-2 w-full bg-transparent rounded border border-[#D9D9D9] outline-none"
           />
 
-          {errors.Web3Nickname ? (
+          {errors.web3Nickname ? (
             <p className="flex self-start text-red-500 font-semibold mt-0.5 text-xs md:text-sm">
-              {errors.Web3Nickname?.message}
+              {errors.web3Nickname?.message}
             </p>
           ) : null}
         </div>
@@ -92,7 +134,14 @@ const PersonalDetails = () => {
         type="submit"
         className="md:hidden w-fit mt-5 cursor-pointer rounded-3xl py-2 px-6 flex items-center gap-2 border border-[#9D9D9]"
       >
-        Save Changes
+        {loading ? (
+          <div className="flex items-center gap-2">
+            <div className="animate-spin h-4 w-4 border-2 border-t-transparent border-[#9D9D9D] rounded-full"></div>
+            <p className="font-semibold">Saving...</p>
+          </div>
+        ) : (
+          <p className=""> Save Changes</p>
+        )}
       </button>
     </form>
   );

@@ -1,8 +1,8 @@
-import { User } from "@/api/type";
 import { create } from "zustand";
 import { createJSONStorage, persist } from "zustand/middleware";
 import Cookies from "js-cookie";
 import { isTokenExpired } from "@/utils/tokenChecker";
+import { User } from "@/constants/types";
 
 interface States {
   user: User | null;
