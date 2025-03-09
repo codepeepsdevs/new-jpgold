@@ -53,9 +53,9 @@ const Navbar = () => {
           className="relative uppercase flex justify-center items-center rounded-full bg-[#356505] w-9 2xs:w-10 xs:w-12 h-9 2xs:h-10 xs:h-12 text-center text-white text-base font-semibold"
         >
           {user && !anonymous ? (
-            user?.profileImage ? (
+            user?.profileImageUrl ? (
               <Image
-                src={user?.profileImage}
+                src={user?.profileImageUrl}
                 alt="profile"
                 fill
                 objectFit="cover"

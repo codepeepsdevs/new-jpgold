@@ -1,15 +1,45 @@
 "use client";
 
-import { blogData } from "@/constants";
-import Image from "next/image";
 import { useParams } from "next/navigation";
+import Image from "next/image";
+import { PortableText } from "@portabletext/react";
 import { FaFacebookF, FaTwitter, FaLinkedinIn } from "react-icons/fa";
 import Link from "next/link";
+import { useBlogById } from "@/hooks/blogs/useBlogById";
+import { useRelatedBlogs } from "@/hooks/blogs/useRelatedBlogs";
+import { urlFor } from "@/utils/sanity";
 
 export default function BlogDetail() {
   const { id } = useParams<{ id: string }>();
+  const { blog, isLoading, error } = useBlogById(id);
 
-  const blog = blogData.find((blog) => blog.id === Number(id));
+  // Get category IDs for related posts query - only do this after blog is loaded
+  const categoryIds = blog?.categories?.map((cat) => cat._id) || [];
+
+  // Fetch related posts - only after we have categoryIds
+  const {
+    relatedBlogs,
+    isLoading: relatedLoading,
+    error: relatedError,
+  } = useRelatedBlogs(blog ? id : "", categoryIds);
+
+  if (isLoading) {
+    return (
+      <div className="w-full flex justify-center items-center min-h-[400px] bg-white dark:bg-bg-700">
+        <p className="text-lg text-gray-600 dark:text-gray-400">Loading...</p>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="w-full flex justify-center items-center min-h-[400px] bg-white dark:bg-bg-700">
+        <p className="text-lg text-gray-600 dark:text-gray-400">
+          Error loading blog: {error.message}
+        </p>
+      </div>
+    );
+  }
 
   if (!blog) {
     return (
@@ -21,6 +51,14 @@ export default function BlogDetail() {
     );
   }
 
+  // Get the image URL using urlFor helper
+  const mainImageUrl = blog.mainImage
+    ? urlFor(blog.mainImage).url()
+    : "/placeholder.jpg";
+  const authorImageUrl = blog.author?.image
+    ? urlFor(blog.author.image).url()
+    : "/placeholder-author.jpg";
+
   return (
     <div className="w-full flex flex-col justify-center bg-white dark:bg-bg-700 py-8">
       <div className="container w-[90%] space-y-4 md:space-y-8">
@@ -28,9 +66,11 @@ export default function BlogDetail() {
         <div className="mb-6">
           <div className="flex items-center gap-2 md:gap-5 text-lg mb-6 md:mb-10">
             <span className="font-bold text-[#060809] dark:text-white">
-              {blog.tag}
+              {blog.categories?.[0]?.title || "Uncategorized"}
             </span>
-            <span className="text-[#7B828E] font-medium">{blog.date}</span>
+            <span className="text-[#7B828E] font-medium">
+              {new Date(blog._createdAt).toLocaleDateString()}
+            </span>
           </div>
           <h1 className="text-3xl xs:text-4xl lg:text-5xl font-isemibold text-black dark:text-white mb-6 md:mb-10">
             {blog.title}
@@ -40,7 +80,7 @@ export default function BlogDetail() {
         {/* Featured Image */}
         <div className="relative w-full h-[30rem] md:h-[40rem] md:rounded-xl overflow-hidden">
           <Image
-            src={blog.image}
+            src={mainImageUrl}
             alt={blog.title}
             fill
             className="object-cover"
@@ -49,54 +89,45 @@ export default function BlogDetail() {
 
         {/* Content */}
         <div className="prose dark:prose-invert max-w-none">
-          <p className="text-lg text-[#0B0B0D] dark:text-white mb-6">
-            In this week&apos;s Business Spotlight, Awele talks us through her
-            journey, some challenges she has faced, and what she has found most
-            rewarding through it all.
-          </p>
-
-          <h2 className="text-2xl font-bold text-[#0B0B0D] dark:text-white mb-4">
-            Tell us the story behind The Art Room?
-          </h2>
-
-          <p className="text-gray-700 dark:text-gray-300 mb-6">
-            The Art Room was an idea I came up with after I dealt with anxiety
-            in 2017. Moving back to Lagos I realized there was a mental space
-            for people in a relaxed to express using art and that was how the
-            art room came about.
-          </p>
-
-          <h2 className="text-2xl font-bold text-[#0B0B0D] dark:text-white mb-4">
-            How did your first session?
-          </h2>
-
-          <p className="text-gray-700 dark:text-gray-300 mb-6">
-            It was before we started the first session. To see everything that
-            you would had as an idea become something in reality that was able
-            to be tangible and rewarding. We had prepped for this session for
-            over a month just waiting to see how many people would show up. We
-            put the word out and sold out in a few days, which encouraged us to
-            push through and put more into the session.
-          </p>
+          <PortableText
+            value={blog.body}
+            components={{
+              block: {
+                // Customize the rendering of different block types if needed
+                h2: ({ children }) => (
+                  <h2 className="text-2xl font-bold text-[#0B0B0D] dark:text-white mb-4">
+                    {children}
+                  </h2>
+                ),
+                normal: ({ children }) => (
+                  <p className="text-gray-700 dark:text-gray-300 mb-6">
+                    {children}
+                  </p>
+                ),
+              },
+            }}
+          />
         </div>
 
-        {/* author  */}
+        {/* author */}
         <div className="flex items-center gap-2">
           <div className="relative w-14 h-14 rounded-full overflow-hidden">
             <Image
-              src={blog.image}
-              alt="Author"
+              src={authorImageUrl}
+              alt={blog.author?.name || "Author"}
               fill
               className="object-cover"
             />
           </div>
           <div>
             <p className="font-bold text-lg text-[#060809] dark:text-white">
-              Skyler Vencers
+              {blog.author?.name || "Author"}
             </p>
-            <p className="text-[#393E46] dark:text-white/70">
-              Product Marketing and Communications
-            </p>
+            {blog.author?.bio && (
+              <div className="text-[#393E46] dark:text-white/70">
+                <PortableText value={blog.author.bio} />
+              </div>
+            )}
           </div>
         </div>
 
@@ -140,22 +171,38 @@ export default function BlogDetail() {
           </div>
         </div>
       </div>
-      {/* More Posts Section */}
+
+      {/* More Posts Section with data from Sanity */}
       <div className="mt-10 md:mt-16 py-10 md:py-16 bg-[#FBF9E9] dark:bg-[#171718]">
         <div className="container w-[90%]">
-          <h2 className="text-2xl md:text-3xl font-bold  dark:text-white mb-8">
+          <h2 className="text-2xl md:text-3xl font-bold dark:text-white mb-8">
             More posts like this
           </h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            {blogData
-              .filter((post) => post.id !== blog.id)
-              .slice(0, 2)
-              .map((post) => (
-                <div key={post.id} className="flex flex-col">
-                  <Link href={`/blog/${post.id}`}>
+
+          {relatedLoading ? (
+            <p className="text-gray-600 dark:text-gray-400">
+              Loading related posts...
+            </p>
+          ) : relatedError ? (
+            <p className="text-gray-600 dark:text-gray-400">
+              Error loading related posts
+            </p>
+          ) : relatedBlogs.length === 0 ? (
+            <p className="text-gray-600 dark:text-gray-400">
+              No related posts found
+            </p>
+          ) : (
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              {relatedBlogs.map((post) => (
+                <div key={post._id} className="flex flex-col">
+                  <Link href={`/blog/${post._id}`}>
                     <div className="relative w-full h-72 rounded-t-lg overflow-hidden">
                       <Image
-                        src={post.image}
+                        src={
+                          post.mainImage
+                            ? urlFor(post.mainImage).url()
+                            : "/placeholder.jpg"
+                        }
                         alt={post.title}
                         fill
                         className="object-cover rounded-t-lg"
@@ -163,18 +210,19 @@ export default function BlogDetail() {
                     </div>
                   </Link>
                   <div className="flex flex-col gap-2 bg-white dark:bg-[#3D3D3D] rounded-b-lg p-4">
-                    <Link href={`/blog/${post.id}`}>
+                    <Link href={`/blog/${post._id}`}>
                       <h3 className="text-lg font-semibold text-[#0B0B0D] dark:text-white transition-colors line-clamp-2">
                         {post.title}
                       </h3>
                     </Link>
-                    <p className="text-sm font-medium text-[#060809] truncate w-2/3 dark:text-[#D9D9D9] line-clamp-2">
-                      {post.description}...
+                    <p className="text-sm font-medium text-[#060809] dark:text-[#D9D9D9] line-clamp-2">
+                      {post.excerpt || ""}
                     </p>
                   </div>
                 </div>
               ))}
-          </div>
+            </div>
+          )}
         </div>
       </div>
     </div>

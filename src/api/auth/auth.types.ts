@@ -1,7 +1,6 @@
 // general response
 
-import { IResponse } from "@/constants/types";
-import { User } from "../type";
+import { IResponse, User } from "@/constants/types";
 
 // Login
 export interface ILogin {

@@ -5,6 +5,11 @@ import { AiOutlineEye, AiOutlineEyeInvisible } from "react-icons/ai";
 import * as yup from "yup";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { useState } from "react";
+import { AxiosError } from "axios";
+import { ErrorResponse } from "@/api/type";
+import ErrorToast from "@/components/toast/ErrorToast";
+import SuccessToast from "@/components/toast/SuccessToast";
+import { useChangePassword } from "@/api/user/user.queries";
 
 const ChangePassword = () => {
   const schema = yup.object().shape({
@@ -29,13 +34,42 @@ const ChangePassword = () => {
     mode: "onBlur",
   });
 
-  const { register, handleSubmit, formState } = form;
+  const { register, handleSubmit, formState, reset } = form;
   const { errors } = formState;
   const [oldPasswordOpen, setOldPasswordOpen] = useState(false);
   const [newPasswordOpen, setNewPasswordOpen] = useState(false);
 
+  const onError = (error: AxiosError<ErrorResponse>) => {
+    const errorMessage = error?.response?.data?.message;
+    const descriptions = Array.isArray(errorMessage)
+      ? errorMessage
+      : [errorMessage];
+
+    ErrorToast({
+      title: "Error changing password",
+      descriptions: descriptions.filter(
+        (msg): msg is string => msg !== undefined
+      ),
+    });
+  };
+
+  const onSuccess = () => {
+    SuccessToast({
+      title: "Password changed",
+      description: "Password has been changed! 🎉.",
+    });
+    reset();
+  };
+
+  const {
+    mutate: change,
+    isPending,
+    isError,
+  } = useChangePassword(onError, onSuccess);
+  const loading = isPending && !isError;
+
   const onSubmit = (data: changePasswordFormData) => {
-    console.log(data);
+    change(data);
   };
 
   return (
@@ -56,7 +90,14 @@ const ChangePassword = () => {
           type="submit"
           className="hidden cursor-pointer rounded-3xl py-2 px-6 md:flex items-center gap-2 border border-[#9D9D9]"
         >
-          Save Changes
+          {loading ? (
+            <div className="flex items-center gap-2">
+              <div className="animate-spin h-4 w-4 border-2 border-t-transparent border-[#9D9D9D] rounded-full"></div>
+              <p className="font-semibold">Saving...</p>
+            </div>
+          ) : (
+            <p className=""> Save Changes</p>
+          )}
         </button>
       </div>
 
@@ -132,7 +173,14 @@ const ChangePassword = () => {
         type="submit"
         className="md:hidden w-fit mt-5 cursor-pointer rounded-3xl py-2 px-6 flex items-center gap-2 border border-[#9D9D9]"
       >
-        Save Changes
+        {loading ? (
+          <div className="flex items-center gap-2">
+            <div className="animate-spin h-4 w-4 border-2 border-t-transparent border-[#9D9D9D] rounded-full"></div>
+            <p className="font-semibold">Saving...</p>
+          </div>
+        ) : (
+          <p className=""> Save Changes</p>
+        )}
       </button>
     </form>
   );

@@ -1,4 +1,6 @@
+import { SupportedChains } from "@/constants/types";
+
 export interface IGetTokenBalance {
-  chain: string;
+  chain: SupportedChains;
   recipient: string;
 }

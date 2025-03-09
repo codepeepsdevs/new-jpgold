@@ -1,10 +1,19 @@
 "use client";
+import { ErrorResponse } from "@/api/type";
+import { useUpdateProfileImage } from "@/api/user/user.queries";
+import ErrorToast from "@/components/toast/ErrorToast";
+import SuccessToast from "@/components/toast/SuccessToast";
 import icons from "@/public/icons";
+import useUserStore from "@/store/user.store";
+import { AxiosError } from "axios";
 import Image from "next/image";
 import { useRef, useState } from "react";
 
 const UploadImage = () => {
-  const [previewUrl, setPreviewUrl] = useState<string | null>(null);
+  const { user } = useUserStore();
+  const [previewUrl, setPreviewUrl] = useState<string | null>(
+    user?.profileImageUrl || null
+  );
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const handleFileSelect = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -13,6 +22,55 @@ const UploadImage = () => {
       const url = URL.createObjectURL(file);
       setPreviewUrl(url);
     }
+  };
+
+  const onError = (error: AxiosError<ErrorResponse>) => {
+    const errorMessage = error?.response?.data?.message;
+    const descriptions = Array.isArray(errorMessage)
+      ? errorMessage
+      : [errorMessage];
+
+    ErrorToast({
+      title: "Error uploading",
+      descriptions: descriptions.filter(
+        (msg): msg is string => msg !== undefined
+      ),
+    });
+  };
+
+  const onSuccess = () => {
+    SuccessToast({
+      title: "Profile image updated",
+      description: "Profile image has being updated! 🎉.",
+    });
+  };
+
+  const {
+    mutate: upload,
+    isPending,
+    isError,
+  } = useUpdateProfileImage(onError, onSuccess);
+  const loading = isPending && !isError;
+
+  const handleUpload = () => {
+    if (!previewUrl) {
+      ErrorToast({
+        title: "No image selected",
+        descriptions: ["Please select an image to upload"],
+      });
+      return;
+    }
+
+    // Get the file from the input ref
+    const file = fileInputRef.current?.files?.[0];
+    if (!file) return;
+
+    // Create a FormData instance
+    const formdata = new FormData();
+    formdata.append("doc", file); // Backend expects 'doc' as the field name
+
+    // Call the upload mutation with the FormData
+    upload({ formdata });
   };
 
   const handleUploadClick = () => {
@@ -85,13 +143,21 @@ const UploadImage = () => {
 
       {/* Upload button */}
       <div className="w-fit cursor-pointer rounded-3xl py-2 px-6 flex items-center gap-2 border border-[#9D9D9]">
-        <Image
-          src={icons.profile.UploadIcon}
-          alt="upload"
-          width={12}
-          height={12}
-        />
-        <p className="font-semibold">Upload Image</p>
+        {loading ? (
+          <div className="flex items-center gap-2">
+            <div className="animate-spin h-4 w-4 border-2 border-t-transparent border-[#9D9D9D] rounded-full"></div>
+            <p className="font-semibold">Uploading...</p>
+          </div>
+        ) : (
+          <div className="flex items-center gap-2" onClick={handleUpload}>
+            <Image
+              src={icons.profile.UploadIcon}
+              alt="upload"
+              className="w-3 sm:w-4"
+            />
+            <p className="font-semibold">Upload Image</p>
+          </div>
+        )}
         <input
           type="file"
           ref={fileInputRef}

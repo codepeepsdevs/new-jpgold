@@ -5,12 +5,25 @@ export interface IResponse {
   statusCode: number;
 }
 
+export enum UserRole {
+  USER = "USER",
+  ADMIN = "ADMIN",
+}
+
 export interface User {
   id: string;
+  fullname: string;
   email: string;
-  name: string;
-  createdAt: string;
-  updatedAt: string;
+  web3Nickname?: string;
+  isEmailVerified: boolean;
+  role: UserRole;
+  tokenVersion: number;
+  isGoogleRegister: boolean;
+  isFacebookRegister: boolean;
+  enableTwofactorAuth: boolean;
+  profileImageUrl: string;
+  createdAt: Date;
+  updatedAt: Date;
 }
 
 export interface TeamMemberProps {
