@@ -18,6 +18,21 @@ import {
 import SpinnerLoader from "@/components/SpinnerLoader";
 import { getProvider, mintNft } from "@/services/jpgnft/jpgnft";
 import toast from "react-hot-toast";
+import {
+  useCryptomusCheckout,
+  useStripeCheckout,
+} from "@/api/payment/payment.queries";
+import { AxiosError, AxiosResponse } from "axios";
+import {
+  RCryptomusCheckout,
+  RStripeCheckout,
+} from "@/api/payment/payment.types";
+import { Elements, useStripe } from "@stripe/react-stripe-js";
+import ErrorToast from "@/components/toast/ErrorToast";
+import { ErrorResponse } from "@/api/type";
+import SuccessToast from "@/components/toast/SuccessToast";
+import { dynamicFrontendUrl } from "@/constants";
+import { loadStripe } from "@stripe/stripe-js";
 
 interface PaymentOption {
   value: string;
@@ -58,11 +73,22 @@ const paymentOptions: PaymentOption[] = [
 ];
 
 const goldBarUrl = process.env.NEXT_PUBLIC_NFT_GOLD_BAR_URL;
+const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLIC_KEY!);
 
-const JpgoldnftBuy = () => {
+export default function JpgoldnftBuy() {
+  return (
+    <Elements stripe={stripePromise}>
+      <JpgoldNftBuyComponent />
+    </Elements>
+  );
+}
+
+const JpgoldNftBuyComponent = () => {
+  const stripe = useStripe();
   const { address, connected } = useWalletInfo();
   const { chain } = useWeb3ModalStore();
   const { publicKey, sendTransaction, signTransaction } = useWallet();
+  // const [isCheckoutLoading, setIsCheckoutLoading] = useState(false);
 
   const program = useMemo(
     () => getProvider(publicKey, signTransaction, sendTransaction),
@@ -80,6 +106,96 @@ const JpgoldnftBuy = () => {
   const [showChainDropdown, setShowChainDropdown] = useState(false);
   const [quantity, setQuantity] = useState<string>("0");
   const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const onStripeError = (error: AxiosError<ErrorResponse>) => {
+    // setIsCheckoutLoading(false);
+    const errorMessage = error?.response?.data?.message;
+    const descriptions = Array.isArray(errorMessage)
+      ? errorMessage
+      : [errorMessage];
+
+    ErrorToast({
+      title: "Error checking out",
+      descriptions: descriptions.filter(
+        (msg): msg is string => msg !== undefined
+      ),
+    });
+  };
+
+  const onStripeSuccess = async (data: AxiosResponse<RStripeCheckout>) => {
+    if (stripe) {
+      if (!data.data.sessionId) {
+        // setIsCheckoutLoading(false);
+        ErrorToast({
+          title: "Error",
+          descriptions: ["Invalid session id"],
+        });
+      }
+      const response = await stripe.redirectToCheckout({
+        sessionId: data.data.sessionId,
+      });
+
+      if (response.error) {
+        // setIsCheckoutLoading(false);
+        ErrorToast({
+          title: "Payment Error",
+          descriptions: [
+            response.error.message ||
+              "Something went wrong while processing payment",
+          ],
+        });
+      }
+    } else {
+      // setIsCheckoutLoading(false);
+      ErrorToast({
+        title: "Error",
+        descriptions: ["Something went wrong while setting up payments"],
+      });
+    }
+    SuccessToast({
+      title: "Order successful",
+      description: "Order placed successfully",
+    });
+  };
+
+  const {
+    mutate: stripeCheckout,
+    isPending: stripeCheckoutLoading,
+    isError: stripeCheckoutError,
+  } = useStripeCheckout(onStripeError, onStripeSuccess);
+
+  const onCryptomusError = (error: AxiosError<ErrorResponse>) => {
+    const errorMessage = error?.response?.data?.message;
+    const descriptions = Array.isArray(errorMessage)
+      ? errorMessage
+      : [errorMessage];
+
+    ErrorToast({
+      title: "Error checking out",
+      descriptions: descriptions.filter(
+        (msg): msg is string => msg !== undefined
+      ),
+    });
+  };
+
+  const onCryptomusSuccess = async (
+    data: AxiosResponse<RCryptomusCheckout>
+  ) => {
+    if (!data.data.url) {
+      ErrorToast({
+        title: "Payment Error",
+        descriptions: ["Something went wrong while processing payment"],
+      });
+      return;
+    }
+    window.location.href = data.data.url;
+  };
+
+  const {
+    mutate: cryptomusCheckout,
+    isPending: cryptomusCheckoutLoading,
+    isError: cryptomusCheckoutError,
+  } = useCryptomusCheckout(onCryptomusError, onCryptomusSuccess);
 
   useEffect(() => {
     const option = chainOptions.find((item) => item.value === chain.type);
@@ -102,59 +218,69 @@ const JpgoldnftBuy = () => {
   const total = value + fee;
 
   const handleQuantityChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    let value = e.target.value.replace(/[^0-9.]/g, "");
+    // Get the current input value
+    const inputValue = e.target.value;
 
-    // Prevent multiple decimal points
-    if ((value.match(/\./g) || []).length > 1) {
-      value = value.slice(0, -1);
+    // If the input is empty, allow it (to clear the field)
+    if (inputValue === "") {
+      setQuantity("");
+      return;
     }
 
-    // Allow empty string for clearing input
-    setQuantity(value);
+    // This regex strictly validates for:
+    // - Digits before decimal (required at least one)
+    // - Optional decimal point followed by at most 1 digit
+    const validInputRegex = /^[0-9]+\.?[0-9]?$|^[0-9]*\.?[0-9]?$/;
+
+    if (validInputRegex.test(inputValue)) {
+      // If input is valid, update the state
+      setQuantity(inputValue);
+    }
+    // If input is invalid, we don't update state (previous valid value remains)
   };
 
   const handleSubmit = async () => {
-    try {
-      // Set loading state to true when submission starts
-      setIsSubmitting(true);
+    switch (true) {
+      case Number(quantity) < 0.1:
+        toast.error("Min amount of grams is 0.1g");
+        return;
+      case !total:
+        toast.error("Amount is required.");
+        return;
+      case !address || !publicKey:
+        toast.error("Wallet address is required, please connect wallet.");
+        return;
+      case !quantity || isNaN(Number(quantity)):
+        toast.error("Quantity is required and must be a valid number.");
+        return;
+    }
 
-      switch (true) {
-        case Number(quantity) < 0.1:
-          toast.error("Min amount of grams is 0.1g");
-          return;
-        case !total:
-          toast.error("Amount is required.");
-          return;
-        case !address || !publicKey:
-          toast.error("Wallet address is required, please connect wallet.");
-          return;
-        case !quantity || isNaN(Number(quantity)):
-          toast.error("Quantity is required and must be a valid number.");
-          return;
-      }
+    switch (selectedPayment.value) {
+      case "wallet":
+        try {
+          // Set loading state to true when submission starts
+          setIsSubmitting(true);
 
-      const metadata = {
-        name: `Japaul Gold NFT (${quantity}g)`,
-        symbol: `JPGNFT(${quantity}g)`,
-        description: `${quantity}g worth of Japaul Gold NFT minted`,
-        image: goldBarUrl,
-        external_url: "https://www.jpgoldcoin.app",
-      };
+          const metadata = {
+            name: `Japaul Gold NFT (${quantity}g)`,
+            symbol: `JPGNFT(${quantity}g)`,
+            description: `${quantity}g worth of Japaul Gold NFT minted`,
+            image: goldBarUrl,
+            external_url: "https://www.jpgoldcoin.app",
+          };
 
-      const customKeyValues = {
-        customKey: "customValue",
-        customKey2: "customValue2",
-      };
+          const customKeyValues = {
+            customKey: "customValue",
+            customKey2: "customValue2",
+          };
 
-      const ipfsUrl = await uploadToPinata(
-        metadata,
-        `Japaul Gold NFT`,
-        customKeyValues
-      );
-      console.log("ipfs url generated", ipfsUrl);
+          const ipfsUrl = await uploadToPinata(
+            metadata,
+            `Japaul Gold NFT`,
+            customKeyValues
+          );
+          console.log("ipfs url generated", ipfsUrl);
 
-      switch (selectedPayment.value) {
-        case "wallet":
           const tx = await mintNft(
             program!,
             metadata.name,
@@ -165,23 +291,41 @@ const JpgoldnftBuy = () => {
 
           toast.success("NFT minted successfully");
           console.log("Nft minted", tx);
-          return;
-        case "cryptomus":
-          toast.error("Cryptomus payment gateway is not available");
-          return;
-        case "stripe":
-          toast.error("Stripe payment gateway is not available");
-          return;
-      }
 
-      setIsSubmitting(false);
-    } catch (error) {
-      // Handle any errors that occur during submission
-      toast.error("An error occurred while minting the NFT");
-      console.error("Minting error:", error);
-      setIsSubmitting(false);
-    } finally {
-      setIsSubmitting(false);
+          setIsSubmitting(false);
+          return;
+        } catch (error) {
+          // Handle any errors that occur during submission
+          toast.error("An error occurred while minting the NFT");
+          console.error("Minting error:", error);
+          setIsSubmitting(false);
+        } finally {
+          setIsSubmitting(false);
+        }
+      case "cryptomus":
+        cryptomusCheckout({
+          amount: formatNumberWithoutExponential(total, 3),
+          walletAddress: address,
+          quantity: Number(quantity),
+          network: chain.type,
+          url_return: `${dynamicFrontendUrl}/user/jpgoldcoin/crypto`,
+          url_success: `${dynamicFrontendUrl}/payment/success`,
+          fee: Number(formatNumberWithoutExponential(fee, 3)),
+          type: "jpgc",
+        });
+        return;
+      case "stripe":
+        stripeCheckout({
+          amount: Number(total.toFixed(2)),
+          walletAddress: address,
+          quantity: Number(quantity),
+          network: chain.type,
+          successUrl: `${dynamicFrontendUrl}/payment/success`,
+          cancelUrl: `${dynamicFrontendUrl}/payment/failed`,
+          fee: Number(formatNumberWithoutExponential(fee, 3)),
+          type: "jpgnft",
+        });
+        return;
     }
   };
 
@@ -205,8 +349,33 @@ const JpgoldnftBuy = () => {
                     type="text"
                     value={quantity}
                     onChange={handleQuantityChange}
+                    onKeyDown={(e) => {
+                      // Prevent typing more than one decimal digit
+                      const currentValue = e.currentTarget.value;
+                      const decimalIndex = currentValue.indexOf(".");
+                      const selectionStart = e.currentTarget.selectionStart;
+
+                      // Only proceed if we have valid selection position
+                      if (
+                        selectionStart !== null &&
+                        decimalIndex !== -1 &&
+                        currentValue.length > decimalIndex + 1 &&
+                        selectionStart > decimalIndex + 1 &&
+                        ![
+                          "Backspace",
+                          "Delete",
+                          "ArrowLeft",
+                          "ArrowRight",
+                          "Tab",
+                        ].includes(e.key)
+                      ) {
+                        e.preventDefault();
+                      }
+                    }}
                     className="text-4xl font-semibold text-[#050706] dark:text-white bg-transparent outline-none text-center w-fit"
                     inputMode="decimal"
+                    pattern="^[0-9]*\.?[0-9]?$"
+                    required
                   />
                 </div>
               </div>
@@ -412,11 +581,17 @@ const JpgoldnftBuy = () => {
             <button
               onClick={handleSubmit}
               disabled={
-                !connected || chain.type !== selectedChain.value || isSubmitting
+                !connected ||
+                chain.type !== selectedChain.value ||
+                isSubmitting ||
+                (stripeCheckoutLoading && !stripeCheckoutError) ||
+                (cryptomusCheckoutLoading && !cryptomusCheckoutError)
               }
               className="disabled:opacity-80 disabled:cursor-not-allowed w-full bg-black font-bold dark:bg-gold-200 text-white py-4 rounded-full transition-colors flex justify-center"
             >
-              {isSubmitting ? (
+              {isSubmitting ||
+              (stripeCheckoutLoading && !stripeCheckoutError) ||
+              (cryptomusCheckoutLoading && !cryptomusCheckoutError) ? (
                 <SpinnerLoader width={25} height={25} color="#FFF" />
               ) : (
                 <>
@@ -434,5 +609,3 @@ const JpgoldnftBuy = () => {
     </div>
   );
 };
-
-export default JpgoldnftBuy;

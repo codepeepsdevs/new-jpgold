@@ -194,6 +194,8 @@ const JpgoldcoinFiatComponent = () => {
       network: chain.type,
       successUrl: `${dynamicFrontendUrl}/payment/success`,
       cancelUrl: `${dynamicFrontendUrl}/payment/failed`,
+      fee: Number(formatNumberWithoutExponential(fee, 3)),
+      type: "jpgc",
     });
   };
 

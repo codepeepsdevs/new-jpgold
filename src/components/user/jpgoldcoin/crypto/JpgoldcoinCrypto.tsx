@@ -158,6 +158,8 @@ const JpgoldcoinCrypto = () => {
       network: chain.type,
       url_return: `${dynamicFrontendUrl}/user/jpgoldcoin/crypto`,
       url_success: `${dynamicFrontendUrl}/payment/success`,
+      fee: Number(formatNumberWithoutExponential(fee, 3)),
+      type: "jpgc",
     });
   };
 

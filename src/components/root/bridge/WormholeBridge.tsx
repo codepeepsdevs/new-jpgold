@@ -2,11 +2,15 @@
 
 import SpinnerLoader from "@/components/SpinnerLoader";
 import { useTheme } from "@/store/theme.store";
-import WormholeConnect, {
+
+import { lazy, Suspense, useEffect, useState } from "react";
+const WormholeConnect = lazy(
+  () => import("@wormhole-foundation/wormhole-connect")
+);
+import {
   nttRoutes,
   WormholeConnectConfig,
 } from "@wormhole-foundation/wormhole-connect";
-import { useEffect, useState } from "react";
 
 const WormholeBridge = () => {
   const theme = useTheme();
@@ -86,22 +90,26 @@ const WormholeBridge = () => {
     },
   };
 
+  const LoadingFallback = () => (
+    <div className="w-full flex justify-center items-center">
+      <SpinnerLoader width={60} height={60} color="#FFB845" />
+    </div>
+  );
+
+  if (!isMounted) return <LoadingFallback />;
+
   return (
     <div className="w-full min-h-screen flex justify-center items-center">
-      {isMounted ? (
-        <div className="container w-full flex justify-center items-center">
+      <div className="container w-full flex justify-center items-center">
+        <Suspense fallback={<LoadingFallback />}>
           <WormholeConnect
             config={wormholeConfig}
             theme={{
               mode: theme,
             }}
           />
-        </div>
-      ) : (
-        <div className="w-full flex justify-center items-center">
-          <SpinnerLoader width={60} height={60} color="#FFB845" />
-        </div>
-      )}
+        </Suspense>
+      </div>
     </div>
   );
 };
