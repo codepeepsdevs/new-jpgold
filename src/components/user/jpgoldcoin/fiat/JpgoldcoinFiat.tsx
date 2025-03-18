@@ -1,10 +1,7 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
-
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 import UserCard from "@/components/UserCard";
-import { FaStripeS } from "react-icons/fa";
 import Image, { StaticImageData } from "next/image";
 import { IoSwapVertical } from "react-icons/io5";
 import images from "@/public/images";
@@ -19,21 +16,17 @@ import ErrorToast from "@/components/toast/ErrorToast";
 import { RStripeCheckout } from "@/api/payment/payment.types";
 import { useStripeCheckout } from "@/api/payment/payment.queries";
 import SpinnerLoader from "@/components/SpinnerLoader";
-import { useAccount } from "wagmi";
-import { useWallet } from "@solana/wallet-adapter-react";
 import toast from "react-hot-toast";
 import { dynamicFrontendUrl } from "@/constants";
 import { Elements, useStripe } from "@stripe/react-stripe-js";
 import { loadStripe } from "@stripe/stripe-js";
 import SuccessToast from "@/components/toast/SuccessToast";
+import { useWalletInfo } from "@/hooks/useWalletInfo";
 
 interface PaymentOption {
   value: string;
   label: string;
-  icon: any;
-  symbol: string;
-  bgColor: string;
-  iconColor: string;
+  image: StaticImageData | string;
 }
 
 interface ChainOption {
@@ -42,23 +35,12 @@ interface ChainOption {
   image: StaticImageData | string;
 }
 
-const payementOptions: PaymentOption[] = [
+const paymentOptions: PaymentOption[] = [
   {
     value: "stripe",
     label: "Stripe",
-    icon: FaStripeS,
-    symbol: "Stripe",
-    bgColor: "#6587EE",
-    iconColor: "#FFFFFF",
+    image: images.user.userPayments.stripe,
   },
-  // {
-  //   value: "paypal",
-  //   label: "Paypal",
-  //   icon: FaPaypal,
-  //   symbol: "Paypal",
-  //   bgColor: "#000000",
-  //   iconColor: "#FFFFFF",
-  // },
 ];
 
 const chainOptions: ChainOption[] = [
@@ -87,10 +69,11 @@ export default function JpgoldcoinFiat() {
 
 const JpgoldcoinFiatComponent = () => {
   const stripe = useStripe();
+  const { address, connected } = useWalletInfo();
 
   const { chain } = useWeb3ModalStore();
   const [selectedPayment, setSelectedPayment] = useState<PaymentOption>(
-    payementOptions[0]
+    paymentOptions[0]
   );
   const [selectedChain, setSelectedChain] = useState<ChainOption>(
     chainOptions.find((item) => item.value === chain.type) || chainOptions[0]
@@ -98,6 +81,7 @@ const JpgoldcoinFiatComponent = () => {
   const [showPaymentDropdown, setShowPaymentDropdown] = useState(false);
   const [showChainDropdown, setShowChainDropdown] = useState(false);
   const [quantity, setQuantity] = useState<string>("0");
+  const [isCheckoutLoading, setIsCheckoutLoading] = useState(false);
 
   useEffect(() => {
     const option = chainOptions.find((item) => item.value === chain.type);
@@ -105,31 +89,6 @@ const JpgoldcoinFiatComponent = () => {
       setSelectedChain(option);
     }
   }, [chain]);
-
-  // Ethereum wallet connection
-  const { address: ethAddress, isConnected: isEthConnected } = useAccount();
-
-  // Solana wallet connection
-  const { publicKey, connected: isSolConnected } = useWallet();
-
-  const walletInfo = useMemo(() => {
-    if (chain.type === "ethereum" && isEthConnected) {
-      return {
-        address: ethAddress,
-        connected: isEthConnected,
-      };
-    } else if (chain.type === "solana" && isSolConnected && publicKey) {
-      return {
-        address: publicKey.toBase58(),
-        connected: isSolConnected,
-      };
-    }
-
-    return {
-      address: null,
-      connected: false,
-    };
-  }, [chain, ethAddress, isEthConnected, publicKey, isSolConnected]);
 
   const { value, isLoading, isError } = useGetGoldPrice({
     quantity: Number(quantity),
@@ -157,6 +116,7 @@ const JpgoldcoinFiatComponent = () => {
   };
 
   const onError = (error: AxiosError<ErrorResponse>) => {
+    setIsCheckoutLoading(false);
     const errorMessage = error?.response?.data?.message;
     const descriptions = Array.isArray(errorMessage)
       ? errorMessage
@@ -173,6 +133,7 @@ const JpgoldcoinFiatComponent = () => {
   const onSuccess = async (data: AxiosResponse<RStripeCheckout>) => {
     if (stripe) {
       if (!data.data.sessionId) {
+        setIsCheckoutLoading(false);
         ErrorToast({
           title: "Error",
           descriptions: ["Invalid session id"],
@@ -183,6 +144,7 @@ const JpgoldcoinFiatComponent = () => {
       });
 
       if (response.error) {
+        setIsCheckoutLoading(false);
         ErrorToast({
           title: "Payment Error",
           descriptions: [
@@ -192,6 +154,7 @@ const JpgoldcoinFiatComponent = () => {
         });
       }
     } else {
+      setIsCheckoutLoading(false);
       ErrorToast({
         title: "Error",
         descriptions: ["Something went wrong while setting up payments"],
@@ -203,13 +166,7 @@ const JpgoldcoinFiatComponent = () => {
     });
   };
 
-  const {
-    mutate: checkout,
-    isPending: checkoutPending,
-    isError: checkoutError,
-  } = useStripeCheckout(onError, onSuccess);
-
-  const checkoutLoading = checkoutPending && !checkoutError;
+  const { mutate: checkout } = useStripeCheckout(onError, onSuccess);
 
   const handleCheckout = () => {
     switch (true) {
@@ -219,7 +176,7 @@ const JpgoldcoinFiatComponent = () => {
       case !total:
         toast.error("Amount is required.");
         return;
-      case !walletInfo.address:
+      case !address:
         toast.error("Wallet address is required.");
         return;
       case !quantity || isNaN(Number(quantity)):
@@ -228,40 +185,16 @@ const JpgoldcoinFiatComponent = () => {
     }
 
     localStorage.setItem("redirect-path", "fiat");
+    setIsCheckoutLoading(true);
 
     checkout({
       amount: Number(total.toFixed(2)),
-      walletAddress: walletInfo.address,
+      walletAddress: address,
       quantity: Number(quantity),
       network: chain.type,
       successUrl: `${dynamicFrontendUrl}/payment/success`,
       cancelUrl: `${dynamicFrontendUrl}/payment/failed`,
     });
-  };
-
-  const renderCryptoIcon = (option: PaymentOption) => {
-    const iconWrapper = (children: React.ReactNode) => (
-      <div
-        className="w-8 h-8 rounded-full flex items-center justify-center"
-        style={{ backgroundColor: option.bgColor }}
-      >
-        {children}
-      </div>
-    );
-
-    if (typeof option.icon === "string") {
-      return iconWrapper(
-        <Image
-          src={option.icon}
-          alt={option.label}
-          width={20}
-          height={20}
-          className="rounded-full"
-        />
-      );
-    }
-    const IconComponent = option.icon;
-    return iconWrapper(<IconComponent size={20} color={option.iconColor} />);
   };
 
   return (
@@ -275,7 +208,7 @@ const JpgoldcoinFiatComponent = () => {
           <div className="p-6 bg-[#F8F8F8] dark:bg-[#151515] rounded-lg">
             <div className="flex items-center justify-center gap-2 text-lg text-[#050706] dark:text-white text-center mb-2">
               You&apos;re buying{" "}
-              {quantity ? `${quantity.toLocaleString()}` : null}{" "}
+              {quantity ? `${quantity.toLocaleString()}g` : null}{" "}
               <Image
                 src={images.user.coin}
                 alt="jpgoldnft"
@@ -327,7 +260,13 @@ const JpgoldcoinFiatComponent = () => {
                 onClick={() => setShowPaymentDropdown(!showPaymentDropdown)}
                 className="w-full flex items-center gap-2 p-3 bg-white dark:bg-[#151515] border border-[#E3E3E8] dark:border-[#292929] rounded-lg text-[#050706] dark:text-white"
               >
-                {renderCryptoIcon(selectedPayment)}
+                <Image
+                  src={selectedPayment.image}
+                  alt={selectedPayment.value}
+                  width={30}
+                  height={30}
+                  className="rounded-full"
+                />{" "}
                 <span>{selectedPayment.label}</span>
                 <svg
                   className="w-4 h-4 ml-auto text-gray-400"
@@ -346,7 +285,7 @@ const JpgoldcoinFiatComponent = () => {
 
               {showPaymentDropdown && (
                 <div className="absolute left-0 right-0 mt-2 bg-white dark:bg-[#151515] border border-[#E3E3E8] dark:border-[#292929] rounded-lg shadow-lg z-50">
-                  {payementOptions.map((option) => (
+                  {paymentOptions.map((option) => (
                     <button
                       key={option.value}
                       onClick={() => {
@@ -355,7 +294,13 @@ const JpgoldcoinFiatComponent = () => {
                       }}
                       className="flex items-center gap-2 w-full p-3 dark:hover:bg-[#292929]"
                     >
-                      {renderCryptoIcon(option)}
+                      <Image
+                        src={option.image}
+                        alt={option.value}
+                        width={30}
+                        height={30}
+                        className=""
+                      />{" "}
                       <span className="text-[#050706] dark:text-white">
                         {option.label}
                       </span>
@@ -418,9 +363,6 @@ const JpgoldcoinFiatComponent = () => {
                 <p className="text-base font-medium text-[#050706] dark:text-white">
                   ${formatNumberWithoutExponential(total, 3)}
                 </p>
-                {/* <p className="text-sm text-[#5A5B5A] dark:text-white/70">
-                  {((quantity * 6.11987 * 1.0015) / 1.5144).toFixed(3)} MATIC
-                </p> */}
               </div>
             </div>
           </div>
@@ -440,7 +382,7 @@ const JpgoldcoinFiatComponent = () => {
                     alt={selectedChain.value}
                     width={30}
                     height={30}
-                    className="rounded-full"
+                    className=""
                   />{" "}
                   <span>{selectedChain.label}</span>
                   <svg
@@ -489,15 +431,17 @@ const JpgoldcoinFiatComponent = () => {
             <button
               onClick={handleCheckout}
               disabled={
-                !walletInfo.connected || chain.type !== selectedChain.value
+                !connected ||
+                chain.type !== selectedChain.value ||
+                isCheckoutLoading
               }
               className="disabled:opacity-80 disabled:cursor-not-allowed w-full bg-black font-bold dark:bg-gold-200 text-white py-4 rounded-full transition-colors flex justify-center"
             >
-              {checkoutLoading ? (
+              {isCheckoutLoading ? (
                 <SpinnerLoader width={25} height={25} color="#FFF" />
               ) : (
                 <>
-                  {!walletInfo.connected
+                  {!connected
                     ? "Connect wallet to continue"
                     : chain.type === selectedChain.value
                     ? `Pay with ${selectedPayment.label}`

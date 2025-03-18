@@ -17,11 +17,10 @@ const LogoutContent = () => {
   const [loading, setLoading] = useState(false);
 
   const handleLogout = () => {
-    sessionStorage.setItem("isLoggingOut", "true");
     removeHeaderToken();
     Cookies.remove("accessToken");
     queryClient.removeQueries({
-      queryKey: ["get-user"],
+      queryKey: ["user"],
     });
     setAnonymous(false);
     if (typeof window !== "undefined") {

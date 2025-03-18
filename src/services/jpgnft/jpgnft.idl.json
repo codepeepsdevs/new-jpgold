@@ -1,0 +1,2483 @@
+{
+  "address": "ETFXiX5XKL9oahfeDgmBVYg9e5SLgMwqPr1sBGboUC4o",
+  "metadata": {
+    "name": "nft_manager",
+    "version": "0.1.0",
+    "spec": "0.1.0",
+    "description": "Created with Anchor"
+  },
+  "instructions": [
+    {
+      "name": "admin_withdraw_fees",
+      "discriminator": [236, 186, 208, 151, 204, 142, 168, 30],
+      "accounts": [
+        {
+          "name": "system_program",
+          "address": "11111111111111111111111111111111"
+        },
+        {
+          "name": "admin",
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "recipient",
+          "writable": true
+        },
+        {
+          "name": "fees_collector",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [102, 99, 111, 108, 116]
+              }
+            ]
+          }
+        },
+        {
+          "name": "nft_manager",
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [110, 102, 116, 109, 103]
+              }
+            ]
+          }
+        }
+      ],
+      "args": [
+        {
+          "name": "amount",
+          "type": "u64"
+        }
+      ]
+    },
+    {
+      "name": "admin_withdraw_mint_fees",
+      "discriminator": [132, 99, 100, 227, 35, 200, 91, 149],
+      "accounts": [
+        {
+          "name": "system_program",
+          "address": "11111111111111111111111111111111"
+        },
+        {
+          "name": "admin",
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "recipient",
+          "writable": true
+        },
+        {
+          "name": "mint_fees_collector",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [109, 102, 99, 111, 108, 116]
+              }
+            ]
+          }
+        },
+        {
+          "name": "nft_manager",
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [110, 102, 116, 109, 103]
+              }
+            ]
+          }
+        }
+      ],
+      "args": [
+        {
+          "name": "amount",
+          "type": "u64"
+        }
+      ]
+    },
+    {
+      "name": "burn_nft",
+      "discriminator": [119, 13, 183, 17, 194, 243, 38, 31],
+      "accounts": [
+        {
+          "name": "gold_price_update"
+        },
+        {
+          "name": "sol_price_update"
+        },
+        {
+          "name": "token_program",
+          "address": "TokenzQdBNbLqP5VEhdkAS6EPFLC1PHnBqCXEpPxuEb"
+        },
+        {
+          "name": "system_program",
+          "address": "11111111111111111111111111111111"
+        },
+        {
+          "name": "signer",
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "mint",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [109, 105, 110, 116, 116]
+              },
+              {
+                "kind": "arg",
+                "path": "discriminant"
+              }
+            ]
+          }
+        },
+        {
+          "name": "token_account",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "account",
+                "path": "signer"
+              },
+              {
+                "kind": "account",
+                "path": "token_program"
+              },
+              {
+                "kind": "account",
+                "path": "mint"
+              }
+            ],
+            "program": {
+              "kind": "const",
+              "value": [
+                140, 151, 37, 143, 78, 36, 137, 241, 187, 61, 16, 41, 20, 142,
+                13, 131, 11, 90, 19, 153, 218, 255, 16, 132, 4, 142, 123, 216,
+                219, 233, 248, 89
+              ]
+            }
+          }
+        },
+        {
+          "name": "collection",
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [99, 111, 108, 108, 116]
+              }
+            ]
+          }
+        },
+        {
+          "name": "nft_manager",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [110, 102, 116, 109, 103]
+              }
+            ]
+          }
+        }
+      ],
+      "args": [
+        {
+          "name": "dicriminant",
+          "type": "u64"
+        }
+      ]
+    },
+    {
+      "name": "buy_nft",
+      "discriminator": [96, 0, 28, 190, 49, 107, 83, 222],
+      "accounts": [
+        {
+          "name": "system_program",
+          "address": "11111111111111111111111111111111"
+        },
+        {
+          "name": "token_program",
+          "address": "TokenzQdBNbLqP5VEhdkAS6EPFLC1PHnBqCXEpPxuEb"
+        },
+        {
+          "name": "associated_token_program",
+          "address": "ATokenGPvbdGVxr1b2hvZbsiqW5xWH25efTNsLJA8knL"
+        },
+        {
+          "name": "buyer",
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "seller"
+        },
+        {
+          "name": "mint",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [109, 105, 110, 116, 116]
+              },
+              {
+                "kind": "arg",
+                "path": "discriminant"
+              }
+            ]
+          },
+          "relations": ["listing"]
+        },
+        {
+          "name": "collection",
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [99, 111, 108, 108, 116]
+              }
+            ]
+          }
+        },
+        {
+          "name": "listing",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [108, 105, 115, 116, 116]
+              },
+              {
+                "kind": "account",
+                "path": "mint"
+              },
+              {
+                "kind": "account",
+                "path": "seller"
+              }
+            ]
+          }
+        },
+        {
+          "name": "listing_token_account",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [108, 105, 115, 116, 116, 97, 116]
+              },
+              {
+                "kind": "account",
+                "path": "listing"
+              }
+            ]
+          }
+        },
+        {
+          "name": "buyer_token_account",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "account",
+                "path": "buyer"
+              },
+              {
+                "kind": "account",
+                "path": "token_program"
+              },
+              {
+                "kind": "account",
+                "path": "mint"
+              }
+            ],
+            "program": {
+              "kind": "const",
+              "value": [
+                140, 151, 37, 143, 78, 36, 137, 241, 187, 61, 16, 41, 20, 142,
+                13, 131, 11, 90, 19, 153, 218, 255, 16, 132, 4, 142, 123, 216,
+                219, 233, 248, 89
+              ]
+            }
+          }
+        },
+        {
+          "name": "seller_account",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [117, 115, 101, 114, 116]
+              },
+              {
+                "kind": "account",
+                "path": "seller"
+              }
+            ]
+          }
+        },
+        {
+          "name": "fees_collector",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [102, 99, 111, 108, 116]
+              }
+            ]
+          }
+        },
+        {
+          "name": "nft_manager",
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [110, 102, 116, 109, 103]
+              }
+            ]
+          }
+        }
+      ],
+      "args": [
+        {
+          "name": "_discriminant",
+          "type": "u64"
+        }
+      ]
+    },
+    {
+      "name": "create_collection",
+      "discriminator": [156, 251, 92, 54, 233, 2, 16, 82],
+      "accounts": [
+        {
+          "name": "token_program",
+          "address": "TokenzQdBNbLqP5VEhdkAS6EPFLC1PHnBqCXEpPxuEb"
+        },
+        {
+          "name": "system_program",
+          "address": "11111111111111111111111111111111"
+        },
+        {
+          "name": "signer",
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "mint",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [99, 111, 108, 108, 116]
+              }
+            ]
+          }
+        },
+        {
+          "name": "token_account",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [99, 111, 108, 116, 97, 116]
+              }
+            ]
+          }
+        }
+      ],
+      "args": [
+        {
+          "name": "args",
+          "type": {
+            "defined": {
+              "name": "CreateCollectionArgs"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "create_user_account",
+      "discriminator": [146, 68, 100, 69, 63, 46, 182, 199],
+      "accounts": [
+        {
+          "name": "system_program",
+          "address": "11111111111111111111111111111111"
+        },
+        {
+          "name": "owner",
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "user_account",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [117, 115, 101, 114, 116]
+              },
+              {
+                "kind": "account",
+                "path": "owner"
+              }
+            ]
+          }
+        },
+        {
+          "name": "nft_manager",
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [110, 102, 116, 109, 103]
+              }
+            ]
+          }
+        }
+      ],
+      "args": []
+    },
+    {
+      "name": "delist_nft",
+      "discriminator": [91, 249, 165, 185, 22, 7, 119, 176],
+      "accounts": [
+        {
+          "name": "system_program",
+          "address": "11111111111111111111111111111111"
+        },
+        {
+          "name": "token_program",
+          "address": "TokenzQdBNbLqP5VEhdkAS6EPFLC1PHnBqCXEpPxuEb"
+        },
+        {
+          "name": "associated_token_program",
+          "address": "ATokenGPvbdGVxr1b2hvZbsiqW5xWH25efTNsLJA8knL"
+        },
+        {
+          "name": "owner",
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "mint",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [109, 105, 110, 116, 116]
+              },
+              {
+                "kind": "arg",
+                "path": "discriminant"
+              }
+            ]
+          },
+          "relations": ["listing"]
+        },
+        {
+          "name": "owner_token_account",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "account",
+                "path": "owner"
+              },
+              {
+                "kind": "account",
+                "path": "token_program"
+              },
+              {
+                "kind": "account",
+                "path": "mint"
+              }
+            ],
+            "program": {
+              "kind": "const",
+              "value": [
+                140, 151, 37, 143, 78, 36, 137, 241, 187, 61, 16, 41, 20, 142,
+                13, 131, 11, 90, 19, 153, 218, 255, 16, 132, 4, 142, 123, 216,
+                219, 233, 248, 89
+              ]
+            }
+          }
+        },
+        {
+          "name": "listing",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [108, 105, 115, 116, 116]
+              },
+              {
+                "kind": "account",
+                "path": "mint"
+              },
+              {
+                "kind": "account",
+                "path": "owner"
+              }
+            ]
+          }
+        },
+        {
+          "name": "listing_token_account",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [108, 105, 115, 116, 116, 97, 116]
+              },
+              {
+                "kind": "account",
+                "path": "listing"
+              }
+            ]
+          }
+        },
+        {
+          "name": "nft_manager",
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [110, 102, 116, 109, 103]
+              }
+            ]
+          }
+        }
+      ],
+      "args": [
+        {
+          "name": "_dicriminant",
+          "type": "u64"
+        }
+      ]
+    },
+    {
+      "name": "finalize_fractionalize_nft",
+      "discriminator": [101, 22, 95, 10, 113, 24, 13, 75],
+      "accounts": [
+        {
+          "name": "token_program",
+          "address": "TokenzQdBNbLqP5VEhdkAS6EPFLC1PHnBqCXEpPxuEb"
+        },
+        {
+          "name": "system_program",
+          "address": "11111111111111111111111111111111"
+        },
+        {
+          "name": "associated_token_program",
+          "address": "ATokenGPvbdGVxr1b2hvZbsiqW5xWH25efTNsLJA8knL"
+        },
+        {
+          "name": "signer",
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "mint",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [109, 105, 110, 116, 116]
+              },
+              {
+                "kind": "arg",
+                "path": "discriminant"
+              }
+            ]
+          }
+        },
+        {
+          "name": "new_mint",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [109, 105, 110, 116, 116]
+              },
+              {
+                "kind": "account",
+                "path": "nft_manager.discriminant",
+                "account": "NFTManager"
+              }
+            ]
+          }
+        },
+        {
+          "name": "new_token_account",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "account",
+                "path": "signer"
+              },
+              {
+                "kind": "account",
+                "path": "token_program"
+              },
+              {
+                "kind": "account",
+                "path": "new_mint"
+              }
+            ],
+            "program": {
+              "kind": "const",
+              "value": [
+                140, 151, 37, 143, 78, 36, 137, 241, 187, 61, 16, 41, 20, 142,
+                13, 131, 11, 90, 19, 153, 218, 255, 16, 132, 4, 142, 123, 216,
+                219, 233, 248, 89
+              ]
+            }
+          }
+        },
+        {
+          "name": "collection",
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [99, 111, 108, 108, 116]
+              }
+            ]
+          }
+        },
+        {
+          "name": "finalize_data",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [102, 105, 110, 102, 100, 116]
+              },
+              {
+                "kind": "account",
+                "path": "mint"
+              }
+            ]
+          }
+        },
+        {
+          "name": "nft_manager",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [110, 102, 116, 109, 103]
+              }
+            ]
+          }
+        }
+      ],
+      "args": [
+        {
+          "name": "_discriminant",
+          "type": "u64"
+        }
+      ]
+    },
+    {
+      "name": "finalize_mint_nft",
+      "discriminator": [6, 16, 29, 34, 56, 229, 82, 97],
+      "accounts": [
+        {
+          "name": "token_program",
+          "address": "TokenzQdBNbLqP5VEhdkAS6EPFLC1PHnBqCXEpPxuEb"
+        },
+        {
+          "name": "system_program",
+          "address": "11111111111111111111111111111111"
+        },
+        {
+          "name": "signer",
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "mint",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [109, 105, 110, 116, 116]
+              },
+              {
+                "kind": "arg",
+                "path": "discriminant"
+              }
+            ]
+          },
+          "relations": ["finalize_data"]
+        },
+        {
+          "name": "collection",
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [99, 111, 108, 108, 116]
+              }
+            ]
+          }
+        },
+        {
+          "name": "finalize_data",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [102, 105, 110, 109, 100, 116]
+              },
+              {
+                "kind": "account",
+                "path": "mint"
+              }
+            ]
+          }
+        },
+        {
+          "name": "nft_manager",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [110, 102, 116, 109, 103]
+              }
+            ]
+          }
+        }
+      ],
+      "args": [
+        {
+          "name": "discriminant",
+          "type": "u64"
+        }
+      ]
+    },
+    {
+      "name": "finalize_ownership_transfer",
+      "discriminator": [139, 103, 10, 238, 21, 250, 171, 56],
+      "accounts": [
+        {
+          "name": "system_program",
+          "address": "11111111111111111111111111111111"
+        },
+        {
+          "name": "signer",
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "nft_manager",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [110, 102, 116, 109, 103]
+              }
+            ]
+          }
+        }
+      ],
+      "args": []
+    },
+    {
+      "name": "fractionalize_nft",
+      "discriminator": [246, 111, 6, 215, 204, 212, 172, 66],
+      "accounts": [
+        {
+          "name": "associated_token_program",
+          "address": "ATokenGPvbdGVxr1b2hvZbsiqW5xWH25efTNsLJA8knL"
+        },
+        {
+          "name": "token_program",
+          "address": "TokenzQdBNbLqP5VEhdkAS6EPFLC1PHnBqCXEpPxuEb"
+        },
+        {
+          "name": "system_program",
+          "address": "11111111111111111111111111111111"
+        },
+        {
+          "name": "signer",
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "mint",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [109, 105, 110, 116, 116]
+              },
+              {
+                "kind": "arg",
+                "path": "args.discriminant"
+              }
+            ]
+          }
+        },
+        {
+          "name": "token_account",
+          "pda": {
+            "seeds": [
+              {
+                "kind": "account",
+                "path": "signer"
+              },
+              {
+                "kind": "account",
+                "path": "token_program"
+              },
+              {
+                "kind": "account",
+                "path": "mint"
+              }
+            ],
+            "program": {
+              "kind": "const",
+              "value": [
+                140, 151, 37, 143, 78, 36, 137, 241, 187, 61, 16, 41, 20, 142,
+                13, 131, 11, 90, 19, 153, 218, 255, 16, 132, 4, 142, 123, 216,
+                219, 233, 248, 89
+              ]
+            }
+          }
+        },
+        {
+          "name": "collection",
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [99, 111, 108, 108, 116]
+              }
+            ]
+          }
+        },
+        {
+          "name": "finalize_data",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [102, 105, 110, 102, 100, 116]
+              },
+              {
+                "kind": "account",
+                "path": "mint"
+              }
+            ]
+          }
+        },
+        {
+          "name": "nft_manager",
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [110, 102, 116, 109, 103]
+              }
+            ]
+          }
+        }
+      ],
+      "args": [
+        {
+          "name": "args",
+          "type": {
+            "defined": {
+              "name": "FractionalizeNFTArgs"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "initiailize_ownership_transfer",
+      "discriminator": [199, 4, 135, 231, 62, 161, 149, 219],
+      "accounts": [
+        {
+          "name": "system_program",
+          "address": "11111111111111111111111111111111"
+        },
+        {
+          "name": "signer",
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "new_owner"
+        },
+        {
+          "name": "nft_manager",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [110, 102, 116, 109, 103]
+              }
+            ]
+          }
+        }
+      ],
+      "args": []
+    },
+    {
+      "name": "initialize_nft_manager",
+      "discriminator": [147, 206, 240, 109, 205, 47, 201, 28],
+      "accounts": [
+        {
+          "name": "system_program",
+          "address": "11111111111111111111111111111111"
+        },
+        {
+          "name": "signer",
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "collection",
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [99, 111, 108, 108, 116]
+              }
+            ]
+          }
+        },
+        {
+          "name": "fees_collector",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [102, 99, 111, 108, 116]
+              }
+            ]
+          }
+        },
+        {
+          "name": "mint_fees_collector",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [109, 102, 99, 111, 108, 116]
+              }
+            ]
+          }
+        },
+        {
+          "name": "nft_manager",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [110, 102, 116, 109, 103]
+              }
+            ]
+          }
+        }
+      ],
+      "args": []
+    },
+    {
+      "name": "list_nft",
+      "discriminator": [88, 221, 93, 166, 63, 220, 106, 232],
+      "accounts": [
+        {
+          "name": "system_program",
+          "address": "11111111111111111111111111111111"
+        },
+        {
+          "name": "token_program",
+          "address": "TokenzQdBNbLqP5VEhdkAS6EPFLC1PHnBqCXEpPxuEb"
+        },
+        {
+          "name": "owner",
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "mint",
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [109, 105, 110, 116, 116]
+              },
+              {
+                "kind": "arg",
+                "path": "discriminant"
+              }
+            ]
+          }
+        },
+        {
+          "name": "owner_token_account",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "account",
+                "path": "owner"
+              },
+              {
+                "kind": "account",
+                "path": "token_program"
+              },
+              {
+                "kind": "account",
+                "path": "mint"
+              }
+            ],
+            "program": {
+              "kind": "const",
+              "value": [
+                140, 151, 37, 143, 78, 36, 137, 241, 187, 61, 16, 41, 20, 142,
+                13, 131, 11, 90, 19, 153, 218, 255, 16, 132, 4, 142, 123, 216,
+                219, 233, 248, 89
+              ]
+            }
+          }
+        },
+        {
+          "name": "collection",
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [99, 111, 108, 108, 116]
+              }
+            ]
+          }
+        },
+        {
+          "name": "listing",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [108, 105, 115, 116, 116]
+              },
+              {
+                "kind": "account",
+                "path": "mint"
+              },
+              {
+                "kind": "account",
+                "path": "owner"
+              }
+            ]
+          }
+        },
+        {
+          "name": "listing_token_account",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [108, 105, 115, 116, 116, 97, 116]
+              },
+              {
+                "kind": "account",
+                "path": "listing"
+              }
+            ]
+          }
+        },
+        {
+          "name": "nft_manager",
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [110, 102, 116, 109, 103]
+              }
+            ]
+          }
+        }
+      ],
+      "args": [
+        {
+          "name": "_dicriminant",
+          "type": "u64"
+        },
+        {
+          "name": "price",
+          "type": "u64"
+        }
+      ]
+    },
+    {
+      "name": "mint_nft",
+      "discriminator": [211, 57, 6, 167, 15, 219, 35, 251],
+      "accounts": [
+        {
+          "name": "gold_price_update"
+        },
+        {
+          "name": "sol_price_update"
+        },
+        {
+          "name": "associated_token_program",
+          "address": "ATokenGPvbdGVxr1b2hvZbsiqW5xWH25efTNsLJA8knL"
+        },
+        {
+          "name": "token_program",
+          "address": "TokenzQdBNbLqP5VEhdkAS6EPFLC1PHnBqCXEpPxuEb"
+        },
+        {
+          "name": "system_program",
+          "address": "11111111111111111111111111111111"
+        },
+        {
+          "name": "signer",
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "mint",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [109, 105, 110, 116, 116]
+              },
+              {
+                "kind": "account",
+                "path": "nft_manager.discriminant",
+                "account": "NFTManager"
+              }
+            ]
+          }
+        },
+        {
+          "name": "destination",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "account",
+                "path": "signer"
+              },
+              {
+                "kind": "account",
+                "path": "token_program"
+              },
+              {
+                "kind": "account",
+                "path": "mint"
+              }
+            ],
+            "program": {
+              "kind": "const",
+              "value": [
+                140, 151, 37, 143, 78, 36, 137, 241, 187, 61, 16, 41, 20, 142,
+                13, 131, 11, 90, 19, 153, 218, 255, 16, 132, 4, 142, 123, 216,
+                219, 233, 248, 89
+              ]
+            }
+          }
+        },
+        {
+          "name": "finalize_data",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [102, 105, 110, 109, 100, 116]
+              },
+              {
+                "kind": "account",
+                "path": "mint"
+              }
+            ]
+          }
+        },
+        {
+          "name": "mint_fees_collector",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [109, 102, 99, 111, 108, 116]
+              }
+            ]
+          }
+        },
+        {
+          "name": "nft_manager",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [110, 102, 116, 109, 103]
+              }
+            ]
+          }
+        }
+      ],
+      "args": [
+        {
+          "name": "args",
+          "type": {
+            "defined": {
+              "name": "MintNFTArgs"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "update_listing_price",
+      "discriminator": [103, 80, 184, 80, 159, 24, 94, 138],
+      "accounts": [
+        {
+          "name": "system_program",
+          "address": "11111111111111111111111111111111"
+        },
+        {
+          "name": "token_program",
+          "address": "TokenzQdBNbLqP5VEhdkAS6EPFLC1PHnBqCXEpPxuEb"
+        },
+        {
+          "name": "owner",
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "mint",
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [109, 105, 110, 116, 116]
+              },
+              {
+                "kind": "arg",
+                "path": "args.discriminant"
+              }
+            ]
+          },
+          "relations": ["listing"]
+        },
+        {
+          "name": "listing",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [108, 105, 115, 116, 116]
+              },
+              {
+                "kind": "account",
+                "path": "mint"
+              },
+              {
+                "kind": "account",
+                "path": "owner"
+              }
+            ]
+          }
+        },
+        {
+          "name": "nft_manager",
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [110, 102, 116, 109, 103]
+              }
+            ]
+          }
+        }
+      ],
+      "args": [
+        {
+          "name": "args",
+          "type": {
+            "defined": {
+              "name": "UpdateListingPriceArgs"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "update_metadata",
+      "discriminator": [170, 182, 43, 239, 97, 78, 225, 186],
+      "accounts": [
+        {
+          "name": "system_program",
+          "address": "11111111111111111111111111111111"
+        },
+        {
+          "name": "token_program",
+          "address": "TokenzQdBNbLqP5VEhdkAS6EPFLC1PHnBqCXEpPxuEb"
+        },
+        {
+          "name": "admin",
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "mint",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [109, 105, 110, 116, 116]
+              },
+              {
+                "kind": "arg",
+                "path": "args.discriminant"
+              }
+            ]
+          }
+        },
+        {
+          "name": "nft_manager",
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [110, 102, 116, 109, 103]
+              }
+            ]
+          }
+        }
+      ],
+      "args": [
+        {
+          "name": "args",
+          "type": {
+            "defined": {
+              "name": "UpdateMetadataArgs"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "user_withdraw",
+      "discriminator": [53, 254, 26, 242, 119, 237, 73, 33],
+      "accounts": [
+        {
+          "name": "system_program",
+          "address": "11111111111111111111111111111111"
+        },
+        {
+          "name": "user",
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "user_account",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [117, 115, 101, 114, 116]
+              },
+              {
+                "kind": "account",
+                "path": "user"
+              }
+            ]
+          }
+        },
+        {
+          "name": "nft_manager",
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [110, 102, 116, 109, 103]
+              }
+            ]
+          }
+        }
+      ],
+      "args": [
+        {
+          "name": "amount",
+          "type": "u64"
+        }
+      ]
+    }
+  ],
+  "accounts": [
+    {
+      "name": "FeesCollector",
+      "discriminator": [169, 21, 16, 76, 17, 73, 88, 68]
+    },
+    {
+      "name": "FinalizeFractionalizeData",
+      "discriminator": [83, 220, 79, 83, 220, 146, 140, 57]
+    },
+    {
+      "name": "FinalizeMintData",
+      "discriminator": [17, 8, 152, 141, 119, 220, 183, 38]
+    },
+    {
+      "name": "Listing",
+      "discriminator": [218, 32, 50, 73, 43, 134, 26, 58]
+    },
+    {
+      "name": "MintFeesCollector",
+      "discriminator": [141, 24, 226, 41, 204, 223, 103, 180]
+    },
+    {
+      "name": "NFTManager",
+      "discriminator": [187, 79, 185, 127, 104, 191, 51, 235]
+    },
+    {
+      "name": "PriceUpdateV2",
+      "discriminator": [34, 241, 35, 99, 157, 126, 244, 205]
+    },
+    {
+      "name": "User",
+      "discriminator": [159, 117, 95, 227, 239, 151, 58, 236]
+    }
+  ],
+  "events": [
+    {
+      "name": "CollectionMinted",
+      "discriminator": [215, 227, 46, 127, 13, 18, 180, 202]
+    },
+    {
+      "name": "FeesWithdrawn",
+      "discriminator": [234, 15, 0, 119, 148, 241, 40, 21]
+    },
+    {
+      "name": "FractionalizeFinalize",
+      "discriminator": [101, 126, 219, 111, 56, 61, 99, 174]
+    },
+    {
+      "name": "ListingPriceUpdated",
+      "discriminator": [85, 181, 185, 147, 101, 54, 37, 147]
+    },
+    {
+      "name": "MetadataUpdated",
+      "discriminator": [132, 36, 215, 246, 166, 90, 189, 44]
+    },
+    {
+      "name": "MintFeesWithdrawn",
+      "discriminator": [181, 87, 221, 111, 123, 181, 95, 124]
+    },
+    {
+      "name": "MintFinalize",
+      "discriminator": [76, 1, 211, 252, 153, 37, 98, 165]
+    },
+    {
+      "name": "NFTFractionalized",
+      "discriminator": [140, 249, 121, 129, 134, 106, 243, 63]
+    },
+    {
+      "name": "NftBought",
+      "discriminator": [153, 244, 210, 5, 141, 116, 133, 54]
+    },
+    {
+      "name": "NftBurned",
+      "discriminator": [98, 90, 30, 11, 112, 99, 246, 155]
+    },
+    {
+      "name": "NftDelisted",
+      "discriminator": [248, 161, 199, 108, 92, 55, 160, 180]
+    },
+    {
+      "name": "NftListed",
+      "discriminator": [115, 235, 107, 89, 89, 231, 135, 26]
+    },
+    {
+      "name": "NftManagerInitialized",
+      "discriminator": [213, 212, 186, 26, 113, 127, 216, 232]
+    },
+    {
+      "name": "NftMinted",
+      "discriminator": [175, 29, 105, 0, 195, 2, 245, 38]
+    },
+    {
+      "name": "OwnershipTransferInitialized",
+      "discriminator": [145, 84, 129, 196, 180, 58, 74, 143]
+    },
+    {
+      "name": "OwnershipTransferred",
+      "discriminator": [172, 61, 205, 183, 250, 50, 38, 98]
+    },
+    {
+      "name": "UserAccountCreated",
+      "discriminator": [16, 133, 225, 182, 145, 219, 182, 3]
+    },
+    {
+      "name": "UserWithdrawEvent",
+      "discriminator": [133, 189, 140, 255, 132, 211, 143, 89]
+    }
+  ],
+  "errors": [
+    {
+      "code": 6000,
+      "name": "SameAuthority",
+      "msg": "Same authority"
+    },
+    {
+      "code": 6001,
+      "name": "Overflow",
+      "msg": "Overflow  occurred"
+    },
+    {
+      "code": 6002,
+      "name": "InvalidMetadata",
+      "msg": "Invalid metadata"
+    },
+    {
+      "code": 6003,
+      "name": "PriceCalculationFail",
+      "msg": "Price calculation fail"
+    },
+    {
+      "code": 6004,
+      "name": "InvalidWeight",
+      "msg": "Invalid weight"
+    },
+    {
+      "code": 6005,
+      "name": "NegativePrice",
+      "msg": "Negative price"
+    },
+    {
+      "code": 6006,
+      "name": "InvalidCollection",
+      "msg": "Invalid collection"
+    },
+    {
+      "code": 6007,
+      "name": "OnlyAdminAllowed",
+      "msg": "Only admin allowed"
+    },
+    {
+      "code": 6008,
+      "name": "InsufficientFunds",
+      "msg": "Insufficient funds"
+    },
+    {
+      "code": 6009,
+      "name": "NotOwner",
+      "msg": "Not owner"
+    },
+    {
+      "code": 6010,
+      "name": "InvalidListing",
+      "msg": "Invalid listing"
+    },
+    {
+      "code": 6011,
+      "name": "UnAuthorized",
+      "msg": "Unauthorized"
+    },
+    {
+      "code": 6012,
+      "name": "InvalidFinalizeData",
+      "msg": "Invalid finalize data"
+    },
+    {
+      "code": 6013,
+      "name": "InvalidTokenAccount",
+      "msg": "Invalid discriminant"
+    },
+    {
+      "code": 6014,
+      "name": "MintFinalizeDataMismatch",
+      "msg": "Mint did not match with finalize data"
+    },
+    {
+      "code": 6015,
+      "name": "InvalidMintSupply",
+      "msg": "Invalid mint supply"
+    },
+    {
+      "code": 6016,
+      "name": "OnlyFutureAuthorityAllowed",
+      "msg": "Only future authority allowed"
+    },
+    {
+      "code": 6017,
+      "name": "NoFutureAuthority",
+      "msg": "No future authority"
+    }
+  ],
+  "types": [
+    {
+      "name": "CollectionMinted",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "mint",
+            "type": "pubkey"
+          },
+          {
+            "name": "metadata",
+            "type": "pubkey"
+          },
+          {
+            "name": "token_account",
+            "type": "pubkey"
+          }
+        ]
+      }
+    },
+    {
+      "name": "CreateCollectionArgs",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "name",
+            "type": "string"
+          },
+          {
+            "name": "symbol",
+            "type": "string"
+          },
+          {
+            "name": "uri",
+            "type": "string"
+          }
+        ]
+      }
+    },
+    {
+      "name": "FeesCollector",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "bump",
+            "type": "u8"
+          }
+        ]
+      }
+    },
+    {
+      "name": "FeesWithdrawn",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "amount",
+            "type": "u64"
+          }
+        ]
+      }
+    },
+    {
+      "name": "FinalizeFractionalizeData",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "mint",
+            "type": "pubkey"
+          },
+          {
+            "name": "weight",
+            "type": "u64"
+          },
+          {
+            "name": "name",
+            "type": "string"
+          },
+          {
+            "name": "symbol",
+            "type": "string"
+          },
+          {
+            "name": "uri",
+            "type": "string"
+          },
+          {
+            "name": "bump",
+            "type": "u8"
+          }
+        ]
+      }
+    },
+    {
+      "name": "FinalizeMintData",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "mint",
+            "type": "pubkey"
+          },
+          {
+            "name": "weight",
+            "type": "u64"
+          },
+          {
+            "name": "bump",
+            "type": "u8"
+          }
+        ]
+      }
+    },
+    {
+      "name": "FractionalizeFinalize",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "mint",
+            "type": "pubkey"
+          },
+          {
+            "name": "new_mint",
+            "type": "pubkey"
+          }
+        ]
+      }
+    },
+    {
+      "name": "FractionalizeNFTArgs",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "discriminant",
+            "type": "u64"
+          },
+          {
+            "name": "part_b",
+            "type": {
+              "defined": {
+                "name": "MintNFTArgs"
+              }
+            }
+          },
+          {
+            "name": "part_a",
+            "type": {
+              "defined": {
+                "name": "MintNFTArgs"
+              }
+            }
+          }
+        ]
+      }
+    },
+    {
+      "name": "Listing",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "price",
+            "type": "u64"
+          },
+          {
+            "name": "owner",
+            "type": "pubkey"
+          },
+          {
+            "name": "mint",
+            "type": "pubkey"
+          },
+          {
+            "name": "bump",
+            "type": "u8"
+          }
+        ]
+      }
+    },
+    {
+      "name": "ListingPriceUpdated",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "listing",
+            "type": "pubkey"
+          },
+          {
+            "name": "new_price",
+            "type": "u64"
+          }
+        ]
+      }
+    },
+    {
+      "name": "MetadataUpdated",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "mint",
+            "type": "pubkey"
+          },
+          {
+            "name": "field_updated",
+            "type": {
+              "defined": {
+                "name": "TokenMetadataFields"
+              }
+            }
+          },
+          {
+            "name": "new_value",
+            "type": "string"
+          }
+        ]
+      }
+    },
+    {
+      "name": "MintFeesCollector",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "bump",
+            "type": "u8"
+          }
+        ]
+      }
+    },
+    {
+      "name": "MintFeesWithdrawn",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "amount",
+            "type": "u64"
+          }
+        ]
+      }
+    },
+    {
+      "name": "MintFinalize",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "mint",
+            "type": "pubkey"
+          },
+          {
+            "name": "weight",
+            "type": "u64"
+          }
+        ]
+      }
+    },
+    {
+      "name": "MintNFTArgs",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "name",
+            "type": "string"
+          },
+          {
+            "name": "symbol",
+            "type": "string"
+          },
+          {
+            "name": "uri",
+            "type": "string"
+          },
+          {
+            "name": "weight",
+            "type": "u64"
+          }
+        ]
+      }
+    },
+    {
+      "name": "NFTFractionalized",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "mint",
+            "type": "pubkey"
+          },
+          {
+            "name": "finalize_data",
+            "type": "pubkey"
+          },
+          {
+            "name": "discriminant",
+            "type": "u64"
+          }
+        ]
+      }
+    },
+    {
+      "name": "NFTManager",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "authority",
+            "type": "pubkey"
+          },
+          {
+            "name": "future_authority",
+            "type": {
+              "option": "pubkey"
+            }
+          },
+          {
+            "name": "collection",
+            "type": "pubkey"
+          },
+          {
+            "name": "bump",
+            "type": "u8"
+          },
+          {
+            "name": "discriminant",
+            "type": "u64"
+          }
+        ]
+      }
+    },
+    {
+      "name": "NftBought",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "buyer",
+            "type": "pubkey"
+          },
+          {
+            "name": "seller",
+            "type": "pubkey"
+          },
+          {
+            "name": "mint",
+            "type": "pubkey"
+          },
+          {
+            "name": "price",
+            "type": "u64"
+          }
+        ]
+      }
+    },
+    {
+      "name": "NftBurned",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "owner",
+            "type": "pubkey"
+          },
+          {
+            "name": "mint",
+            "type": "pubkey"
+          },
+          {
+            "name": "amount",
+            "type": "u64"
+          }
+        ]
+      }
+    },
+    {
+      "name": "NftDelisted",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "owner",
+            "type": "pubkey"
+          },
+          {
+            "name": "mint",
+            "type": "pubkey"
+          }
+        ]
+      }
+    },
+    {
+      "name": "NftListed",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "owner",
+            "type": "pubkey"
+          },
+          {
+            "name": "listing",
+            "type": "pubkey"
+          },
+          {
+            "name": "price",
+            "type": "u64"
+          }
+        ]
+      }
+    },
+    {
+      "name": "NftManagerInitialized",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "manager",
+            "type": "pubkey"
+          },
+          {
+            "name": "fees_collector",
+            "type": "pubkey"
+          },
+          {
+            "name": "mint_fees_collector",
+            "type": "pubkey"
+          }
+        ]
+      }
+    },
+    {
+      "name": "NftMinted",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "mint",
+            "type": "pubkey"
+          },
+          {
+            "name": "finalize_data",
+            "type": "pubkey"
+          },
+          {
+            "name": "metadata",
+            "type": "pubkey"
+          },
+          {
+            "name": "price",
+            "type": "u64"
+          },
+          {
+            "name": "discriminant",
+            "type": "u64"
+          }
+        ]
+      }
+    },
+    {
+      "name": "OwnershipTransferInitialized",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "previous_owner",
+            "type": "pubkey"
+          },
+          {
+            "name": "future_owner",
+            "type": "pubkey"
+          }
+        ]
+      }
+    },
+    {
+      "name": "OwnershipTransferred",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "previous_owner",
+            "type": "pubkey"
+          },
+          {
+            "name": "new_owner",
+            "type": "pubkey"
+          }
+        ]
+      }
+    },
+    {
+      "name": "PriceFeedMessage",
+      "repr": {
+        "kind": "c"
+      },
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "feed_id",
+            "docs": [
+              "`FeedId` but avoid the type alias because of compatibility issues with Anchor's `idl-build` feature."
+            ],
+            "type": {
+              "array": ["u8", 32]
+            }
+          },
+          {
+            "name": "price",
+            "type": "i64"
+          },
+          {
+            "name": "conf",
+            "type": "u64"
+          },
+          {
+            "name": "exponent",
+            "type": "i32"
+          },
+          {
+            "name": "publish_time",
+            "docs": ["The timestamp of this price update in seconds"],
+            "type": "i64"
+          },
+          {
+            "name": "prev_publish_time",
+            "docs": [
+              "The timestamp of the previous price update. This field is intended to allow users to",
+              "identify the single unique price update for any moment in time:",
+              "for any time t, the unique update is the one such that prev_publish_time < t <= publish_time.",
+              "",
+              "Note that there may not be such an update while we are migrating to the new message-sending logic,",
+              "as some price updates on pythnet may not be sent to other chains (because the message-sending",
+              "logic may not have triggered). We can solve this problem by making the message-sending mandatory",
+              "(which we can do once publishers have migrated over).",
+              "",
+              "Additionally, this field may be equal to publish_time if the message is sent on a slot where",
+              "where the aggregation was unsuccesful. This problem will go away once all publishers have",
+              "migrated over to a recent version of pyth-agent."
+            ],
+            "type": "i64"
+          },
+          {
+            "name": "ema_price",
+            "type": "i64"
+          },
+          {
+            "name": "ema_conf",
+            "type": "u64"
+          }
+        ]
+      }
+    },
+    {
+      "name": "PriceUpdateV2",
+      "docs": [
+        "A price update account. This account is used by the Pyth Receiver program to store a verified price update from a Pyth price feed.",
+        "It contains:",
+        "- `write_authority`: The write authority for this account. This authority can close this account to reclaim rent or update the account to contain a different price update.",
+        "- `verification_level`: The [`VerificationLevel`] of this price update. This represents how many Wormhole guardian signatures have been verified for this price update.",
+        "- `price_message`: The actual price update.",
+        "- `posted_slot`: The slot at which this price update was posted."
+      ],
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "write_authority",
+            "type": "pubkey"
+          },
+          {
+            "name": "verification_level",
+            "type": {
+              "defined": {
+                "name": "VerificationLevel"
+              }
+            }
+          },
+          {
+            "name": "price_message",
+            "type": {
+              "defined": {
+                "name": "PriceFeedMessage"
+              }
+            }
+          },
+          {
+            "name": "posted_slot",
+            "type": "u64"
+          }
+        ]
+      }
+    },
+    {
+      "name": "TokenMetadataFields",
+      "type": {
+        "kind": "enum",
+        "variants": [
+          {
+            "name": "Name"
+          },
+          {
+            "name": "Symbol"
+          },
+          {
+            "name": "Uri"
+          }
+        ]
+      }
+    },
+    {
+      "name": "UpdateListingPriceArgs",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "new_price",
+            "type": "u64"
+          },
+          {
+            "name": "discriminant",
+            "type": "u64"
+          }
+        ]
+      }
+    },
+    {
+      "name": "UpdateMetadataArgs",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "field",
+            "type": {
+              "defined": {
+                "name": "TokenMetadataFields"
+              }
+            }
+          },
+          {
+            "name": "value",
+            "type": "string"
+          },
+          {
+            "name": "discriminant",
+            "type": "u64"
+          }
+        ]
+      }
+    },
+    {
+      "name": "User",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "authority",
+            "type": "pubkey"
+          },
+          {
+            "name": "bump",
+            "type": "u8"
+          }
+        ]
+      }
+    },
+    {
+      "name": "UserAccountCreated",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "user_account",
+            "type": "pubkey"
+          },
+          {
+            "name": "owner",
+            "type": "pubkey"
+          }
+        ]
+      }
+    },
+    {
+      "name": "UserWithdrawEvent",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "user",
+            "type": "pubkey"
+          },
+          {
+            "name": "amount",
+            "type": "u64"
+          }
+        ]
+      }
+    },
+    {
+      "name": "VerificationLevel",
+      "docs": [
+        "Pyth price updates are bridged to all blockchains via Wormhole.",
+        "Using the price updates on another chain requires verifying the signatures of the Wormhole guardians.",
+        "The usual process is to check the signatures for two thirds of the total number of guardians, but this can be cumbersome on Solana because of the transaction size limits,",
+        "so we also allow for partial verification.",
+        "",
+        "This enum represents how much a price update has been verified:",
+        "- If `Full`, we have verified the signatures for two thirds of the current guardians.",
+        "- If `Partial`, only `num_signatures` guardian signatures have been checked.",
+        "",
+        "# Warning",
+        "Using partially verified price updates is dangerous, as it lowers the threshold of guardians that need to collude to produce a malicious price update."
+      ],
+      "type": {
+        "kind": "enum",
+        "variants": [
+          {
+            "name": "Partial",
+            "fields": [
+              {
+                "name": "num_signatures",
+                "type": "u8"
+              }
+            ]
+          },
+          {
+            "name": "Full"
+          }
+        ]
+      }
+    }
+  ],
+  "constants": [
+    {
+      "name": "COLLECTION_KEY",
+      "type": "string",
+      "value": "\"collection\""
+    },
+    {
+      "name": "COLLECTION_TAG",
+      "type": "bytes",
+      "value": "[99, 111, 108, 108, 116]"
+    },
+    {
+      "name": "COLLECTION_TOKEN_ACCOUNT_TAG",
+      "type": "bytes",
+      "value": "[99, 111, 108, 116, 97, 116]"
+    },
+    {
+      "name": "DISCRIMINANT_KEY",
+      "type": "string",
+      "value": "\"discriminant\""
+    },
+    {
+      "name": "FEES_COLLECTOR_TAG",
+      "type": "bytes",
+      "value": "[102, 99, 111, 108, 116]"
+    },
+    {
+      "name": "FINALIZE_FRACTIONALIZE_DATA_TAG",
+      "type": "bytes",
+      "value": "[102, 105, 110, 102, 100, 116]"
+    },
+    {
+      "name": "FINALIZE_MINT_DATA_TAG",
+      "type": "bytes",
+      "value": "[102, 105, 110, 109, 100, 116]"
+    },
+    {
+      "name": "LISTING_TAG",
+      "type": "bytes",
+      "value": "[108, 105, 115, 116, 116]"
+    },
+    {
+      "name": "LISTING_TOKEN_ACCOUNT_TAG",
+      "type": "bytes",
+      "value": "[108, 105, 115, 116, 116, 97, 116]"
+    },
+    {
+      "name": "MAX_AGE",
+      "type": "u64",
+      "value": "86400"
+    },
+    {
+      "name": "MINT_FEES_COLLECTOR_TAG",
+      "type": "bytes",
+      "value": "[109, 102, 99, 111, 108, 116]"
+    },
+    {
+      "name": "MINT_TAG",
+      "type": "bytes",
+      "value": "[109, 105, 110, 116, 116]"
+    },
+    {
+      "name": "NFT_MANAGER_TAG",
+      "type": "bytes",
+      "value": "[110, 102, 116, 109, 103]"
+    },
+    {
+      "name": "USER_TAG",
+      "type": "bytes",
+      "value": "[117, 115, 101, 114, 116]"
+    },
+    {
+      "name": "WEIGHT_KEY",
+      "type": "string",
+      "value": "\"weight\""
+    }
+  ]
+}
