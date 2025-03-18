@@ -8,7 +8,7 @@ import {
   Program,
   Wallet,
 } from "@coral-xyz/anchor";
-import { Connection, PublicKey } from "@solana/web3.js";
+import { Connection, PublicKey, Signer, Transaction } from "@solana/web3.js";
 import idl from "./jpgnft.idl.json";
 import { NftManager } from "./jpgnft.types";
 import { getClusterURL } from "@/utils/utilityFunctions";
@@ -17,7 +17,12 @@ import {
   getOrCreateAssociatedTokenAccount,
   transfer,
   TOKEN_2022_PROGRAM_ID,
+  TOKEN_PROGRAM_ID,
+  createTransferInstruction,
+  getAccount,
+  createAssociatedTokenAccountInstruction,
 } from "@solana/spl-token";
+import { sign } from "crypto";
 
 const CLUSTER: string = process.env.NEXT_PUBLIC_CLUSTER || "devnet";
 const HELIUS_API_KEY = process.env.NEXT_PUBLIC_HELIUS_API_KEY;
@@ -214,64 +219,153 @@ export const mintNft = async (
 };
 
 export const transferNft = async (
-  program: Program<NftManager>,
+  wallet: {
+    publicKey: PublicKey;
+    signTransaction: (tx: Transaction) => Promise<Transaction>;
+  },
   mintAddress: string,
   recipientAddress: string
 ): Promise<{
   txSignature: string;
   mint: string;
 }> => {
-  if (!program.provider.publicKey) {
-    throw new Error("Wallet not connected");
-  }
-
-  const signer = program.provider.publicKey;
-  const connection = program.provider.connection;
-
   try {
     console.log(`Transferring NFT ${mintAddress} to ${recipientAddress}`);
+
+    if (!wallet.publicKey) {
+      throw new Error("Wallet not connected");
+    }
+    const connection = new Connection(RPC_URL, "confirmed");
 
     // Create PublicKeys
     const mintPubkey = new PublicKey(mintAddress);
     const recipientPubkey = new PublicKey(recipientAddress);
 
-    // Get the user's associated token address for this NFT
+    // Determine which token program to use based on the token mint
+    let tokenProgramId = TOKEN_PROGRAM_ID; // Default to standard SPL Token program
+    let isToken2022 = false;
+
+    // Try to get the token account with both programs to determine which one is correct
+    try {
+      // First try with standard token program
+      const standardTokenATA = await getAssociatedTokenAddress(
+        mintPubkey,
+        wallet.publicKey,
+        false,
+        TOKEN_PROGRAM_ID
+      );
+
+      try {
+        await getAccount(
+          connection,
+          standardTokenATA,
+          "confirmed",
+          TOKEN_PROGRAM_ID
+        );
+        console.log("Using standard TOKEN_PROGRAM_ID for transfer");
+        tokenProgramId = TOKEN_PROGRAM_ID;
+      } catch (error) {
+        // If standard token account not found, try with Token-2022
+        console.log("Standard token account not found, trying Token-2022");
+        const token2022ATA = await getAssociatedTokenAddress(
+          mintPubkey,
+          wallet.publicKey,
+          false,
+          TOKEN_2022_PROGRAM_ID
+        );
+
+        await getAccount(
+          connection,
+          token2022ATA,
+          "confirmed",
+          TOKEN_2022_PROGRAM_ID
+        );
+        console.log("Using TOKEN_2022_PROGRAM_ID for transfer");
+        isToken2022 = true;
+        tokenProgramId = TOKEN_2022_PROGRAM_ID;
+      }
+    } catch (error) {
+      console.error("Error determining token program:", error);
+      throw new Error(
+        "Could not determine token program. You may not own this NFT or token account not found."
+      );
+    }
+
+    // Get source ATA (your wallet's token account)
     const sourceATA = await getAssociatedTokenAddress(
       mintPubkey,
-      signer,
-      false, // allowOwnerOffCurve
-      TOKEN_2022_PROGRAM_ID // Using Token-2022 program like the backend
+      wallet.publicKey,
+      false,
+      tokenProgramId
     );
 
-    // Create or get the destination token account for recipient
-    const destinationATA = await getOrCreateAssociatedTokenAccount(
-      connection,
-      program.provider as any, // Need sender to pay for account creation if needed
+    // Get destination ATA (recipient's token account)
+    const destinationATA = await getAssociatedTokenAddress(
       mintPubkey,
       recipientPubkey,
-      false, // allowOwnerOffCurve
-      "confirmed", // commitment
-      undefined, // confirmOptions
-      TOKEN_2022_PROGRAM_ID
+      false,
+      tokenProgramId
     );
 
     console.log("Source token account:", sourceATA.toString());
-    console.log(
-      "Destination token account:",
-      destinationATA.address.toString()
+    console.log("Destination token account:", destinationATA.toString());
+    console.log("Using token program:", tokenProgramId.toString());
+
+    // Create transaction
+    const transaction = new Transaction();
+
+    // Check if the recipient's token account exists, if not create it
+    try {
+      await getAccount(connection, destinationATA, "confirmed", tokenProgramId);
+      console.log("Recipient's token account exists");
+    } catch (error) {
+      console.log("Creating recipient's token account");
+      transaction.add(
+        createAssociatedTokenAccountInstruction(
+          wallet.publicKey, // payer
+          destinationATA, // associatedToken
+          recipientPubkey, // owner
+          mintPubkey, // mint
+          tokenProgramId
+        )
+      );
+    }
+
+    // Add transfer instruction
+    transaction.add(
+      createTransferInstruction(
+        sourceATA, // source
+        destinationATA, // destination
+        wallet.publicKey, // owner
+        1, // amount (1 for NFT)
+        [], // multiSigners
+        tokenProgramId
+      )
     );
 
-    // Execute the transfer
-    const txSignature = await transfer(
-      connection,
-      program.provider as any, // Provider needs to have the signTransaction method
-      sourceATA,
-      destinationATA.address,
-      signer,
-      1, // NFTs have amount=1
-      [],
-      undefined,
-      TOKEN_2022_PROGRAM_ID
+    // Get latest blockhash
+    const { blockhash, lastValidBlockHeight } =
+      await connection.getLatestBlockhash("confirmed");
+    transaction.recentBlockhash = blockhash;
+    transaction.feePayer = wallet.publicKey;
+
+    // Sign transaction
+    const signedTransaction = await wallet.signTransaction(transaction);
+
+    // Send transaction
+    const txSignature = await connection.sendRawTransaction(
+      signedTransaction.serialize(),
+      { skipPreflight: false, preflightCommitment: "confirmed" }
+    );
+
+    // Wait for confirmation
+    await connection.confirmTransaction(
+      {
+        blockhash,
+        lastValidBlockHeight,
+        signature: txSignature,
+      },
+      "confirmed"
     );
 
     console.log("NFT transfer successful:", txSignature);
@@ -280,8 +374,18 @@ export const transferNft = async (
       txSignature,
       mint: mintAddress,
     };
-  } catch (error) {
-    console.error("Error in NFT minting process:", error);
-    throw error;
+  } catch (error: any) {
+    console.error("Error in NFT transfer process:", error);
+
+    // Provide more specific error messages
+    if (error.message?.includes("insufficient funds")) {
+      throw new Error("Insufficient funds to transfer NFT");
+    } else if (error.message?.includes("owner does not match")) {
+      throw new Error("You do not own this NFT");
+    } else if (error.message?.includes("TokenAccountNotFoundError")) {
+      throw new Error("Token account not found - you may not own this NFT");
+    } else {
+      throw error;
+    }
   }
 };

@@ -1,14 +1,19 @@
 import { useQuery } from "@tanstack/react-query";
 import { IGetNftsByOwnerParams } from "./jpgnft.types";
 import { getNftsByOwnerRequest } from "./jpgnft.apis";
-import { DasApiAsset } from "@metaplex-foundation/digital-asset-standard-api";
+import { NFTAsset } from "@/constants/types";
 
 export const useGetNftsByOwner = (options: IGetNftsByOwnerParams) => {
   const { data, isError, isSuccess, error, isLoading } = useQuery({
     queryKey: ["get-wallet-nfts", options],
     queryFn: () => getNftsByOwnerRequest(options),
+    enabled: !!options.address,
   });
-  const assets: DasApiAsset[] = data?.data;
+  const nftData: {
+    nfts: NFTAsset[];
+    total: number;
+    limit: number;
+  } = data?.data;
 
-  return { assets, isError, isSuccess, error, isLoading };
+  return { nftData, isError, isSuccess, error, isLoading };
 };
