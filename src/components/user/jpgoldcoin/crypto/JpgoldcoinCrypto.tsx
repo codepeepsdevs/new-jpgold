@@ -1,14 +1,12 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 import UserCard from "@/components/UserCard";
 import Image, { StaticImageData } from "next/image";
 import { IoSwapVertical } from "react-icons/io5";
 import images from "@/public/images";
 import icons from "@/public/icons";
 import useWeb3ModalStore from "@/store/web3Modal.store";
-import { useWallet } from "@solana/wallet-adapter-react";
-import { useAccount } from "wagmi";
 import { useGetGoldPrice } from "@/api/metal-price/metal-price.queries";
 import { formatNumberWithoutExponential } from "@/utils/utilityFunctions";
 import toast from "react-hot-toast";
@@ -20,6 +18,7 @@ import { useCryptomusCheckout } from "@/api/payment/payment.queries";
 import { dynamicFrontendUrl } from "@/constants";
 import SkeletonComponent from "@/components/Skeleton";
 import SpinnerLoader from "@/components/SpinnerLoader";
+import { useWalletInfo } from "@/hooks/useWalletInfo";
 
 interface PaymentOption {
   value: string;
@@ -32,14 +31,6 @@ interface ChainOption {
   label: string;
   image: StaticImageData | string;
 }
-
-const paymentOptions: PaymentOption[] = [
-  {
-    value: "cryptomus",
-    label: "Cryptomus",
-    image: images.user.userPayments.cryptomus,
-  },
-];
 
 const chainOptions: ChainOption[] = [
   {
@@ -55,7 +46,17 @@ const chainOptions: ChainOption[] = [
   },
 ];
 
+const paymentOptions: PaymentOption[] = [
+  {
+    value: "cryptomus",
+    label: "Crypto Gateway (Cryptomus)",
+    image: images.user.userPayments.cryptomus,
+  },
+];
+
 const JpgoldcoinCrypto = () => {
+  const { address, connected } = useWalletInfo();
+
   const { chain } = useWeb3ModalStore();
   const [selectedPayment, setSelectedPayment] = useState<PaymentOption>(
     paymentOptions[0]
@@ -73,31 +74,6 @@ const JpgoldcoinCrypto = () => {
       setSelectedChain(option);
     }
   }, [chain]);
-
-  // Ethereum wallet connection
-  const { address: ethAddress, isConnected: isEthConnected } = useAccount();
-
-  // Solana wallet connection
-  const { publicKey, connected: isSolConnected } = useWallet();
-
-  const walletInfo = useMemo(() => {
-    if (chain.type === "ethereum" && isEthConnected) {
-      return {
-        address: ethAddress,
-        connected: isEthConnected,
-      };
-    } else if (chain.type === "solana" && isSolConnected && publicKey) {
-      return {
-        address: publicKey.toBase58(),
-        connected: isSolConnected,
-      };
-    }
-
-    return {
-      address: null,
-      connected: false,
-    };
-  }, [chain, ethAddress, isEthConnected, publicKey, isSolConnected]);
 
   const { value, isLoading, isError } = useGetGoldPrice({
     quantity: Number(quantity),
@@ -165,7 +141,7 @@ const JpgoldcoinCrypto = () => {
       case !total:
         toast.error("Amount is required.");
         return;
-      case !walletInfo.address:
+      case !address:
         toast.error("Wallet address is required.");
         return;
       case !quantity || isNaN(Number(quantity)):
@@ -177,7 +153,7 @@ const JpgoldcoinCrypto = () => {
 
     checkout({
       amount: formatNumberWithoutExponential(total, 3),
-      walletAddress: walletInfo.address,
+      walletAddress: address,
       quantity: Number(quantity),
       network: chain.type,
       url_return: `${dynamicFrontendUrl}/user/jpgoldcoin/crypto`,
@@ -196,7 +172,7 @@ const JpgoldcoinCrypto = () => {
           <div className="p-6 bg-[#F8F8F8] dark:bg-[#151515] rounded-lg">
             <div className="flex items-center justify-center gap-2 text-lg text-[#050706] dark:text-white text-center mb-2">
               You&apos;re buying{" "}
-              {quantity ? `${quantity.toLocaleString()}` : null}{" "}
+              {quantity ? `${quantity.toLocaleString()}g` : null}{" "}
               <Image
                 src={images.user.coin}
                 alt="jpgoldnft"
@@ -253,7 +229,7 @@ const JpgoldcoinCrypto = () => {
                   alt={selectedPayment.value}
                   width={30}
                   height={30}
-                  className="rounded-full"
+                  className=""
                 />{" "}
                 <span>{selectedPayment.label}</span>
                 <svg
@@ -287,7 +263,7 @@ const JpgoldcoinCrypto = () => {
                         alt={option.value}
                         width={30}
                         height={30}
-                        className="rounded-full"
+                        className=""
                       />{" "}
                       <span className="text-[#050706] dark:text-white">
                         {option.label}
@@ -351,9 +327,6 @@ const JpgoldcoinCrypto = () => {
                 <p className="text-base font-medium text-[#050706] dark:text-white">
                   ${formatNumberWithoutExponential(total, 3)}
                 </p>
-                {/* <p className="text-sm text-[#5A5B5A] dark:text-white/70">
-                  {((quantity * 6.11987 * 1.0015) / 1.5144).toFixed(3)} MATIC
-                </p> */}
               </div>
             </div>
           </div>
@@ -421,16 +394,14 @@ const JpgoldcoinCrypto = () => {
 
             <button
               onClick={handleCheckout}
-              disabled={
-                !walletInfo.connected || chain.type !== selectedChain.value
-              }
+              disabled={!connected || chain.type !== selectedChain.value}
               className="disabled:opacity-80 disabled:cursor-not-allowed w-full bg-black font-bold dark:bg-gold-200 text-white py-4 rounded-full transition-colors flex justify-center"
             >
               {checkoutLoading ? (
                 <SpinnerLoader width={25} height={25} color="#FFF" />
               ) : (
                 <>
-                  {!walletInfo.connected
+                  {!connected
                     ? "Connect wallet to continue"
                     : chain.type === selectedChain.value
                     ? `Pay with ${selectedPayment.label}`

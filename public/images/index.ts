@@ -78,7 +78,8 @@ import tokenOwner from "./user/tokenOwner.png";
 import paymentFailed from "./payment/paymentFailed.png";
 import paymentSuccess from "./payment/paymentSuccess.png";
 
-import cryptomus from "./user/payments/cryptomus.svg";
+import cryptomus from "./user/payments/cryptomus.png";
+import stripe from "./user/payments/stripe.png";
 
 const jpgc = {
   jpgcOne,
@@ -166,6 +167,7 @@ const team = {
 const cart = {};
 const userPayments = {
   cryptomus,
+  stripe,
 };
 
 const user = {
