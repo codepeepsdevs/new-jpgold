@@ -12,7 +12,7 @@ export const stripeCheckoutRequest = async (
 ): Promise<AxiosResponse<RStripeCheckout>> => {
   const { type, ...rest } = formdata;
   return request({
-    url: `/v1/stripe/checkout/${type}`,
+    url: `/v1/stripe/${type}/checkout`,
     method: "post",
     data: rest,
   });
@@ -24,7 +24,7 @@ export const cryptomusCheckoutRequest = async (
   const { type, ...rest } = formdata;
 
   return request({
-    url: `/v1/cryptomus/create-payment/${this}`,
+    url: `/v1/cryptomus/${type}/create-payment`,
     method: "post",
     data: rest,
   });
