@@ -7,7 +7,9 @@ import { fractionalizeNft, getProvider } from "@/services/jpgnft/jpgnft";
 import { useWallet } from "@solana/wallet-adapter-react";
 import {
   BN,
+  Program,
 } from "@coral-xyz/anchor";
+import { NftManager } from "@/services/jpgnft/jpgnft.types";
 const JpgoldnftFractionalize = () => {
   const [selectedNFT, setSelectedNFT] = useState("JPGNFT #(45)");
   const [fraction1, setFraction1] = useState(0);
@@ -44,7 +46,7 @@ const JpgoldnftFractionalize = () => {
       console.log("Starting fractionalization...");
       console.log({ program, discriminant, fractionalizeArgs })
 
-      const result = await fractionalizeNft(program, discriminant, fractionalizeArgs);
+      const result = await fractionalizeNft(program as Program<NftManager>, discriminant, fractionalizeArgs);
       console.log("Fractionalization successful:", result);
     } catch (error) {
       console.error("Error during fractionalization:", error);

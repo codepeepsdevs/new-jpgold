@@ -233,7 +233,7 @@ export const mintNft = async (
  * Fractionalizes an NFT and finalizes the fractionalization.
  */
 export const fractionalizeNft = async (
-  program: Program<any>,
+  program: Program<NftManager>,
   discriminant: BN,
   fractionalizeArgs: any
 ): Promise<string> => {
