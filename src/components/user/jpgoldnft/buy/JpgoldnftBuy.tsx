@@ -102,15 +102,25 @@ const JpgoldnftBuy = () => {
   const total = value + fee;
 
   const handleQuantityChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    let value = e.target.value.replace(/[^0-9.]/g, "");
+    // Get the current input value
+    const inputValue = e.target.value;
 
-    // Prevent multiple decimal points
-    if ((value.match(/\./g) || []).length > 1) {
-      value = value.slice(0, -1);
+    // If the input is empty, allow it (to clear the field)
+    if (inputValue === "") {
+      setQuantity("");
+      return;
     }
 
-    // Allow empty string for clearing input
-    setQuantity(value);
+    // This regex strictly validates for:
+    // - Digits before decimal (required at least one)
+    // - Optional decimal point followed by at most 1 digit
+    const validInputRegex = /^[0-9]+\.?[0-9]?$|^[0-9]*\.?[0-9]?$/;
+
+    if (validInputRegex.test(inputValue)) {
+      // If input is valid, update the state
+      setQuantity(inputValue);
+    }
+    // If input is invalid, we don't update state (previous valid value remains)
   };
 
   const handleSubmit = async () => {
@@ -205,8 +215,33 @@ const JpgoldnftBuy = () => {
                     type="text"
                     value={quantity}
                     onChange={handleQuantityChange}
+                    onKeyDown={(e) => {
+                      // Prevent typing more than one decimal digit
+                      const currentValue = e.currentTarget.value;
+                      const decimalIndex = currentValue.indexOf(".");
+                      const selectionStart = e.currentTarget.selectionStart;
+
+                      // Only proceed if we have valid selection position
+                      if (
+                        selectionStart !== null &&
+                        decimalIndex !== -1 &&
+                        currentValue.length > decimalIndex + 1 &&
+                        selectionStart > decimalIndex + 1 &&
+                        ![
+                          "Backspace",
+                          "Delete",
+                          "ArrowLeft",
+                          "ArrowRight",
+                          "Tab",
+                        ].includes(e.key)
+                      ) {
+                        e.preventDefault();
+                      }
+                    }}
                     className="text-4xl font-semibold text-[#050706] dark:text-white bg-transparent outline-none text-center w-fit"
                     inputMode="decimal"
+                    pattern="^[0-9]*\.?[0-9]?$"
+                    required
                   />
                 </div>
               </div>

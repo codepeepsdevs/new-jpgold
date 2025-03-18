@@ -188,12 +188,14 @@ const JpgoldcoinFiatComponent = () => {
     setIsCheckoutLoading(true);
 
     checkout({
-      amount: Number(total.toFixed(2)),
+      amount: Number(total.toFixed(3)),
       walletAddress: address,
       quantity: Number(quantity),
       network: chain.type,
       successUrl: `${dynamicFrontendUrl}/payment/success`,
       cancelUrl: `${dynamicFrontendUrl}/payment/failed`,
+      fee: Number(formatNumberWithoutExponential(fee, 3)),
+      type: "jpgc",
     });
   };
 

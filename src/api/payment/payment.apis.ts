@@ -10,19 +10,22 @@ import {
 export const stripeCheckoutRequest = async (
   formdata: IStripeCheckout
 ): Promise<AxiosResponse<RStripeCheckout>> => {
+  const { type, ...rest } = formdata;
   return request({
-    url: "/v1/stripe/checkout",
+    url: `/v1/stripe/checkout/${type}`,
     method: "post",
-    data: formdata,
+    data: rest,
   });
 };
 
 export const cryptomusCheckoutRequest = async (
   formdata: ICryptomusCheckout
 ): Promise<AxiosResponse<RCryptomusCheckout>> => {
+  const { type, ...rest } = formdata;
+
   return request({
-    url: "/v1/cryptomus/create-payment",
+    url: `/v1/cryptomus/create-payment/${this}`,
     method: "post",
-    data: formdata,
+    data: rest,
   });
 };
