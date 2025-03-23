@@ -1,17 +1,18 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
+
 "use client";
 
 import { useGetNftsByOwner } from "@/api/jpgnft/jpgnft.queries";
-import { SortByEnum, SortDirectionEnum } from "@/api/jpgnft/jpgnft.types";
-import { useGetGoldPrice } from "@/api/metal-price/metal-price.queries";
+import { useSimpleGoldPrice } from "@/api/metal-price/metal-price.queries";
 import SpinnerLoader from "@/components/SpinnerLoader";
 import UserCard from "@/components/UserCard";
 import { NFTAsset } from "@/constants/types";
 import { useWalletInfo } from "@/hooks/useWalletInfo";
-import { getProvider, transferNft } from "@/services/jpgnft/jpgnft";
+import { transferNft } from "@/services/jpgnft/jpgnft";
 import { formatNumberWithoutExponential } from "@/utils/utilityFunctions";
 import { useWallet } from "@solana/wallet-adapter-react";
 import { useQueryClient } from "@tanstack/react-query";
-import { useMemo, useState } from "react";
+import { useState } from "react";
 import toast from "react-hot-toast";
 import { IoChevronDown } from "react-icons/io5";
 
@@ -26,15 +27,7 @@ const JpgoldnftTransfer = () => {
 
   const { publicKey, signTransaction } = useWallet();
 
-  const { value, isLoading, isError } = useGetGoldPrice({
-    quantity: Number(selectedNFT?.priority.goldWeight),
-  });
-
-  const quantityPriceLoading = isLoading && !isError;
-
-  const { value: oneJpgcValue } = useGetGoldPrice({
-    quantity: 1,
-  });
+  const { value: oneJpgcValue } = useSimpleGoldPrice(1);
 
   const { nftData } = useGetNftsByOwner({
     address: address!,
@@ -201,10 +194,11 @@ const JpgoldnftTransfer = () => {
                     Amount
                   </span>
                   <span className="text-base text-[#050706] dark:text-white">
-                    {quantityPriceLoading
-                      ? "Loading..."
-                      : value
-                      ? `$${formatNumberWithoutExponential(value, 3)}`
+                    {selectedNFT?.priority?.price
+                      ? `$${formatNumberWithoutExponential(
+                          selectedNFT.priority.price,
+                          3
+                        )}`
                       : `Pending NFT`}
                   </span>
                 </div>

@@ -10,9 +10,9 @@ const NftsNav = () => {
   const navigate = useNavigate();
   const navOptions = [
     {
-      label: "All NFTs",
-      smallLabel: "All NFTs",
-      path: "/user/nfts/all",
+      label: "Private NFTs",
+      smallLabel: "Private",
+      path: "/user/nfts/private",
     },
     {
       label: "Listed NFTs",

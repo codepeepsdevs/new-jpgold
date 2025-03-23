@@ -7,7 +7,7 @@ import { IoSwapVertical } from "react-icons/io5";
 import images from "@/public/images";
 import icons from "@/public/icons";
 import useWeb3ModalStore from "@/store/web3Modal.store";
-import { useGetGoldPrice } from "@/api/metal-price/metal-price.queries";
+
 import { formatNumberWithoutExponential } from "@/utils/utilityFunctions";
 import toast from "react-hot-toast";
 import { ErrorResponse } from "@/api/type";
@@ -19,6 +19,7 @@ import { dynamicFrontendUrl } from "@/constants";
 import SkeletonComponent from "@/components/Skeleton";
 import SpinnerLoader from "@/components/SpinnerLoader";
 import { useWalletInfo } from "@/hooks/useWalletInfo";
+import { useSimpleGoldPrice } from "@/api/metal-price/metal-price.queries";
 
 interface PaymentOption {
   value: string;
@@ -75,17 +76,12 @@ const JpgoldcoinCrypto = () => {
     }
   }, [chain]);
 
-  const { value, isLoading, isError } = useGetGoldPrice({
-    quantity: Number(quantity),
-  });
+  const { value: oneJpgcValue } = useSimpleGoldPrice(1);
+  const { value, loading: quantityPriceLoading } = useSimpleGoldPrice(
+    Number(quantity)
+  );
 
-  const quantityPriceLoading = isLoading && !isError;
-
-  const { value: oneJpgcValue } = useGetGoldPrice({
-    quantity: 1,
-  });
-
-  const fee = value * 0.0015;
+  const fee = value * 0.03;
   const total = value + fee;
 
   const handleQuantityChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -313,7 +309,7 @@ const JpgoldcoinCrypto = () => {
             <hr className="dark:border-[#3D3D3D]" />
             <div className="flex justify-between items-center">
               <span className="text-base text-[#282928] dark:text-white/70">
-                Fee (0.15%)
+                Fee (3%)
               </span>
               <span className="text-base text-[#050706] font-semibold dark:text-white">
                 ${formatNumberWithoutExponential(fee, 3)}

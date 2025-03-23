@@ -1,5 +1,11 @@
 import { IResponse, SupportedChains } from "@/constants/types";
 
+interface MarketplaceItem {
+  discriminant: number;
+  owner: string;
+  mintAddress: string;
+}
+
 export interface IStripeCheckout {
   amount: number;
   walletAddress: string;
@@ -8,7 +14,8 @@ export interface IStripeCheckout {
   network: SupportedChains;
   successUrl: string;
   cancelUrl: string;
-  type: "jpgnft" | "jpgc";
+  type: "jpgnft" | "jpgc" | "marketplace";
+  marketplaceItems?: MarketplaceItem[];
 }
 
 export interface RStripeCheckout extends IResponse {
@@ -23,7 +30,8 @@ export interface ICryptomusCheckout {
   network: SupportedChains;
   url_return: string;
   url_success: string;
-  type: "jpgnft" | "jpgc";
+  type: "jpgnft" | "jpgc" | "marketplace";
+  marketplaceItems?: MarketplaceItem[];
 }
 
 export interface RCryptomusCheckout extends IResponse {

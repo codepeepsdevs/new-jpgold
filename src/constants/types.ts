@@ -1,4 +1,5 @@
 import { DasApiAsset } from "@metaplex-foundation/digital-asset-standard-api";
+import BN from "bn.js";
 import { StaticImageData } from "next/image";
 
 export interface IResponse {
@@ -76,7 +77,40 @@ export type V1_NFTAsset = DasApiAsset & {
 
 export interface NFTAsset extends V1_NFTAsset {
   priority: {
-    goldWeight: number;
     discriminant: number;
+    finalized: boolean;
+    owner: string;
+    goldWeight: number | null;
+    price: number | null;
+    listed: boolean;
+    listingPrice: number | null;
+    listingAccount: string | null;
   };
+}
+
+export interface ExtractedNFTAsset {
+  id: string;
+  price: number | null;
+  discriminant: string | number;
+  image: StaticImageData | string | undefined;
+  finalized: boolean;
+  weight: number | null;
+  owner: string;
+  name: string;
+  description: string | undefined;
+  symbol: string;
+  listed: boolean;
+  listingPrice: number | null;
+  listingAccount: string | null;
+  rate: {
+    value: number;
+    absolute: number;
+    status: string;
+    raw: number;
+  };
+}
+
+export interface NftBuyArgs {
+  discriminant: BN;
+  owner: string;
 }

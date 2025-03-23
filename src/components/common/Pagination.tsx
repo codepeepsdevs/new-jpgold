@@ -1,55 +1,62 @@
-import { FC } from 'react';
-import { FaChevronDown } from 'react-icons/fa';
-import { IoChevronBack, IoChevronForward } from 'react-icons/io5';
+import { FC, useRef } from "react";
+import { IoChevronBack, IoChevronForward } from "react-icons/io5";
 
 interface PaginationProps {
-    currentPage: number;
-    totalPages: number;
-    onPageChange: (page: number) => void;
+  currentPage: number;
+  onPageChange: (page: number) => void;
+  itemsPerPage: number;
+  onItemsPerPageChange: (limit: number) => void;
+  pageSizeOptions?: number[];
 }
 
-const Pagination: FC<PaginationProps> = ({ currentPage, totalPages, onPageChange }) => {
-    return (
-        <div className="flex items-center justify-end gap-2 py-4">
-            <div className="flex items-center gap-1 text-sm text-[#232222] font-medium dark:text-gray-400">
-                <div className='flex gap-1 border-r px-2 items-center'>
-                    <select
-                        value={currentPage}
-                        onChange={(e) => onPageChange(Number(e.target.value))}
-                        className="py-1 cursor-pointer px-2 dark:border-gray-700 bg-white dark:bg-[#1C1C1E]  appearance-none outline-none"
-                    >
-                        {Array.from({ length: totalPages }, (_, i) => i + 1).map(page => (
-                            <option key={page} value={page}>
-                                {page}
-                            </option>
-                        ))}
+const Pagination: FC<PaginationProps> = ({
+  currentPage,
+  onPageChange,
+  itemsPerPage,
+  onItemsPerPageChange,
+  pageSizeOptions = [8, 16, 32, 64, 128],
+}) => {
+  const selectRef = useRef<HTMLSelectElement>(null);
 
-                    </select>
-                    <FaChevronDown className='text-[#232222]' />
-                </div>
-                <span className="whitespace-nowrap border-r px-2 text-[#9CA3AF]">
-                    of {totalPages} pages
-                </span>
-            </div>
-
-            <div className="flex items-center">
-                <button
-                    onClick={() => onPageChange(currentPage - 1)}
-                    disabled={currentPage === 1}
-                    className="p-1 disabled:opacity-50 disabled:cursor-not-allowed"
-                >
-                    <IoChevronBack className="w-4 h-4 text-gray-600 dark:text-gray-400" />
-                </button>
-                <button
-                    onClick={() => onPageChange(currentPage + 1)}
-                    disabled={currentPage === totalPages}
-                    className="p-1 disabled:opacity-50 disabled:cursor-not-allowed"
-                >
-                    <IoChevronForward className="w-4 h-4 text-gray-600 dark:text-gray-400" />
-                </button>
-            </div>
+  return (
+    <div className="flex items-center justify-end gap-2 py-4">
+      <div className="flex items-center gap-1 text-sm text-[#232222] font-medium dark:text-[#9CA3AF]">
+        <div className="flex gap-1 border-r px-2 items-center relative">
+          <select
+            ref={selectRef}
+            value={itemsPerPage}
+            onChange={(e) => onItemsPerPageChange(Number(e.target.value))}
+            className="py-1 cursor-pointer px-1 dark:border-gray-70 bg-white dark:bg-[#1C1C1E]  outline-none"
+          >
+            {pageSizeOptions.map((size) => (
+              <option key={size} value={size}>
+                {size} items
+              </option>
+            ))}
+          </select>
         </div>
-    );
+        <span className="whitespace-nowrap border-r px-2 text-[#9CA3AF]">
+          Page {currentPage}
+        </span>
+      </div>
+
+      <div className="flex items-center">
+        <button
+          onClick={() => onPageChange(currentPage - 1)}
+          disabled={currentPage === 1}
+          className="p-1 disabled:opacity-50 disabled:cursor-not-allowed"
+        >
+          <IoChevronBack className="w-4 h-4 text-gray-600 dark:text-[#9CA3AF]" />
+        </button>
+        <button
+          onClick={() => onPageChange(currentPage + 1)}
+          className="p-1 disabled:opacity-50 disabled:cursor-not-allowed"
+        >
+          <IoChevronForward className="w-4 h-4 text-gray-600 dark:text-[#9CA3AF]" />
+        </button>
+      </div>
+    </div>
+  );
 };
 
-export default Pagination; 
+export default Pagination;

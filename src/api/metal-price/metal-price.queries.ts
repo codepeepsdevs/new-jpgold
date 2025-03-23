@@ -28,3 +28,16 @@ export const useGetGoldPrice = ({ quantity }: { quantity: number }) => {
 
   return { value, isError, isSuccess, error, isLoading };
 };
+
+export const useSimpleGoldPrice = (amount: number) => {
+  const { value, isLoading, isError } = useGetGoldPrice({
+    quantity: amount,
+  });
+
+  const loading = isLoading && !isError;
+
+  return {
+    value,
+    loading,
+  };
+};

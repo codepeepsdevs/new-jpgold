@@ -1,19 +1,12 @@
-import { StaticImageData } from "next/image";
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
 import toast from "react-hot-toast";
-interface NFTItem {
-  id: number;
-  amount: number;
-  price: number;
-  imageUrl: string | StaticImageData;
-  verified: boolean;
-}
+import { NFTAsset } from "@/constants/types";
 
 interface CartStore {
-  items: NFTItem[];
-  addItem: (item: NFTItem) => void;
-  removeItem: (itemId: number) => void;
+  items: NFTAsset[];
+  addItem: (item: NFTAsset) => void;
+  removeItem: (itemId: string) => void;
   clearCart: () => void;
   getTotalPrice: () => number;
   getItemCount: () => number;
@@ -45,7 +38,10 @@ export const useCartStore = create<CartStore>()(
 
       getTotalPrice: () => {
         const state = get();
-        return state.items.reduce((total, item) => total + item.price, 0);
+        return state.items.reduce(
+          (total, item) => total + (item?.priority?.listingPrice || 0),
+          0
+        );
       },
 
       getItemCount: () => {

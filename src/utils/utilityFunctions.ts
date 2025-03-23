@@ -1,5 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
+import { ExtractedNFTAsset, NFTAsset } from "@/constants/types";
+import images from "@/public/images";
 import axios from "axios";
 
 export const getReturnPath = () => {
@@ -113,5 +115,103 @@ export const uploadToPinata = async (
     throw new Error(
       error.response?.data?.error || "Failed to upload metadata to IPFS"
     );
+  }
+};
+
+export const extractNFTProperties = (nft: NFTAsset): ExtractedNFTAsset => {
+  // Get the original minting price (or base price)
+  const originalPrice = Number(nft?.priority.price) || 0;
+
+  // Get the current listing price (what the user is selling it for)
+  const listingPrice = Number(nft?.priority.listingPrice) || 0;
+
+  // Calculate percentage difference
+  let percentageRate = 0;
+  let rateStatus = "stable";
+
+  if (originalPrice > 0 && listingPrice > 0) {
+    // Calculate percentage change relative to the smaller value
+    if (listingPrice > originalPrice) {
+      // Price increased: ((new - old) / old) * 100
+      percentageRate = ((listingPrice - originalPrice) / originalPrice) * 100;
+      rateStatus = "high";
+    } else if (listingPrice < originalPrice) {
+      // Price decreased: ((old - new) / old) * 100
+      percentageRate = ((originalPrice - listingPrice) / originalPrice) * 100;
+      rateStatus = "low";
+    } else {
+      // Prices are equal
+      percentageRate = 0;
+      rateStatus = "stable";
+    }
+
+    // Round to 2 decimal places
+    percentageRate = Math.round(percentageRate * 100) / 100;
+  }
+
+  return {
+    id: nft?.id,
+    price: nft?.priority.price,
+    discriminant: nft?.priority.discriminant,
+    image: nft?.content?.files
+      ? nft.content.files[0].uri
+      : images.marketplace.nftGold,
+    finalized: nft?.priority.finalized,
+    weight: nft?.priority.goldWeight,
+    owner: nft?.priority.owner,
+    name: nft?.content.metadata.name,
+    description: nft?.content.metadata.description,
+    symbol: nft?.content.metadata.symbol,
+    listed: nft?.priority.listed,
+    listingPrice: nft?.priority.listingPrice,
+    listingAccount: nft?.priority.listingAccount,
+    rate: {
+      value: percentageRate, // Properly signed value
+      absolute: percentageRate, // Always positive
+      status: rateStatus, // "high", "low", or "stable"
+      raw: listingPrice - originalPrice, // Raw price difference
+    },
+  };
+};
+
+export const refreshWindow = (delayInSeconds: number = 3) => {
+  if (typeof window === "undefined") {
+    return () => {};
+  }
+
+  console.log(`Window will refresh in ${delayInSeconds} seconds...`);
+
+  // Schedule the refresh
+  const timeoutId = setTimeout(() => {
+    console.log("Refreshing window now...");
+    window.location.reload();
+  }, delayInSeconds * 1000);
+
+  // Return a function to cancel the refresh if needed
+  return () => {
+    console.log("Cancelled scheduled window refresh");
+    clearTimeout(timeoutId);
+  };
+};
+
+export const scrollToTop = ({
+  height = 50,
+  id,
+  type = "scrollTo",
+}: {
+  height?: number;
+  id: string;
+  type?: "scrollTo" | "scrollIntoView";
+}) => {
+  const element = document.getElementById(id);
+  if (element) {
+    if (type === "scrollTo") {
+      const yOffset = -height;
+      const y =
+        element.getBoundingClientRect().top + window.pageYOffset + yOffset;
+      window.scrollTo({ top: y, behavior: "smooth" });
+    } else if (type === "scrollIntoView") {
+      element.scrollIntoView({ behavior: "smooth", block: "start" });
+    }
   }
 };

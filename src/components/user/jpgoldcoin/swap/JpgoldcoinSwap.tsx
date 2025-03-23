@@ -246,7 +246,7 @@ const JpgoldcoinSwap = () => {
 
             <div className="flex justify-between items-center">
               <span className="text-base text-[#282928] dark:text-white/70">
-                Fee (0.15%)
+                text-white{" "}
               </span>
               <span className="text-base text-[#050706] font-semibold dark:text-white">
                 $8.21

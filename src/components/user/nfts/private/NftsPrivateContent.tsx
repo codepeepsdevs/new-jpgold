@@ -5,18 +5,24 @@ import UserCard from "@/components/UserCard";
 import { IoWalletOutline } from "react-icons/io5";
 import NFTCard from "@/components/cards/NFTCards";
 import { useWalletInfo } from "@/hooks/useWalletInfo";
-import { useGetListedNfts } from "@/api/jpgnft/jpgnft.queries";
+import { useGetNftsByOwner } from "@/api/jpgnft/jpgnft.queries";
+import { SortByEnum, SortDirectionEnum } from "@/api/jpgnft/jpgnft.types";
 import Pagination from "@/components/common/Pagination";
 import { useState } from "react";
 import SkeletonComponent from "@/components/Skeleton";
+import { scrollToTop } from "@/utils/utilityFunctions";
 
-const NftsListedContent = () => {
+const NftsPrivateContent = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(8);
 
   const { address, connected } = useWalletInfo();
-  const { nftData, isLoading } = useGetListedNfts({
-    owner: address!,
+  const { nftData, isLoading } = useGetNftsByOwner({
+    address: address!,
+    sortBy: {
+      sortBy: SortByEnum.CREATED,
+      sortDirection: SortDirectionEnum.DESC,
+    },
     page: currentPage,
     limit: itemsPerPage,
   });
@@ -25,35 +31,25 @@ const NftsListedContent = () => {
 
   const handlePageChange = (page: number) => {
     setCurrentPage(page);
-    const element = document.getElementById("listed-nfts");
-    if (element) {
-      // Add a small offset to account for any fixed headers
-      const yOffset = -100; // Adjust based on your header height
-      const y =
-        element.getBoundingClientRect().top + window.pageYOffset + yOffset;
-      window.scrollTo({ top: y, behavior: "smooth" });
-    }
+    setTimeout(() => {
+      scrollToTop({
+        id: "my-nfts",
+        type: "scrollIntoView",
+      });
+    }, 10);
   };
 
   const handleItemsPerPageChange = (items: number) => {
     setItemsPerPage(items);
-    const element = document.getElementById("listed-nfts");
-    if (element) {
-      // Add a small offset to account for any fixed headers
-      const yOffset = -100; // Adjust based on your header height
-      const y =
-        element.getBoundingClientRect().top + window.pageYOffset + yOffset;
-      window.scrollTo({ top: y, behavior: "smooth" });
-    }
   };
 
   return (
-    <div id="listed-nfts" className="space-y-6">
+    <div id="" className="h-full min-h-screen space-y-6">
       <UserCard>
         <div className="px-2.5 2xs:px-4 py-1 2xs:py-4 sm:px-6 sm:py-6">
           {connected && hasNFTs && (
             <h2 className="text-2xl font-bold dark:text-white mb-6">
-              Listed NFTS
+              Private NFTS
             </h2>
           )}
 
@@ -82,16 +78,16 @@ const NftsListedContent = () => {
                         <IoWalletOutline size={80} />
                       </div>
                       <h3 className="text-xl font-semibold text-[#050706] dark:text-white mb-2">
-                        You don&apos;t have any listed NFT yet
+                        You don&apos;t have any private NFT yet
                       </h3>
                       <p className="text-base text-[#5A5A5A] dark:text-gray-400 mb-6">
-                        Add NFT to your listed collection
+                        Add NFT to your private collection
                       </p>
                       <Link
-                        href="/user/nfts/private"
+                        href="/user/jpgoldnft/buy"
                         className="inline-flex items-center font-semibold justify-center rounded-full px-10 py-3 bg-black dark:bg-gold-200 text-white transition-colors"
                       >
-                        List NFT
+                        Buy NFT
                       </Link>
                     </div>
                   ) : (
@@ -114,7 +110,7 @@ const NftsListedContent = () => {
                 Connect Solana Wallet{" "}
               </h3>
               <p className="text-base text-[#5A5A5A] dark:text-gray-400 mb-6">
-                To view your Listed Japaul gold NFTs
+                To view your private Japaul gold NFTs
               </p>
             </div>
           )}
@@ -134,4 +130,4 @@ const NftsListedContent = () => {
   );
 };
 
-export default NftsListedContent;
+export default NftsPrivateContent;

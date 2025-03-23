@@ -14,6 +14,7 @@ const Content = ({ children }: { children: React.ReactNode }) => {
     }
     return pathname.startsWith(item.path); // Match paths with dynamic segments
   });
+
   return (
     <div
       className={classNames(

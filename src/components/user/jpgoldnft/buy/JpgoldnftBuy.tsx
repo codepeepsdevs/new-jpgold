@@ -8,7 +8,7 @@ import { IoSwapVertical } from "react-icons/io5";
 import icons from "@/public/icons";
 import useWeb3ModalStore from "@/store/web3Modal.store";
 import { useWallet } from "@solana/wallet-adapter-react";
-import { useGetGoldPrice } from "@/api/metal-price/metal-price.queries";
+
 import { useWalletInfo } from "@/hooks/useWalletInfo";
 import SkeletonComponent from "@/components/Skeleton";
 import {
@@ -33,6 +33,8 @@ import { ErrorResponse } from "@/api/type";
 import SuccessToast from "@/components/toast/SuccessToast";
 import { dynamicFrontendUrl } from "@/constants";
 import { loadStripe } from "@stripe/stripe-js";
+import { useQueryClient } from "@tanstack/react-query";
+import { useSimpleGoldPrice } from "@/api/metal-price/metal-price.queries";
 
 interface PaymentOption {
   value: string;
@@ -84,6 +86,8 @@ export default function JpgoldnftBuy() {
 }
 
 const JpgoldNftBuyComponent = () => {
+  const queryClient = useQueryClient();
+
   const stripe = useStripe();
   const { address, connected } = useWalletInfo();
   const { chain } = useWeb3ModalStore();
@@ -204,17 +208,13 @@ const JpgoldNftBuyComponent = () => {
     }
   }, [chain]);
 
-  const { value, isLoading, isError } = useGetGoldPrice({
-    quantity: Number(quantity),
-  });
+  const { value, loading: quantityPriceLoading } = useSimpleGoldPrice(
+    Number(quantity)
+  );
 
-  const quantityPriceLoading = isLoading && !isError;
+  const { value: oneJpgcValue } = useSimpleGoldPrice(1);
 
-  const { value: oneJpgcValue } = useGetGoldPrice({
-    quantity: 1,
-  });
-
-  const fee = value * 0.0015;
+  const fee = value * 0.03;
   const total = value + fee;
 
   const handleQuantityChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -299,9 +299,12 @@ const JpgoldNftBuyComponent = () => {
           toast.error("An error occurred while minting the NFT");
           console.error("Minting error:", error);
           setIsSubmitting(false);
+          setQuantity("");
         } finally {
           setIsSubmitting(false);
         }
+
+        return;
       case "cryptomus":
         cryptomusCheckout({
           amount: formatNumberWithoutExponential(total, 3),
@@ -311,7 +314,7 @@ const JpgoldNftBuyComponent = () => {
           url_return: `${dynamicFrontendUrl}/user/jpgoldcoin/crypto`,
           url_success: `${dynamicFrontendUrl}/payment/success`,
           fee: Number(formatNumberWithoutExponential(fee, 3)),
-          type: "jpgc",
+          type: "jpgnft",
         });
         return;
       case "stripe":
@@ -327,6 +330,7 @@ const JpgoldNftBuyComponent = () => {
         });
         return;
     }
+    queryClient.invalidateQueries({ queryKey: ["get-wallet-nfts"] });
   };
 
   return (
@@ -495,15 +499,21 @@ const JpgoldNftBuyComponent = () => {
                 ${formatNumberWithoutExponential(value, 3)}
               </span>
             </div>
-            <hr className="dark:border-[#3D3D3D]" />
-            <div className="flex justify-between items-center">
-              <span className="text-base text-[#282928] dark:text-white/70">
-                Fee (0.15%)
-              </span>
-              <span className="text-base text-[#050706] font-semibold dark:text-white">
-                ${formatNumberWithoutExponential(fee, 3)}
-              </span>
-            </div>
+            {selectedPayment.value !== "wallet" && (
+              <>
+                {" "}
+                <hr className="dark:border-[#3D3D3D]" />
+                <div className="flex justify-between items-center">
+                  <span className="text-base text-[#282928] dark:text-white/70">
+                    Fee (3%)
+                  </span>
+                  <span className="text-base text-[#050706] font-semibold dark:text-white">
+                    ${formatNumberWithoutExponential(fee, 3)}
+                  </span>
+                </div>
+              </>
+            )}
+
             <hr className="dark:border-[#3D3D3D]" />
 
             <div className="flex justify-between items-center pt-4">
