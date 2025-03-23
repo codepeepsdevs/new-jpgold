@@ -22,9 +22,22 @@ export const useGetGoldPrice = ({ quantity }: { quantity: number }) => {
   const { data, isError, isSuccess, error, isLoading } = useQuery({
     queryKey: ["get-gold-price", { quantity }],
     queryFn: () => getGoldPriceRequest({ quantity }),
-    enabled: quantity !== 0,
+    enabled: quantity !== undefined && quantity !== null && quantity !== 0,
   });
   const value: number = data?.data;
 
   return { value, isError, isSuccess, error, isLoading };
+};
+
+export const useSimpleGoldPrice = (amount: number) => {
+  const { value, isLoading, isError } = useGetGoldPrice({
+    quantity: amount,
+  });
+
+  const loading = isLoading && !isError;
+
+  return {
+    value,
+    loading,
+  };
 };

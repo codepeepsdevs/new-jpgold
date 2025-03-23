@@ -1,5 +1,5 @@
 {
-  "address": "ETFXiX5XKL9oahfeDgmBVYg9e5SLgMwqPr1sBGboUC4o",
+  "address": "78TGdayzTnEPi8UVMeRgJYSx6uawNB3CHTrcBBMM2gDK",
   "metadata": {
     "name": "nft_manager",
     "version": "0.1.0",
@@ -108,12 +108,6 @@
       "discriminator": [119, 13, 183, 17, 194, 243, 38, 31],
       "accounts": [
         {
-          "name": "gold_price_update"
-        },
-        {
-          "name": "sol_price_update"
-        },
-        {
           "name": "token_program",
           "address": "TokenzQdBNbLqP5VEhdkAS6EPFLC1PHnBqCXEpPxuEb"
         },
@@ -171,19 +165,7 @@
           }
         },
         {
-          "name": "collection",
-          "pda": {
-            "seeds": [
-              {
-                "kind": "const",
-                "value": [99, 111, 108, 108, 116]
-              }
-            ]
-          }
-        },
-        {
           "name": "nft_manager",
-          "writable": true,
           "pda": {
             "seeds": [
               {
@@ -241,17 +223,6 @@
             ]
           },
           "relations": ["listing"]
-        },
-        {
-          "name": "collection",
-          "pda": {
-            "seeds": [
-              {
-                "kind": "const",
-                "value": [99, 111, 108, 108, 116]
-              }
-            ]
-          }
         },
         {
           "name": "listing",
@@ -824,16 +795,18 @@
       "discriminator": [246, 111, 6, 215, 204, 212, 172, 66],
       "accounts": [
         {
-          "name": "associated_token_program",
-          "address": "ATokenGPvbdGVxr1b2hvZbsiqW5xWH25efTNsLJA8knL"
+          "name": "system_program",
+          "address": "11111111111111111111111111111111"
         },
         {
           "name": "token_program",
           "address": "TokenzQdBNbLqP5VEhdkAS6EPFLC1PHnBqCXEpPxuEb"
         },
         {
-          "name": "system_program",
-          "address": "11111111111111111111111111111111"
+          "name": "gold_price_update"
+        },
+        {
+          "name": "sol_price_update"
         },
         {
           "name": "signer",
@@ -906,6 +879,18 @@
               {
                 "kind": "account",
                 "path": "mint"
+              }
+            ]
+          }
+        },
+        {
+          "name": "fees_collector",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [102, 99, 111, 108, 116]
               }
             ]
           }
@@ -1025,7 +1010,16 @@
           }
         }
       ],
-      "args": []
+      "args": [
+        {
+          "name": "args",
+          "type": {
+            "defined": {
+              "name": "InitializeNFTManagerArgs"
+            }
+          }
+        }
+      ]
     },
     {
       "name": "list_nft",
@@ -1282,6 +1276,54 @@
       ]
     },
     {
+      "name": "update_fees",
+      "discriminator": [225, 27, 13, 6, 69, 84, 172, 191],
+      "accounts": [
+        {
+          "name": "system_program",
+          "address": "11111111111111111111111111111111"
+        },
+        {
+          "name": "signer",
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "fees_collector",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [102, 99, 111, 108, 116]
+              }
+            ]
+          }
+        },
+        {
+          "name": "nft_manager",
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [110, 102, 116, 109, 103]
+              }
+            ]
+          }
+        }
+      ],
+      "args": [
+        {
+          "name": "args",
+          "type": {
+            "defined": {
+              "name": "UpdateFeesArgs"
+            }
+          }
+        }
+      ]
+    },
+    {
       "name": "update_listing_price",
       "discriminator": [103, 80, 184, 80, 159, 24, 94, 138],
       "accounts": [
@@ -1498,72 +1540,40 @@
   ],
   "events": [
     {
-      "name": "CollectionMinted",
-      "discriminator": [215, 227, 46, 127, 13, 18, 180, 202]
+      "name": "BuyNFTEvent",
+      "discriminator": [219, 69, 16, 165, 22, 85, 241, 18]
     },
     {
-      "name": "FeesWithdrawn",
-      "discriminator": [234, 15, 0, 119, 148, 241, 40, 21]
+      "name": "CreateUserAccountEvent",
+      "discriminator": [64, 18, 124, 181, 150, 183, 218, 78]
     },
     {
-      "name": "FractionalizeFinalize",
-      "discriminator": [101, 126, 219, 111, 56, 61, 99, 174]
+      "name": "DelistNFTEvent",
+      "discriminator": [199, 0, 198, 10, 167, 176, 72, 246]
     },
     {
-      "name": "ListingPriceUpdated",
-      "discriminator": [85, 181, 185, 147, 101, 54, 37, 147]
+      "name": "FinalizeFractionalizeNFTEvent",
+      "discriminator": [183, 155, 172, 178, 4, 240, 187, 222]
     },
     {
-      "name": "MetadataUpdated",
-      "discriminator": [132, 36, 215, 246, 166, 90, 189, 44]
+      "name": "FinalizeMintNFTEvent",
+      "discriminator": [171, 239, 151, 250, 5, 35, 39, 192]
     },
     {
-      "name": "MintFeesWithdrawn",
-      "discriminator": [181, 87, 221, 111, 123, 181, 95, 124]
+      "name": "FractionalizeNFTEvent",
+      "discriminator": [48, 119, 67, 18, 122, 135, 83, 37]
     },
     {
-      "name": "MintFinalize",
-      "discriminator": [76, 1, 211, 252, 153, 37, 98, 165]
+      "name": "ListNFTEvent",
+      "discriminator": [198, 238, 53, 99, 190, 86, 159, 141]
     },
     {
-      "name": "NFTFractionalized",
-      "discriminator": [140, 249, 121, 129, 134, 106, 243, 63]
+      "name": "MintNFTEvent",
+      "discriminator": [61, 132, 188, 51, 125, 206, 152, 18]
     },
     {
-      "name": "NftBought",
-      "discriminator": [153, 244, 210, 5, 141, 116, 133, 54]
-    },
-    {
-      "name": "NftBurned",
-      "discriminator": [98, 90, 30, 11, 112, 99, 246, 155]
-    },
-    {
-      "name": "NftDelisted",
-      "discriminator": [248, 161, 199, 108, 92, 55, 160, 180]
-    },
-    {
-      "name": "NftListed",
-      "discriminator": [115, 235, 107, 89, 89, 231, 135, 26]
-    },
-    {
-      "name": "NftManagerInitialized",
-      "discriminator": [213, 212, 186, 26, 113, 127, 216, 232]
-    },
-    {
-      "name": "NftMinted",
-      "discriminator": [175, 29, 105, 0, 195, 2, 245, 38]
-    },
-    {
-      "name": "OwnershipTransferInitialized",
-      "discriminator": [145, 84, 129, 196, 180, 58, 74, 143]
-    },
-    {
-      "name": "OwnershipTransferred",
-      "discriminator": [172, 61, 205, 183, 250, 50, 38, 98]
-    },
-    {
-      "name": "UserAccountCreated",
-      "discriminator": [16, 133, 225, 182, 145, 219, 182, 3]
+      "name": "UpdateListingPriceEvent",
+      "discriminator": [59, 123, 64, 39, 174, 247, 30, 195]
     },
     {
       "name": "UserWithdrawEvent",
@@ -1664,21 +1674,25 @@
   ],
   "types": [
     {
-      "name": "CollectionMinted",
+      "name": "BuyNFTEvent",
       "type": {
         "kind": "struct",
         "fields": [
+          {
+            "name": "buyer",
+            "type": "pubkey"
+          },
+          {
+            "name": "seller",
+            "type": "pubkey"
+          },
           {
             "name": "mint",
             "type": "pubkey"
           },
           {
-            "name": "metadata",
-            "type": "pubkey"
-          },
-          {
-            "name": "token_account",
-            "type": "pubkey"
+            "name": "price",
+            "type": "u64"
           }
         ]
       }
@@ -1704,6 +1718,52 @@
       }
     },
     {
+      "name": "CreateUserAccountEvent",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "user_account",
+            "type": "pubkey"
+          },
+          {
+            "name": "owner",
+            "type": "pubkey"
+          }
+        ]
+      }
+    },
+    {
+      "name": "DelistNFTEvent",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "owner",
+            "type": "pubkey"
+          },
+          {
+            "name": "mint",
+            "type": "pubkey"
+          }
+        ]
+      }
+    },
+    {
+      "name": "Fees",
+      "type": {
+        "kind": "enum",
+        "variants": [
+          {
+            "name": "FractionalizeFee"
+          },
+          {
+            "name": "SellFee"
+          }
+        ]
+      }
+    },
+    {
       "name": "FeesCollector",
       "type": {
         "kind": "struct",
@@ -1711,18 +1771,18 @@
           {
             "name": "bump",
             "type": "u8"
-          }
-        ]
-      }
-    },
-    {
-      "name": "FeesWithdrawn",
-      "type": {
-        "kind": "struct",
-        "fields": [
+          },
           {
-            "name": "amount",
-            "type": "u64"
+            "name": "fractionalize_fee",
+            "type": "u32"
+          },
+          {
+            "name": "sell_fee",
+            "type": "u32"
+          },
+          {
+            "name": "fees_decimals",
+            "type": "u8"
           }
         ]
       }
@@ -1760,6 +1820,22 @@
       }
     },
     {
+      "name": "FinalizeFractionalizeNFTEvent",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "mint",
+            "type": "pubkey"
+          },
+          {
+            "name": "new_mint",
+            "type": "pubkey"
+          }
+        ]
+      }
+    },
+    {
       "name": "FinalizeMintData",
       "type": {
         "kind": "struct",
@@ -1780,7 +1856,7 @@
       }
     },
     {
-      "name": "FractionalizeFinalize",
+      "name": "FinalizeMintNFTEvent",
       "type": {
         "kind": "struct",
         "fields": [
@@ -1789,8 +1865,8 @@
             "type": "pubkey"
           },
           {
-            "name": "new_mint",
-            "type": "pubkey"
+            "name": "weight",
+            "type": "u64"
           }
         ]
       }
@@ -1824,6 +1900,66 @@
       }
     },
     {
+      "name": "FractionalizeNFTEvent",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "mint",
+            "type": "pubkey"
+          },
+          {
+            "name": "finalize_data",
+            "type": "pubkey"
+          },
+          {
+            "name": "discriminant",
+            "type": "u64"
+          }
+        ]
+      }
+    },
+    {
+      "name": "InitializeNFTManagerArgs",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "fractionalize_fee",
+            "type": "u32"
+          },
+          {
+            "name": "sell_fee",
+            "type": "u32"
+          }
+        ]
+      }
+    },
+    {
+      "name": "ListNFTEvent",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "owner",
+            "type": "pubkey"
+          },
+          {
+            "name": "listing",
+            "type": "pubkey"
+          },
+          {
+            "name": "mint",
+            "type": "pubkey"
+          },
+          {
+            "name": "price",
+            "type": "u64"
+          }
+        ]
+      }
+    },
+    {
       "name": "Listing",
       "type": {
         "kind": "struct",
@@ -1848,46 +1984,6 @@
       }
     },
     {
-      "name": "ListingPriceUpdated",
-      "type": {
-        "kind": "struct",
-        "fields": [
-          {
-            "name": "listing",
-            "type": "pubkey"
-          },
-          {
-            "name": "new_price",
-            "type": "u64"
-          }
-        ]
-      }
-    },
-    {
-      "name": "MetadataUpdated",
-      "type": {
-        "kind": "struct",
-        "fields": [
-          {
-            "name": "mint",
-            "type": "pubkey"
-          },
-          {
-            "name": "field_updated",
-            "type": {
-              "defined": {
-                "name": "TokenMetadataFields"
-              }
-            }
-          },
-          {
-            "name": "new_value",
-            "type": "string"
-          }
-        ]
-      }
-    },
-    {
       "name": "MintFeesCollector",
       "type": {
         "kind": "struct",
@@ -1895,34 +1991,6 @@
           {
             "name": "bump",
             "type": "u8"
-          }
-        ]
-      }
-    },
-    {
-      "name": "MintFeesWithdrawn",
-      "type": {
-        "kind": "struct",
-        "fields": [
-          {
-            "name": "amount",
-            "type": "u64"
-          }
-        ]
-      }
-    },
-    {
-      "name": "MintFinalize",
-      "type": {
-        "kind": "struct",
-        "fields": [
-          {
-            "name": "mint",
-            "type": "pubkey"
-          },
-          {
-            "name": "weight",
-            "type": "u64"
           }
         ]
       }
@@ -1952,7 +2020,7 @@
       }
     },
     {
-      "name": "NFTFractionalized",
+      "name": "MintNFTEvent",
       "type": {
         "kind": "struct",
         "fields": [
@@ -1963,6 +2031,14 @@
           {
             "name": "finalize_data",
             "type": "pubkey"
+          },
+          {
+            "name": "metadata",
+            "type": "pubkey"
+          },
+          {
+            "name": "price",
+            "type": "u64"
           },
           {
             "name": "discriminant",
@@ -1997,166 +2073,6 @@
           {
             "name": "discriminant",
             "type": "u64"
-          }
-        ]
-      }
-    },
-    {
-      "name": "NftBought",
-      "type": {
-        "kind": "struct",
-        "fields": [
-          {
-            "name": "buyer",
-            "type": "pubkey"
-          },
-          {
-            "name": "seller",
-            "type": "pubkey"
-          },
-          {
-            "name": "mint",
-            "type": "pubkey"
-          },
-          {
-            "name": "price",
-            "type": "u64"
-          }
-        ]
-      }
-    },
-    {
-      "name": "NftBurned",
-      "type": {
-        "kind": "struct",
-        "fields": [
-          {
-            "name": "owner",
-            "type": "pubkey"
-          },
-          {
-            "name": "mint",
-            "type": "pubkey"
-          },
-          {
-            "name": "amount",
-            "type": "u64"
-          }
-        ]
-      }
-    },
-    {
-      "name": "NftDelisted",
-      "type": {
-        "kind": "struct",
-        "fields": [
-          {
-            "name": "owner",
-            "type": "pubkey"
-          },
-          {
-            "name": "mint",
-            "type": "pubkey"
-          }
-        ]
-      }
-    },
-    {
-      "name": "NftListed",
-      "type": {
-        "kind": "struct",
-        "fields": [
-          {
-            "name": "owner",
-            "type": "pubkey"
-          },
-          {
-            "name": "listing",
-            "type": "pubkey"
-          },
-          {
-            "name": "price",
-            "type": "u64"
-          }
-        ]
-      }
-    },
-    {
-      "name": "NftManagerInitialized",
-      "type": {
-        "kind": "struct",
-        "fields": [
-          {
-            "name": "manager",
-            "type": "pubkey"
-          },
-          {
-            "name": "fees_collector",
-            "type": "pubkey"
-          },
-          {
-            "name": "mint_fees_collector",
-            "type": "pubkey"
-          }
-        ]
-      }
-    },
-    {
-      "name": "NftMinted",
-      "type": {
-        "kind": "struct",
-        "fields": [
-          {
-            "name": "mint",
-            "type": "pubkey"
-          },
-          {
-            "name": "finalize_data",
-            "type": "pubkey"
-          },
-          {
-            "name": "metadata",
-            "type": "pubkey"
-          },
-          {
-            "name": "price",
-            "type": "u64"
-          },
-          {
-            "name": "discriminant",
-            "type": "u64"
-          }
-        ]
-      }
-    },
-    {
-      "name": "OwnershipTransferInitialized",
-      "type": {
-        "kind": "struct",
-        "fields": [
-          {
-            "name": "previous_owner",
-            "type": "pubkey"
-          },
-          {
-            "name": "future_owner",
-            "type": "pubkey"
-          }
-        ]
-      }
-    },
-    {
-      "name": "OwnershipTransferred",
-      "type": {
-        "kind": "struct",
-        "fields": [
-          {
-            "name": "previous_owner",
-            "type": "pubkey"
-          },
-          {
-            "name": "new_owner",
-            "type": "pubkey"
           }
         ]
       }
@@ -2282,6 +2198,26 @@
       }
     },
     {
+      "name": "UpdateFeesArgs",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "fee",
+            "type": {
+              "defined": {
+                "name": "Fees"
+              }
+            }
+          },
+          {
+            "name": "new_fee",
+            "type": "u32"
+          }
+        ]
+      }
+    },
+    {
       "name": "UpdateListingPriceArgs",
       "type": {
         "kind": "struct",
@@ -2292,6 +2228,22 @@
           },
           {
             "name": "discriminant",
+            "type": "u64"
+          }
+        ]
+      }
+    },
+    {
+      "name": "UpdateListingPriceEvent",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "listing",
+            "type": "pubkey"
+          },
+          {
+            "name": "new_price",
             "type": "u64"
           }
         ]
@@ -2333,22 +2285,6 @@
           {
             "name": "bump",
             "type": "u8"
-          }
-        ]
-      }
-    },
-    {
-      "name": "UserAccountCreated",
-      "type": {
-        "kind": "struct",
-        "fields": [
-          {
-            "name": "user_account",
-            "type": "pubkey"
-          },
-          {
-            "name": "owner",
-            "type": "pubkey"
           }
         ]
       }
@@ -2452,7 +2388,7 @@
     {
       "name": "MAX_AGE",
       "type": "u64",
-      "value": "86400"
+      "value": "259200"
     },
     {
       "name": "MINT_FEES_COLLECTOR_TAG",
