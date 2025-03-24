@@ -9,12 +9,10 @@ import UserCard from "@/components/UserCard";
 import { NFTAsset } from "@/constants/types";
 import { useWalletInfo } from "@/hooks/useWalletInfo";
 import { fractionalizeNft, getProvider } from "@/services/jpgnft/jpgnft";
-import { NftManager } from "@/services/jpgnft/jpgnft.types";
 import {
   formatNumberWithoutExponential,
   uploadToPinata,
 } from "@/utils/utilityFunctions";
-import { Program } from "@metaplex-foundation/umi";
 import { useWallet } from "@solana/wallet-adapter-react";
 import { useQueryClient } from "@tanstack/react-query";
 import BN from "bn.js";
@@ -235,41 +233,7 @@ const JpgoldnftFractionalize = () => {
     }
   };
 
-  // const { publicKey, sendTransaction, signTransaction } = useWallet();
-
-  // const program = useMemo(
-  //   () => getProvider(publicKey, signTransaction, sendTransaction),
-  //   [publicKey, signTransaction, sendTransaction]
-  // );
-
-  const fractionalize = async () => {
-    try {
-      const discriminant = new BN(12345); // Replace with actual discriminant
-      const fractionalizeArgs = {
-        discriminant,
-        part_a: {
-          name: `${selectedNFT} - Part A`,
-          symbol: "PARTA",
-          uri: "https://example.com/metadataA.json", // Replace with actual URI
-          weight: new BN(fraction1),
-        },
-        part_b: {
-          name: `${selectedNFT} - Part B`,
-          symbol: "PARTB",
-          uri: "https://example.com/metadataB.json", // Replace with actual URI
-          weight: new BN(fraction2),
-        },
-      };
-
-      console.log("Starting fractionalization...");
-      console.log({ program, discriminant, fractionalizeArgs })
-
-      const result = await fractionalizeNft(program as Program<NftManager>, discriminant, fractionalizeArgs);
-      console.log("Fractionalization successful:", result);
-    } catch (error) {
-      console.error("Error during fractionalization:", error);
-    }
-  };
+  console.log({ setSelectedNFT });
 
   return (
     <div className="h-screen overflow-x-hidden flex flex-col md:flex-row lg:flex-col xl:flex-row gap-4">
