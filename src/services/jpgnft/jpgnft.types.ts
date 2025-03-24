@@ -5,7 +5,7 @@
  * IDL can be found at `target/idl/nft_manager.json`.
  */
 export type NftManager = {
-  address: "ETFXiX5XKL9oahfeDgmBVYg9e5SLgMwqPr1sBGboUC4o";
+  address: "78TGdayzTnEPi8UVMeRgJYSx6uawNB3CHTrcBBMM2gDK";
   metadata: {
     name: "nftManager";
     version: "0.1.0";
@@ -114,12 +114,6 @@ export type NftManager = {
       discriminator: [119, 13, 183, 17, 194, 243, 38, 31];
       accounts: [
         {
-          name: "goldPriceUpdate";
-        },
-        {
-          name: "solPriceUpdate";
-        },
-        {
           name: "tokenProgram";
           address: "TokenzQdBNbLqP5VEhdkAS6EPFLC1PHnBqCXEpPxuEb";
         },
@@ -206,19 +200,7 @@ export type NftManager = {
           };
         },
         {
-          name: "collection";
-          pda: {
-            seeds: [
-              {
-                kind: "const";
-                value: [99, 111, 108, 108, 116];
-              }
-            ];
-          };
-        },
-        {
           name: "nftManager";
-          writable: true;
           pda: {
             seeds: [
               {
@@ -276,17 +258,6 @@ export type NftManager = {
             ];
           };
           relations: ["listing"];
-        },
-        {
-          name: "collection";
-          pda: {
-            seeds: [
-              {
-                kind: "const";
-                value: [99, 111, 108, 108, 116];
-              }
-            ];
-          };
         },
         {
           name: "listing";
@@ -946,16 +917,18 @@ export type NftManager = {
       discriminator: [246, 111, 6, 215, 204, 212, 172, 66];
       accounts: [
         {
-          name: "associatedTokenProgram";
-          address: "ATokenGPvbdGVxr1b2hvZbsiqW5xWH25efTNsLJA8knL";
+          name: "systemProgram";
+          address: "11111111111111111111111111111111";
         },
         {
           name: "tokenProgram";
           address: "TokenzQdBNbLqP5VEhdkAS6EPFLC1PHnBqCXEpPxuEb";
         },
         {
-          name: "systemProgram";
-          address: "11111111111111111111111111111111";
+          name: "goldPriceUpdate";
+        },
+        {
+          name: "solPriceUpdate";
         },
         {
           name: "signer";
@@ -1057,6 +1030,18 @@ export type NftManager = {
               {
                 kind: "account";
                 path: "mint";
+              }
+            ];
+          };
+        },
+        {
+          name: "feesCollector";
+          writable: true;
+          pda: {
+            seeds: [
+              {
+                kind: "const";
+                value: [102, 99, 111, 108, 116];
               }
             ];
           };
@@ -1176,7 +1161,16 @@ export type NftManager = {
           };
         }
       ];
-      args: [];
+      args: [
+        {
+          name: "args";
+          type: {
+            defined: {
+              name: "initializeNftManagerArgs";
+            };
+          };
+        }
+      ];
     },
     {
       name: "listNft";
@@ -1491,6 +1485,54 @@ export type NftManager = {
       ];
     },
     {
+      name: "updateFees";
+      discriminator: [225, 27, 13, 6, 69, 84, 172, 191];
+      accounts: [
+        {
+          name: "systemProgram";
+          address: "11111111111111111111111111111111";
+        },
+        {
+          name: "signer";
+          writable: true;
+          signer: true;
+        },
+        {
+          name: "feesCollector";
+          writable: true;
+          pda: {
+            seeds: [
+              {
+                kind: "const";
+                value: [102, 99, 111, 108, 116];
+              }
+            ];
+          };
+        },
+        {
+          name: "nftManager";
+          pda: {
+            seeds: [
+              {
+                kind: "const";
+                value: [110, 102, 116, 109, 103];
+              }
+            ];
+          };
+        }
+      ];
+      args: [
+        {
+          name: "args";
+          type: {
+            defined: {
+              name: "updateFeesArgs";
+            };
+          };
+        }
+      ];
+    },
+    {
       name: "updateListingPrice";
       discriminator: [103, 80, 184, 80, 159, 24, 94, 138];
       accounts: [
@@ -1707,72 +1749,40 @@ export type NftManager = {
   ];
   events: [
     {
-      name: "collectionMinted";
-      discriminator: [215, 227, 46, 127, 13, 18, 180, 202];
+      name: "buyNftEvent";
+      discriminator: [219, 69, 16, 165, 22, 85, 241, 18];
     },
     {
-      name: "feesWithdrawn";
-      discriminator: [234, 15, 0, 119, 148, 241, 40, 21];
+      name: "createUserAccountEvent";
+      discriminator: [64, 18, 124, 181, 150, 183, 218, 78];
     },
     {
-      name: "fractionalizeFinalize";
-      discriminator: [101, 126, 219, 111, 56, 61, 99, 174];
+      name: "delistNftEvent";
+      discriminator: [199, 0, 198, 10, 167, 176, 72, 246];
     },
     {
-      name: "listingPriceUpdated";
-      discriminator: [85, 181, 185, 147, 101, 54, 37, 147];
+      name: "finalizeFractionalizeNftEvent";
+      discriminator: [183, 155, 172, 178, 4, 240, 187, 222];
     },
     {
-      name: "metadataUpdated";
-      discriminator: [132, 36, 215, 246, 166, 90, 189, 44];
+      name: "finalizeMintNftEvent";
+      discriminator: [171, 239, 151, 250, 5, 35, 39, 192];
     },
     {
-      name: "mintFeesWithdrawn";
-      discriminator: [181, 87, 221, 111, 123, 181, 95, 124];
+      name: "fractionalizeNftEvent";
+      discriminator: [48, 119, 67, 18, 122, 135, 83, 37];
     },
     {
-      name: "mintFinalize";
-      discriminator: [76, 1, 211, 252, 153, 37, 98, 165];
+      name: "listNftEvent";
+      discriminator: [198, 238, 53, 99, 190, 86, 159, 141];
     },
     {
-      name: "nftFractionalized";
-      discriminator: [140, 249, 121, 129, 134, 106, 243, 63];
+      name: "mintNftEvent";
+      discriminator: [61, 132, 188, 51, 125, 206, 152, 18];
     },
     {
-      name: "nftBought";
-      discriminator: [153, 244, 210, 5, 141, 116, 133, 54];
-    },
-    {
-      name: "nftBurned";
-      discriminator: [98, 90, 30, 11, 112, 99, 246, 155];
-    },
-    {
-      name: "nftDelisted";
-      discriminator: [248, 161, 199, 108, 92, 55, 160, 180];
-    },
-    {
-      name: "nftListed";
-      discriminator: [115, 235, 107, 89, 89, 231, 135, 26];
-    },
-    {
-      name: "nftManagerInitialized";
-      discriminator: [213, 212, 186, 26, 113, 127, 216, 232];
-    },
-    {
-      name: "nftMinted";
-      discriminator: [175, 29, 105, 0, 195, 2, 245, 38];
-    },
-    {
-      name: "ownershipTransferInitialized";
-      discriminator: [145, 84, 129, 196, 180, 58, 74, 143];
-    },
-    {
-      name: "ownershipTransferred";
-      discriminator: [172, 61, 205, 183, 250, 50, 38, 98];
-    },
-    {
-      name: "userAccountCreated";
-      discriminator: [16, 133, 225, 182, 145, 219, 182, 3];
+      name: "updateListingPriceEvent";
+      discriminator: [59, 123, 64, 39, 174, 247, 30, 195];
     },
     {
       name: "userWithdrawEvent";
@@ -1873,21 +1883,25 @@ export type NftManager = {
   ];
   types: [
     {
-      name: "collectionMinted";
+      name: "buyNftEvent";
       type: {
         kind: "struct";
         fields: [
+          {
+            name: "buyer";
+            type: "pubkey";
+          },
+          {
+            name: "seller";
+            type: "pubkey";
+          },
           {
             name: "mint";
             type: "pubkey";
           },
           {
-            name: "metadata";
-            type: "pubkey";
-          },
-          {
-            name: "tokenAccount";
-            type: "pubkey";
+            name: "price";
+            type: "u64";
           }
         ];
       };
@@ -1913,6 +1927,52 @@ export type NftManager = {
       };
     },
     {
+      name: "createUserAccountEvent";
+      type: {
+        kind: "struct";
+        fields: [
+          {
+            name: "userAccount";
+            type: "pubkey";
+          },
+          {
+            name: "owner";
+            type: "pubkey";
+          }
+        ];
+      };
+    },
+    {
+      name: "delistNftEvent";
+      type: {
+        kind: "struct";
+        fields: [
+          {
+            name: "owner";
+            type: "pubkey";
+          },
+          {
+            name: "mint";
+            type: "pubkey";
+          }
+        ];
+      };
+    },
+    {
+      name: "fees";
+      type: {
+        kind: "enum";
+        variants: [
+          {
+            name: "fractionalizeFee";
+          },
+          {
+            name: "sellFee";
+          }
+        ];
+      };
+    },
+    {
       name: "feesCollector";
       type: {
         kind: "struct";
@@ -1920,18 +1980,18 @@ export type NftManager = {
           {
             name: "bump";
             type: "u8";
-          }
-        ];
-      };
-    },
-    {
-      name: "feesWithdrawn";
-      type: {
-        kind: "struct";
-        fields: [
+          },
           {
-            name: "amount";
-            type: "u64";
+            name: "fractionalizeFee";
+            type: "u32";
+          },
+          {
+            name: "sellFee";
+            type: "u32";
+          },
+          {
+            name: "feesDecimals";
+            type: "u8";
           }
         ];
       };
@@ -1969,6 +2029,22 @@ export type NftManager = {
       };
     },
     {
+      name: "finalizeFractionalizeNftEvent";
+      type: {
+        kind: "struct";
+        fields: [
+          {
+            name: "mint";
+            type: "pubkey";
+          },
+          {
+            name: "newMint";
+            type: "pubkey";
+          }
+        ];
+      };
+    },
+    {
       name: "finalizeMintData";
       type: {
         kind: "struct";
@@ -1989,7 +2065,7 @@ export type NftManager = {
       };
     },
     {
-      name: "fractionalizeFinalize";
+      name: "finalizeMintNftEvent";
       type: {
         kind: "struct";
         fields: [
@@ -1998,8 +2074,8 @@ export type NftManager = {
             type: "pubkey";
           },
           {
-            name: "newMint";
-            type: "pubkey";
+            name: "weight";
+            type: "u64";
           }
         ];
       };
@@ -2033,6 +2109,66 @@ export type NftManager = {
       };
     },
     {
+      name: "fractionalizeNftEvent";
+      type: {
+        kind: "struct";
+        fields: [
+          {
+            name: "mint";
+            type: "pubkey";
+          },
+          {
+            name: "finalizeData";
+            type: "pubkey";
+          },
+          {
+            name: "discriminant";
+            type: "u64";
+          }
+        ];
+      };
+    },
+    {
+      name: "initializeNftManagerArgs";
+      type: {
+        kind: "struct";
+        fields: [
+          {
+            name: "fractionalizeFee";
+            type: "u32";
+          },
+          {
+            name: "sellFee";
+            type: "u32";
+          }
+        ];
+      };
+    },
+    {
+      name: "listNftEvent";
+      type: {
+        kind: "struct";
+        fields: [
+          {
+            name: "owner";
+            type: "pubkey";
+          },
+          {
+            name: "listing";
+            type: "pubkey";
+          },
+          {
+            name: "mint";
+            type: "pubkey";
+          },
+          {
+            name: "price";
+            type: "u64";
+          }
+        ];
+      };
+    },
+    {
       name: "listing";
       type: {
         kind: "struct";
@@ -2057,46 +2193,6 @@ export type NftManager = {
       };
     },
     {
-      name: "listingPriceUpdated";
-      type: {
-        kind: "struct";
-        fields: [
-          {
-            name: "listing";
-            type: "pubkey";
-          },
-          {
-            name: "newPrice";
-            type: "u64";
-          }
-        ];
-      };
-    },
-    {
-      name: "metadataUpdated";
-      type: {
-        kind: "struct";
-        fields: [
-          {
-            name: "mint";
-            type: "pubkey";
-          },
-          {
-            name: "fieldUpdated";
-            type: {
-              defined: {
-                name: "tokenMetadataFields";
-              };
-            };
-          },
-          {
-            name: "newValue";
-            type: "string";
-          }
-        ];
-      };
-    },
-    {
       name: "mintFeesCollector";
       type: {
         kind: "struct";
@@ -2104,34 +2200,6 @@ export type NftManager = {
           {
             name: "bump";
             type: "u8";
-          }
-        ];
-      };
-    },
-    {
-      name: "mintFeesWithdrawn";
-      type: {
-        kind: "struct";
-        fields: [
-          {
-            name: "amount";
-            type: "u64";
-          }
-        ];
-      };
-    },
-    {
-      name: "mintFinalize";
-      type: {
-        kind: "struct";
-        fields: [
-          {
-            name: "mint";
-            type: "pubkey";
-          },
-          {
-            name: "weight";
-            type: "u64";
           }
         ];
       };
@@ -2161,7 +2229,7 @@ export type NftManager = {
       };
     },
     {
-      name: "nftFractionalized";
+      name: "mintNftEvent";
       type: {
         kind: "struct";
         fields: [
@@ -2172,6 +2240,14 @@ export type NftManager = {
           {
             name: "finalizeData";
             type: "pubkey";
+          },
+          {
+            name: "metadata";
+            type: "pubkey";
+          },
+          {
+            name: "price";
+            type: "u64";
           },
           {
             name: "discriminant";
@@ -2206,166 +2282,6 @@ export type NftManager = {
           {
             name: "discriminant";
             type: "u64";
-          }
-        ];
-      };
-    },
-    {
-      name: "nftBought";
-      type: {
-        kind: "struct";
-        fields: [
-          {
-            name: "buyer";
-            type: "pubkey";
-          },
-          {
-            name: "seller";
-            type: "pubkey";
-          },
-          {
-            name: "mint";
-            type: "pubkey";
-          },
-          {
-            name: "price";
-            type: "u64";
-          }
-        ];
-      };
-    },
-    {
-      name: "nftBurned";
-      type: {
-        kind: "struct";
-        fields: [
-          {
-            name: "owner";
-            type: "pubkey";
-          },
-          {
-            name: "mint";
-            type: "pubkey";
-          },
-          {
-            name: "amount";
-            type: "u64";
-          }
-        ];
-      };
-    },
-    {
-      name: "nftDelisted";
-      type: {
-        kind: "struct";
-        fields: [
-          {
-            name: "owner";
-            type: "pubkey";
-          },
-          {
-            name: "mint";
-            type: "pubkey";
-          }
-        ];
-      };
-    },
-    {
-      name: "nftListed";
-      type: {
-        kind: "struct";
-        fields: [
-          {
-            name: "owner";
-            type: "pubkey";
-          },
-          {
-            name: "listing";
-            type: "pubkey";
-          },
-          {
-            name: "price";
-            type: "u64";
-          }
-        ];
-      };
-    },
-    {
-      name: "nftManagerInitialized";
-      type: {
-        kind: "struct";
-        fields: [
-          {
-            name: "manager";
-            type: "pubkey";
-          },
-          {
-            name: "feesCollector";
-            type: "pubkey";
-          },
-          {
-            name: "mintFeesCollector";
-            type: "pubkey";
-          }
-        ];
-      };
-    },
-    {
-      name: "nftMinted";
-      type: {
-        kind: "struct";
-        fields: [
-          {
-            name: "mint";
-            type: "pubkey";
-          },
-          {
-            name: "finalizeData";
-            type: "pubkey";
-          },
-          {
-            name: "metadata";
-            type: "pubkey";
-          },
-          {
-            name: "price";
-            type: "u64";
-          },
-          {
-            name: "discriminant";
-            type: "u64";
-          }
-        ];
-      };
-    },
-    {
-      name: "ownershipTransferInitialized";
-      type: {
-        kind: "struct";
-        fields: [
-          {
-            name: "previousOwner";
-            type: "pubkey";
-          },
-          {
-            name: "futureOwner";
-            type: "pubkey";
-          }
-        ];
-      };
-    },
-    {
-      name: "ownershipTransferred";
-      type: {
-        kind: "struct";
-        fields: [
-          {
-            name: "previousOwner";
-            type: "pubkey";
-          },
-          {
-            name: "newOwner";
-            type: "pubkey";
           }
         ];
       };
@@ -2491,6 +2407,26 @@ export type NftManager = {
       };
     },
     {
+      name: "updateFeesArgs";
+      type: {
+        kind: "struct";
+        fields: [
+          {
+            name: "fee";
+            type: {
+              defined: {
+                name: "fees";
+              };
+            };
+          },
+          {
+            name: "newFee";
+            type: "u32";
+          }
+        ];
+      };
+    },
+    {
       name: "updateListingPriceArgs";
       type: {
         kind: "struct";
@@ -2501,6 +2437,22 @@ export type NftManager = {
           },
           {
             name: "discriminant";
+            type: "u64";
+          }
+        ];
+      };
+    },
+    {
+      name: "updateListingPriceEvent";
+      type: {
+        kind: "struct";
+        fields: [
+          {
+            name: "listing";
+            type: "pubkey";
+          },
+          {
+            name: "newPrice";
             type: "u64";
           }
         ];
@@ -2542,22 +2494,6 @@ export type NftManager = {
           {
             name: "bump";
             type: "u8";
-          }
-        ];
-      };
-    },
-    {
-      name: "userAccountCreated";
-      type: {
-        kind: "struct";
-        fields: [
-          {
-            name: "userAccount";
-            type: "pubkey";
-          },
-          {
-            name: "owner";
-            type: "pubkey";
           }
         ];
       };
@@ -2661,7 +2597,7 @@ export type NftManager = {
     {
       name: "maxAge";
       type: "u64";
-      value: "86400";
+      value: "259200";
     },
     {
       name: "mintFeesCollectorTag";

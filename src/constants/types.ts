@@ -1,3 +1,5 @@
+import { DasApiAsset } from "@metaplex-foundation/digital-asset-standard-api";
+import BN from "bn.js";
 import { StaticImageData } from "next/image";
 
 export interface IResponse {
@@ -44,4 +46,71 @@ export interface Chain {
   id?: number;
   name: string;
   type: SupportedChains;
+}
+
+export type V1_NFTAsset = DasApiAsset & {
+  mint_extensions: {
+    metadata: {
+      uri: string;
+      mint: string;
+      name: string;
+      symbol: string;
+      update_authority: string;
+      additional_metadata: [string, string][];
+    };
+    metadata_pointer: {
+      authority: string;
+      metadata_address: string;
+    };
+    group_member_pointer: {
+      authority: string;
+      member_address: string;
+    };
+  };
+  token_info: {
+    supply: number;
+    decimals: number;
+    token_program: string;
+    associated_token_address: string;
+  };
+};
+
+export interface NFTAsset extends V1_NFTAsset {
+  priority: {
+    discriminant: number;
+    finalized: boolean;
+    owner: string;
+    goldWeight: number | null;
+    price: number | null;
+    listed: boolean;
+    listingPrice: number | null;
+    listingAccount: string | null;
+  };
+}
+
+export interface ExtractedNFTAsset {
+  id: string;
+  price: number | null;
+  discriminant: string | number;
+  image: StaticImageData | string | undefined;
+  finalized: boolean;
+  weight: number | null;
+  owner: string;
+  name: string;
+  description: string | undefined;
+  symbol: string;
+  listed: boolean;
+  listingPrice: number | null;
+  listingAccount: string | null;
+  rate: {
+    value: number;
+    absolute: number;
+    status: string;
+    raw: number;
+  };
+}
+
+export interface NftBuyArgs {
+  discriminant: BN;
+  owner: string;
 }

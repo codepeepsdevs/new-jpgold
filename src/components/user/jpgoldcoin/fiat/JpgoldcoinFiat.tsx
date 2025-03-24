@@ -5,7 +5,7 @@ import UserCard from "@/components/UserCard";
 import Image, { StaticImageData } from "next/image";
 import { IoSwapVertical } from "react-icons/io5";
 import images from "@/public/images";
-import { useGetGoldPrice } from "@/api/metal-price/metal-price.queries";
+
 import SkeletonComponent from "@/components/Skeleton";
 import { formatNumberWithoutExponential } from "@/utils/utilityFunctions";
 import icons from "@/public/icons";
@@ -22,6 +22,7 @@ import { Elements, useStripe } from "@stripe/react-stripe-js";
 import { loadStripe } from "@stripe/stripe-js";
 import SuccessToast from "@/components/toast/SuccessToast";
 import { useWalletInfo } from "@/hooks/useWalletInfo";
+import { useSimpleGoldPrice } from "@/api/metal-price/metal-price.queries";
 
 interface PaymentOption {
   value: string;
@@ -90,17 +91,12 @@ const JpgoldcoinFiatComponent = () => {
     }
   }, [chain]);
 
-  const { value, isLoading, isError } = useGetGoldPrice({
-    quantity: Number(quantity),
-  });
+  const { value: oneJpgcValue } = useSimpleGoldPrice(1);
+  const { value, loading: quantityPriceLoading } = useSimpleGoldPrice(
+    Number(quantity)
+  );
 
-  const quantityPriceLoading = isLoading && !isError;
-
-  const { value: oneJpgcValue } = useGetGoldPrice({
-    quantity: 1,
-  });
-
-  const fee = value * 0.0015;
+  const fee = value * 0.03;
   const total = value + fee;
 
   const handleQuantityChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -194,6 +190,8 @@ const JpgoldcoinFiatComponent = () => {
       network: chain.type,
       successUrl: `${dynamicFrontendUrl}/payment/success`,
       cancelUrl: `${dynamicFrontendUrl}/payment/failed`,
+      fee: Number(formatNumberWithoutExponential(fee, 3)),
+      type: "jpgc",
     });
   };
 
@@ -347,7 +345,7 @@ const JpgoldcoinFiatComponent = () => {
             <hr className="dark:border-[#3D3D3D]" />
             <div className="flex justify-between items-center">
               <span className="text-base text-[#282928] dark:text-white/70">
-                Fee (0.15%)
+                Fee (3%)
               </span>
               <span className="text-base text-[#050706] font-semibold dark:text-white">
                 ${formatNumberWithoutExponential(fee, 3)}

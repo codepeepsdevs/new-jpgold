@@ -11,9 +11,16 @@ const nextConfig: NextConfig = {
         hostname: "res.cloudinary.com",
         pathname: "**",
       },
+
       {
         protocol: "https",
         hostname: "cdn.sanity.io",
+        pathname: "**",
+      },
+
+      {
+        protocol: "https",
+        hostname: "firebasestorage.googleapis.com",
         pathname: "**",
       },
     ],

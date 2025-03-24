@@ -4,8 +4,7 @@ import { useState, useMemo } from "react";
 import Image from "next/image";
 import { IoSearch, IoList, IoCheckmark, IoChevronDown } from "react-icons/io5";
 import { TbLayoutGrid } from "react-icons/tb";
-import NFTCard from "../../cards/NFTCards";
-import images from "../../../../public/images";
+import images from "../../../public/images";
 import {
   createColumnHelper,
   flexRender,
@@ -13,172 +12,147 @@ import {
   useReactTable,
   getFilteredRowModel,
 } from "@tanstack/react-table";
-import { StaticImageData } from "next/image";
-import Pagination from "@/components/common/Pagination";
-import { useRouter } from "next/navigation";
 import { MdOutlineShoppingCart, MdVerified } from "react-icons/md";
-
-interface NFTItem {
-  id: number;
-  imageUrl: string | StaticImageData;
-  amount: number;
-  price: number;
-  verified: boolean;
-  todayChange: number;
-  weekChange: number;
-}
-
-const nftListData: NFTItem[] = [
-  {
-    id: 1,
-    amount: 100,
-    price: 1000,
-    imageUrl: images.marketplace.nftGold,
-    verified: true,
-    todayChange: -2.5,
-    weekChange: 5.3,
-  },
-  {
-    id: 2,
-    amount: 5.8,
-    price: 1455.92,
-    imageUrl: images.marketplace.nftGold,
-    verified: true,
-    todayChange: 2.5,
-    weekChange: -5.3,
-  },
-  {
-    id: 3,
-    amount: 5.8,
-    price: 1455.92,
-    imageUrl: images.marketplace.nftGold,
-    verified: true,
-    todayChange: 2.5,
-    weekChange: -5.3,
-  },
-  {
-    id: 4,
-    amount: 5.8,
-    price: 1455.92,
-    imageUrl: images.marketplace.nftGold,
-    verified: true,
-    todayChange: 2.5,
-    weekChange: -5.3,
-  },
-  {
-    id: 5,
-    amount: 3.5,
-    price: 1114.53,
-    imageUrl: images.marketplace.nftGold,
-    verified: true,
-    todayChange: 2.5,
-    weekChange: -5.3,
-  },
-];
+import { ExtractedNFTAsset } from "@/constants/types";
+import useNavigate from "@/hooks/useNavigate";
+import { useGetAllListedNfts } from "@/api/jpgnft/jpgnft.queries";
+import { LuPackageX } from "react-icons/lu";
+import NFTCard from "../cards/NFTCards";
+import Pagination from "../common/Pagination";
+import {
+  extractNFTProperties,
+  formatNumberWithoutExponential,
+  scrollToTop,
+} from "@/utils/utilityFunctions";
+import classNames from "classnames";
+import SkeletonComponent from "../Skeleton";
+import { AllNftSortByEnum, SortDirectionEnum } from "@/api/jpgnft/jpgnft.types";
 
 const sortOptions = [
-  { value: "price-low-high", label: "Price low to high" },
-  { value: "price-high-low", label: "Price high to low" },
-  { value: "amount-high-low", label: "Amount high to low" },
-  { value: "recently-created", label: "Recently created" },
+  {
+    value: {
+      sortBy: AllNftSortByEnum.PRICE,
+      sortDirection: SortDirectionEnum.ASC,
+    },
+    label: "Price low to high",
+  },
+  {
+    value: {
+      sortBy: AllNftSortByEnum.PRICE,
+      sortDirection: SortDirectionEnum.DESC,
+    },
+    label: "Price high to low",
+  },
+  {
+    value: {
+      sortBy: AllNftSortByEnum.AMOUNT,
+      sortDirection: SortDirectionEnum.ASC,
+    },
+    label: "Amount low to high",
+  },
+  {
+    value: {
+      sortBy: AllNftSortByEnum.AMOUNT,
+      sortDirection: SortDirectionEnum.DESC,
+    },
+    label: "Amount high to low",
+  },
 ];
 
-type NFTListProps = {
-  isUser?: boolean;
-};
-
-const NFTList = ({ isUser = false }: NFTListProps) => {
-  console.log({ isUser });
+const NFTList = () => {
+  const navigate = useNavigate();
 
   const [isGridView, setIsGridView] = useState(true);
-  const [sortBy, setSortBy] = useState("price-low-high");
-  const [isSelectOpen, setIsSelectOpen] = useState(false);
-  const [currentPage, setCurrentPage] = useState(1);
-  const [globalFilter, setGlobalFilter] = useState("");
-  const router = useRouter();
+  const [sortBy, setSortBy] = useState<{
+    sortBy: AllNftSortByEnum;
+    sortDirection: SortDirectionEnum;
+  }>(sortOptions[0].value);
+  const [search, setSearch] = useState("");
 
-  const columnHelper = createColumnHelper<NFTItem>();
+  const [isSelectOpen, setIsSelectOpen] = useState(false);
+
+  const [currentPage, setCurrentPage] = useState(1);
+  const [itemsPerPage, setItemsPerPage] = useState(32);
+
+  const { nftData, isLoading } = useGetAllListedNfts({
+    search,
+    page: currentPage,
+    limit: itemsPerPage,
+    sortBy,
+  });
+
+  const hasNFTs = nftData?.nfts && nftData.nfts.length > 0;
+  const extractedNFTs = useMemo(() => {
+    if (!nftData?.nfts || nftData.nfts.length === 0) {
+      return [];
+    }
+
+    return nftData.nfts.map((nft) => extractNFTProperties(nft));
+  }, [nftData?.nfts]);
+
+  const columnHelper = createColumnHelper<ExtractedNFTAsset>();
   const columns = useMemo(
     () => [
-      columnHelper.accessor("id", {
+      columnHelper.accessor("image", {
         header: "Name",
-        cell: (info) => (
+        cell: ({ row }) => (
           <div className="flex items-center gap-2">
             <div className="w-6 h-6 rounded">
               <Image
                 src={images.marketplace.nftGold}
-                alt={`JPNFT #${info.getValue()}`}
+                alt={`JPNFT #${row.original.image}`}
                 width={150}
                 height={150}
                 className="object-contain"
               />
             </div>
-            <span>JPNFT #{info.getValue()}</span>
+            <span>JPNFT #{row.original.description}</span>
             <MdVerified className="text-gold-200" />
           </div>
         ),
       }),
-      columnHelper.accessor("amount", {
+      columnHelper.accessor("weight", {
         header: "Amount",
-        cell: (info) => `${info.getValue()} grams`,
+        cell: ({ getValue }) => `${getValue()} grams`,
       }),
-      columnHelper.accessor("price", {
-        id: "listedPrice",
+      columnHelper.accessor("listingPrice", {
+        id: "listingPrice",
         header: "Listed Price",
-        cell: (info) =>
-          `$${info
-            .getValue()
-            .toLocaleString("en-US", { minimumFractionDigits: 2 })}`,
+        cell: ({ getValue }) => `$${getValue()?.toLocaleString()}`,
       }),
-      columnHelper.accessor("todayChange", {
-        header: "Today",
-        cell: (info) => {
-          const value = info.getValue();
-          const isPositive = value > 0;
-          return (
-            <span
-              className={
-                isPositive
-                  ? "text-[#63BA23] font-semibold"
-                  : "text-[#D20832] font-semibold"
-              }
-            >
-              {isPositive ? "▲" : "▼"} {Math.abs(value).toFixed(2)}%
-            </span>
-          );
-        },
-      }),
-      columnHelper.accessor("weekChange", {
-        header: "7 Days",
-        cell: (info) => {
-          const value = info.getValue();
-          const isPositive = value > 0;
-          return (
-            <span className={isPositive ? "text-[#63BA23]" : "text-[#D20832]"}>
-              {isPositive ? "▲" : "▼"} {Math.abs(value).toFixed(2)}%
-            </span>
-          );
-        },
-      }),
+
       columnHelper.accessor("price", {
         id: "currentPrice",
         header: "Current Price",
-        cell: (info) =>
-          `$${info
-            .getValue()
-            .toLocaleString("en-US", { minimumFractionDigits: 2 })}`,
+        cell: ({ getValue }) =>
+          `$${formatNumberWithoutExponential(getValue() || 0, 2)}`,
       }),
+      columnHelper.accessor("rate", {
+        header: "Rate",
+        cell: (info) => {
+          const rate = info.getValue();
+          return (
+            <span
+              className={classNames("", {
+                "text-[#63BA23]": rate.status === "low",
+                "text-[#D20832]": rate.status === "high",
+                "text-primary": rate.status === "stable",
+              })}
+            >
+              {rate.status === "low" ? "▲" : rate.status === "high" ? "▼" : ""}
+              {rate.value}%
+            </span>
+          );
+        },
+      }),
+
       columnHelper.display({
         id: "actions",
         header: "Purchase",
         cell: (info) => (
           <div className="flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
             <button
-              onClick={() =>
-                isUser
-                  ? router.push(`/user/marketplace/${info.row.original.id}`)
-                  : router.push(`/marketplace/${info.row.original.id}`)
-              }
+              onClick={() => navigate(`/marketplace/${info.row.original.id}`)}
               className="bg-[#CC8F00] font-semibold text-white px-6 py-2 rounded hover:bg-[#B37E00] transition-colors"
             >
               Buy
@@ -190,52 +164,31 @@ const NFTList = ({ isUser = false }: NFTListProps) => {
         ),
       }),
     ],
-    [columnHelper, router, isUser]
+    [columnHelper, navigate]
   );
 
   const table = useReactTable({
-    data: nftListData,
+    data: extractedNFTs || [],
     columns,
-    state: {
-      globalFilter,
-    },
-    onGlobalFilterChange: setGlobalFilter,
+
     getCoreRowModel: getCoreRowModel(),
     getFilteredRowModel: getFilteredRowModel(),
-    globalFilterFn: (row, columnId, filterValue) => {
-      const searchValue = filterValue.toLowerCase();
-      const value = String(row.getValue(columnId)).toLowerCase();
-      return (
-        value.includes(searchValue) ||
-        `jpnft #${row.original.id}`.toLowerCase().includes(searchValue) ||
-        `${row.original.amount}`.toLowerCase().includes(searchValue) ||
-        `${row.original.price}`.toLowerCase().includes(searchValue)
-      );
-    },
   });
-
-  // Pagination calculations
-  const itemsPerPage = 8;
-  const filteredRows = table.getFilteredRowModel().rows;
-  const totalPages = Math.ceil(filteredRows.length / itemsPerPage);
-
-  // Get paginated data
-  const paginatedData = useMemo(() => {
-    const startIndex = (currentPage - 1) * itemsPerPage;
-    const endIndex = startIndex + itemsPerPage;
-    return filteredRows.slice(startIndex, endIndex);
-  }, [filteredRows, currentPage, itemsPerPage]);
 
   const handlePageChange = (page: number) => {
     setCurrentPage(page);
-    // You might want to scroll to top when changing pages
-    window.scrollTo(0, 0);
+    scrollToTop({
+      id: "marketplace-nfts",
+      height: 130,
+    });
+  };
+
+  const handleItemsPerPageChange = (items: number) => {
+    setItemsPerPage(items);
   };
 
   return (
-    <section className="w-full py-8">
-      {/* Header Controls */}
-      {/* <div className={`flex flex-col gap-3 md:flex-row md:items-center md:justify-between p-2 bg-[#F6F6F6] dark:bg-[#1D1F1E] rounded-lg mb-6`}> */}
+    <section id="marketplace-nfts" className="w-full py-8 h-full min-h-screen">
       <div
         className={`flex flex-col gap-3 md:flex-row md:items-center md:justify-between p-2 bg-transparent rounded-lg mb-6`}
       >
@@ -244,11 +197,11 @@ const NFTList = ({ isUser = false }: NFTListProps) => {
             <IoSearch size={20} className="text-gray-500 dark:text-[#4E4E4E]" />
             <input
               type="text"
-              placeholder="Search nft"
-              value={globalFilter ?? ""}
+              placeholder="Search nft discriminant"
+              value={search}
               onChange={(e) => {
-                setGlobalFilter(e.target.value);
-                setCurrentPage(1); // Reset to first page on search
+                setSearch(e.target.value);
+                setCurrentPage(1);
               }}
               className="w-full bg-transparent outline-none dark:text-white"
             />
@@ -273,9 +226,9 @@ const NFTList = ({ isUser = false }: NFTListProps) => {
 
           {isSelectOpen && (
             <div className="absolute top-full left-0 right-0 mt-2 bg-white dark:bg-[#1C1C1E] border border-[#D5D5DD] rounded-lg shadow-lg z-10">
-              {sortOptions.map((option) => (
+              {sortOptions.map((option, index) => (
                 <button
-                  key={option.value}
+                  key={index}
                   onClick={() => {
                     setSortBy(option.value);
                     setIsSelectOpen(false);
@@ -316,13 +269,37 @@ const NFTList = ({ isUser = false }: NFTListProps) => {
         </div>
       </div>
 
-      {/* Content */}
       {isGridView ? (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-          {paginatedData.map((row) => (
-            <NFTCard key={row.original.id} {...row.original} isUser={isUser} />
-          ))}
-        </div>
+        isLoading ? (
+          <div className="flex flex-col items-center justify-center text-center py-2 sm:py-4">
+            <div className="w-full grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+              {Array.from({ length: 8 }).map((_, index) => (
+                <SkeletonComponent
+                  key={index}
+                  style={{
+                    borderRadius: "0.5rem",
+                  }}
+                  className="px-10 py-2 w-full border border-[#E6E6E6] dark:border-[#3D3D3D] h-60"
+                />
+              ))}
+            </div>
+          </div>
+        ) : !hasNFTs ? (
+          <div className="flex flex-col items-center justify-center text-center py-20 sm:py-40">
+            <div className="w-20 h-20 mb-4 text-gray-300 dark:text-gray-600">
+              <LuPackageX size={80} />
+            </div>
+            <h3 className="text-xl font-semibold text-[#050706] dark:text-white mb-2">
+              There are no NFTs listed at the moment
+            </h3>
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+            {nftData.nfts.map((nft) => (
+              <NFTCard key={nft.id} nft={nft} type="marketplace" />
+            ))}
+          </div>
+        )
       ) : (
         <div className="w-full border border-[#E2E2E2] dark:border-[#E2E2E2]/20  p-4 rounded-lg overflow-hidden">
           <div className="overflow-x-auto">
@@ -348,7 +325,7 @@ const NFTList = ({ isUser = false }: NFTListProps) => {
                 ))}
               </thead>
               <tbody>
-                {paginatedData.map((row) => (
+                {table.getRowModel().rows.map((row) => (
                   <tr
                     key={row.id}
                     className="group border-b dark:text-white border-[#E2E2E2] cursor-pointer dark:border-[#E2E2E2]/20 hover:bg-[#FAFAFA] dark:hover:bg-[#FAFAFA]/10 transition-colors"
@@ -369,14 +346,16 @@ const NFTList = ({ isUser = false }: NFTListProps) => {
         </div>
       )}
 
-      {/* Pagination */}
-      {filteredRows.length > 0 && (
-        <Pagination
-          currentPage={currentPage}
-          totalPages={totalPages}
-          onPageChange={handlePageChange}
-        />
-      )}
+      <div className="mt-4">
+        {nftData && (
+          <Pagination
+            currentPage={currentPage}
+            onPageChange={handlePageChange}
+            itemsPerPage={itemsPerPage}
+            onItemsPerPageChange={handleItemsPerPageChange}
+          />
+        )}
+      </div>
     </section>
   );
 };

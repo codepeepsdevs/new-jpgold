@@ -343,7 +343,7 @@ export const SidebarData = [
   {
     id: 5,
     title: "Marketplace",
-    path: "/user/marketplace",
+    path: "/marketplace",
     icon: MdOutlineShoppingCart,
     iconActive: MdShoppingCart,
   },
@@ -367,7 +367,7 @@ export const SidebarData = [
   {
     id: 8,
     title: "My NFTs",
-    path: "/user/nfts/all",
+    path: "/user/nfts/private",
     icon: TbHexagonLetterN,
     iconActive: TbHexagonLetterNFilled,
   },
