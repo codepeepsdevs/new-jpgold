@@ -223,66 +223,6 @@ export const mintNft = async (
   }
 };
 
-// interface FractionalizeNFTArgs {
-//   discriminant: BN;
-//   part_a: {
-//     name: string;
-//     symbol: string;
-//     uri: string;
-//     weight: BN;
-//   };
-//   part_b: {
-//     name: string;
-//     symbol: string;
-//     uri: string;
-//     weight: BN;
-//   };
-// }
-
-/**
- * Fractionalizes an NFT and finalizes the fractionalization.
- */
-export const fractionalizeNft = async (
-  program: Program<NftManager>,
-  discriminant: BN,
-  fractionalizeArgs: any
-): Promise<string> => {
-  if (!program.provider.publicKey) {
-    throw new Error("Wallet not connected");
-  }
-
-  const signer = program.provider.publicKey;
-
-  console.log("Fractionalizing NFT with discriminant:", discriminant.toString());
-
-  try {
-    // Step 1: Fractionalize the NFT
-    const fractionalizeSignature = await program.methods
-      .fractionalizeNft(fractionalizeArgs)
-      .accounts({
-        signer,
-      })
-      .rpc();
-
-    console.log("NFT fractionalized:", fractionalizeSignature);
-
-    // Step 2: Finalize the fractionalization
-    const finalizeSignature = await program.methods
-      .finalizeFractionalizeNft(discriminant)
-      .accounts({
-        signer,
-      })
-      .rpc();
-
-    console.log("Fractionalization finalized:", finalizeSignature);
-
-    return finalizeSignature;
-  } catch (error) {
-    console.error("Error in NFT fractionalization process:", error);
-    throw error;
-  }
-};
-
 export const transferNft = async (
   wallet: {
     publicKey: PublicKey;
