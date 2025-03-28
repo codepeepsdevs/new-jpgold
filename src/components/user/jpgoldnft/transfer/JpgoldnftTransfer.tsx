@@ -4,11 +4,16 @@
 
 import { useGetNftsByOwner } from "@/api/jpgnft/jpgnft.queries";
 import { useSimpleGoldPrice } from "@/api/metal-price/metal-price.queries";
+import {
+  useCreateTrx,
+  useUpdateTrx,
+} from "@/api/transactions/transactions.queries";
 import SpinnerLoader from "@/components/SpinnerLoader";
 import UserCard from "@/components/UserCard";
-import { NFTAsset } from "@/constants/types";
+import { NFTAsset, PAYMENT_METHOD, TRX_TYPE } from "@/constants/types";
 import { useWalletInfo } from "@/hooks/useWalletInfo";
 import { transferNft } from "@/services/jpgnft/jpgnft";
+import useWeb3ModalStore from "@/store/web3Modal.store";
 import { formatNumberWithoutExponential } from "@/utils/utilityFunctions";
 import { useWallet } from "@solana/wallet-adapter-react";
 import { useQueryClient } from "@tanstack/react-query";
@@ -18,12 +23,20 @@ import { IoChevronDown } from "react-icons/io5";
 
 const JpgoldnftTransfer = () => {
   const queryClient = useQueryClient();
+  const { chain } = useWeb3ModalStore();
 
   const { address, connected } = useWalletInfo();
   const [selectedNFT, setSelectedNFT] = useState<NFTAsset>();
   const [showNFTDropdown, setShowNFTDropdown] = useState(false);
   const [recipient, setRecipient] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [trxRef, setTrxRef] = useState<string>(() => {
+    // Try to load from localStorage on initial render
+    if (typeof window !== "undefined") {
+      return localStorage.getItem("currentTrxRef") || "";
+    }
+    return "";
+  });
 
   const { publicKey, signTransaction } = useWallet();
 
@@ -33,11 +46,22 @@ const JpgoldnftTransfer = () => {
     address: address!,
   });
 
+  const { mutateAsync: createTrx } = useCreateTrx((data) => {
+    const newTrxRef = data.data.trxRef;
+    setTrxRef(newTrxRef);
+
+    // Save to localStorage
+    if (typeof window !== "undefined") {
+      localStorage.setItem("currentTrxRef", newTrxRef);
+    }
+  });
+  const { mutateAsync: updateTrx } = useUpdateTrx();
+
   const handleSubmit = async () => {
     try {
       setIsSubmitting(true);
 
-      if (!selectedNFT?.id) {
+      if (!selectedNFT?.id || !selectedNFT?.priority?.goldWeight) {
         toast.error("Please select an NFT to transfer");
         setIsSubmitting(false);
         return;
@@ -57,13 +81,33 @@ const JpgoldnftTransfer = () => {
 
       const loadingToastId = toast.loading("Transferring NFT...");
 
-      const result = await transferNft(
+      const createTrxResponse = await createTrx({
+        amount: 0,
+        type: TRX_TYPE.JPGNFT_TRANSFER,
+        walletAddress: address,
+        quantity: selectedNFT.priority.goldWeight,
+        network: chain.type,
+        fee: 0,
+        paymentMethod: PAYMENT_METHOD.WALLET,
+      });
+
+      const currentTrxRef = createTrxResponse?.data?.trxRef || trxRef;
+      if (typeof window !== "undefined") {
+        localStorage.setItem("currentTrxRef", currentTrxRef);
+      }
+
+      const tx = await transferNft(
         { publicKey, signTransaction },
         selectedNFT.id,
         recipient
       );
       toast.dismiss(loadingToastId);
-      console.log("Transfer result:", result);
+      console.log("Transfer result:", tx);
+      await updateTrx({
+        signature: tx.txSignature,
+        trxRef: currentTrxRef,
+      });
+
       toast.success("NFT transferred successfully!");
       queryClient.invalidateQueries({ queryKey: ["get-wallet-nfts"] });
 

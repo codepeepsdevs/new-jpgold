@@ -108,9 +108,46 @@ export interface ExtractedNFTAsset {
     status: string;
     raw: number;
   };
+  nft: NFTAsset;
 }
 
 export interface NftBuyArgs {
   discriminant: BN;
   owner: string;
+}
+
+export enum TRX_TYPE {
+  JPGC_BUY = "JPGC_BUY",
+  JPGNFT_BUY = "JPGNFT_BUY",
+  JPGNFT_MARKETPLACE = "JPGNFT_MARKETPLACE",
+  JPGNFT_TRANSFER = "JPGNFT_TRANSFER",
+  JPGNFT_FRACTIONALIZE = "JPGNFT_FRACTIONALIZE",
+}
+
+export enum PAYMENT_METHOD {
+  WALLET = "wallet",
+  STRIPE = "stripe",
+  CRYPTOMUS = "cryptomus",
+}
+
+export enum TRX_STATUS {
+  PENDING = "pending",
+  COMPLETED = "completed",
+  FAILED = "failed",
+}
+
+export interface TransactionProps {
+  id: string;
+  trxRef: string;
+  amount: number;
+  status: TRX_STATUS;
+  quantity: number;
+  network: SupportedChains;
+  fee: number;
+  walletAddress: string;
+  paymentMethod: PAYMENT_METHOD;
+  type: TRX_TYPE;
+  signature?: string;
+  createdAt: Date;
+  updatedAt: Date;
 }

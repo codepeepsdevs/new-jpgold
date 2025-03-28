@@ -27,6 +27,8 @@ import {
 import classNames from "classnames";
 import SkeletonComponent from "../Skeleton";
 import { AllNftSortByEnum, SortDirectionEnum } from "@/api/jpgnft/jpgnft.types";
+import { useCartStore } from "@/store/useCartStore";
+import { BiTrash } from "react-icons/bi";
 
 const sortOptions = [
   {
@@ -61,6 +63,7 @@ const sortOptions = [
 
 const NFTList = () => {
   const navigate = useNavigate();
+  const { addItem, removeItem, items } = useCartStore();
 
   const [isGridView, setIsGridView] = useState(true);
   const [sortBy, setSortBy] = useState<{
@@ -149,22 +152,48 @@ const NFTList = () => {
       columnHelper.display({
         id: "actions",
         header: "Purchase",
-        cell: (info) => (
-          <div className="flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
-            <button
-              onClick={() => navigate(`/marketplace/${info.row.original.id}`)}
-              className="bg-[#CC8F00] font-semibold text-white px-6 py-2 rounded hover:bg-[#B37E00] transition-colors"
-            >
-              Buy
-            </button>
-            <button className="bg-black/5 py-2 px-4">
-              <MdOutlineShoppingCart size={20} />
-            </button>
-          </div>
-        ),
+        cell: (info) => {
+          const id = info.row.original.id;
+          const isInCart = items.some((item) => item.id === id);
+
+          const handleCartClick = (e: React.MouseEvent) => {
+            e.stopPropagation();
+            if (isInCart) {
+              removeItem(id);
+            } else {
+              addItem(info.row.original.nft);
+            }
+          };
+          return (
+            <div className="flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+              <button
+                onClick={() => navigate(`/marketplace/${id}`)}
+                className="bg-[#CC8F00] font-semibold text-white px-6 py-2 rounded hover:bg-[#B37E00] transition-colors"
+              >
+                Buy
+              </button>
+              <button
+                onClick={handleCartClick}
+                className="bg-black/5 py-2 px-4"
+              >
+                {isInCart ? (
+                  <BiTrash
+                    className="text-red-500 dark:text-red-500"
+                    size={25}
+                  />
+                ) : (
+                  <MdOutlineShoppingCart
+                    className={"text-black dark:text-white"}
+                    size={25}
+                  />
+                )}{" "}
+              </button>
+            </div>
+          );
+        },
       }),
     ],
-    [columnHelper, navigate]
+    [columnHelper, navigate, addItem, removeItem, items]
   );
 
   const table = useReactTable({

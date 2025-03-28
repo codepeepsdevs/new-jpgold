@@ -120,10 +120,10 @@ export const uploadToPinata = async (
 
 export const extractNFTProperties = (nft: NFTAsset): ExtractedNFTAsset => {
   // Get the original minting price (or base price)
-  const originalPrice = Number(nft?.priority.price) || 0;
+  const originalPrice = Number(nft?.priority?.price) || 0;
 
   // Get the current listing price (what the user is selling it for)
-  const listingPrice = Number(nft?.priority.listingPrice) || 0;
+  const listingPrice = Number(nft?.priority?.listingPrice) || 0;
 
   // Calculate percentage difference
   let percentageRate = 0;
@@ -151,26 +151,27 @@ export const extractNFTProperties = (nft: NFTAsset): ExtractedNFTAsset => {
 
   return {
     id: nft?.id,
-    price: nft?.priority.price,
-    discriminant: nft?.priority.discriminant,
+    price: nft?.priority?.price,
+    discriminant: nft?.priority?.discriminant,
     image: nft?.content?.files
       ? nft.content.files[0].uri
       : images.marketplace.nftGold,
-    finalized: nft?.priority.finalized,
-    weight: nft?.priority.goldWeight,
-    owner: nft?.priority.owner,
-    name: nft?.content.metadata.name,
-    description: nft?.content.metadata.description,
-    symbol: nft?.content.metadata.symbol,
-    listed: nft?.priority.listed,
-    listingPrice: nft?.priority.listingPrice,
-    listingAccount: nft?.priority.listingAccount,
+    finalized: nft?.priority?.finalized,
+    weight: nft?.priority?.goldWeight,
+    owner: nft?.priority?.owner,
+    name: nft?.content?.metadata?.name,
+    description: nft?.content?.metadata?.description,
+    symbol: nft?.content?.metadata?.symbol,
+    listed: nft?.priority?.listed,
+    listingPrice: nft?.priority?.listingPrice,
+    listingAccount: nft?.priority?.listingAccount,
     rate: {
       value: percentageRate, // Properly signed value
       absolute: percentageRate, // Always positive
       status: rateStatus, // "high", "low", or "stable"
       raw: listingPrice - originalPrice, // Raw price difference
     },
+    nft,
   };
 };
 

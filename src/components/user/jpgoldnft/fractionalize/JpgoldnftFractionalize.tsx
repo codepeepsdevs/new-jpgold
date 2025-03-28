@@ -2,13 +2,23 @@
 
 "use client";
 
+import { useSimpleTokenPrice } from "@/api/coinmarketcap/coinmarketcap.queries";
 import { useGetNftsByOwner } from "@/api/jpgnft/jpgnft.queries";
 import { useSimpleGoldPrice } from "@/api/metal-price/metal-price.queries";
+import {
+  useCreateTrx,
+  useUpdateTrx,
+} from "@/api/transactions/transactions.queries";
 import SpinnerLoader from "@/components/SpinnerLoader";
 import UserCard from "@/components/UserCard";
-import { NFTAsset } from "@/constants/types";
+import { NFTAsset, PAYMENT_METHOD, TRX_TYPE } from "@/constants/types";
 import { useWalletInfo } from "@/hooks/useWalletInfo";
-import { fractionalizeNft, getProvider } from "@/services/jpgnft/jpgnft";
+import {
+  fractionalizeNft,
+  getFees,
+  getProvider,
+} from "@/services/jpgnft/jpgnft"; // Added getFees import
+import useWeb3ModalStore from "@/store/web3Modal.store";
 import {
   formatNumberWithoutExponential,
   uploadToPinata,
@@ -16,7 +26,7 @@ import {
 import { useWallet } from "@solana/wallet-adapter-react";
 import { useQueryClient } from "@tanstack/react-query";
 import BN from "bn.js";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react"; // Added useEffect
 import toast from "react-hot-toast";
 import { IoChevronDown } from "react-icons/io5";
 
@@ -25,11 +35,29 @@ const goldBarUrl = process.env.NEXT_PUBLIC_NFT_GOLD_BAR_URL;
 const JpgoldnftFractionalize = () => {
   const queryClient = useQueryClient();
   const { publicKey, sendTransaction, signTransaction } = useWallet();
+  const { chain } = useWeb3ModalStore();
 
   const { address, connected } = useWalletInfo();
   const [selectedNFT, setSelectedNFT] = useState<NFTAsset>();
   const [showNFTDropdown, setShowNFTDropdown] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [trxRef, setTrxRef] = useState<string>(() => {
+    // Try to load from localStorage on initial render
+    if (typeof window !== "undefined") {
+      return localStorage.getItem("currentTrxRef") || "";
+    }
+    return "";
+  });
+
+  // Add state for fees
+  const [fees, setFees] = useState<{
+    fractionalizeFee: number;
+    sellFee: number;
+    feesDecimals: number;
+  } | null>(null);
+
+  // Add loading state for fees
+  const [isLoadingFees, setIsLoadingFees] = useState(false);
 
   const [fractions, setFractions] = useState({
     quantity1: "",
@@ -42,9 +70,11 @@ const JpgoldnftFractionalize = () => {
   const { value: value1 } = useSimpleGoldPrice(Number(fractions.quantity1));
   const { value: value2 } = useSimpleGoldPrice(Number(fractions.quantity2));
 
-  const fee = selectedNFT?.priority?.price
-    ? selectedNFT.priority.price * 0.0015
-    : null;
+  // Calculate fee based on dynamic fee instead of hardcoded value
+  const fee = useMemo(() => {
+    if (!selectedNFT?.priority?.price || !fees) return null;
+    return selectedNFT.priority.price * fees.fractionalizeFee;
+  }, [selectedNFT?.priority?.price, fees]);
 
   const { nftData } = useGetNftsByOwner({
     address: address!,
@@ -54,6 +84,39 @@ const JpgoldnftFractionalize = () => {
     () => getProvider(publicKey, signTransaction, sendTransaction),
     [publicKey, signTransaction, sendTransaction]
   );
+
+  // Fetch fees when program is available
+  useEffect(() => {
+    async function fetchFees() {
+      if (!program) return;
+
+      try {
+        setIsLoadingFees(true);
+        const feesData = await getFees(program);
+        setFees(feesData);
+      } catch (error) {
+        console.error("Error fetching fees:", error);
+        toast.error("Could not retrieve fee information");
+      } finally {
+        setIsLoadingFees(false);
+      }
+    }
+
+    fetchFees();
+  }, [program]);
+
+  const { mutateAsync: createTrx } = useCreateTrx((data) => {
+    const newTrxRef = data.data.trxRef;
+    setTrxRef(newTrxRef);
+
+    // Save to localStorage
+    if (typeof window !== "undefined") {
+      localStorage.setItem("currentTrxRef", newTrxRef);
+    }
+  });
+  const { mutateAsync: updateTrx } = useUpdateTrx();
+
+  const { tokenPrice, symbol } = useSimpleTokenPrice(Number(fee));
 
   const handleQuantity1Change = (e: React.ChangeEvent<HTMLInputElement>) => {
     // Get the current input value
@@ -145,16 +208,22 @@ const JpgoldnftFractionalize = () => {
 
       setIsSubmitting(true);
 
-      if (!selectedNFT?.id) {
+      if (
+        !selectedNFT?.id ||
+        !selectedNFT?.priority.discriminant ||
+        !selectedNFT?.priority.goldWeight
+      ) {
         toast.error("Please select an NFT to fractionalize");
         setIsSubmitting(false);
         return;
       }
-      if (!selectedNFT?.priority.discriminant) {
-        toast.error("Please select a Finalized NFT to fractionalize");
+
+      if (!fee) {
+        toast.error("Invalid fee");
         setIsSubmitting(false);
         return;
       }
+
       if (!address || !publicKey || !signTransaction) {
         toast.error("Wallet not connected. Please connect your wallet.");
         setIsSubmitting(false);
@@ -197,6 +266,21 @@ const JpgoldnftFractionalize = () => {
       console.log("ipfs1 url generated", ipfsUrl1);
       console.log("ipfs2 url generated", ipfsUrl2);
 
+      const createTrxResponse = await createTrx({
+        amount: Number(fee),
+        type: TRX_TYPE.JPGNFT_FRACTIONALIZE,
+        walletAddress: address,
+        quantity: selectedNFT.priority.goldWeight,
+        network: chain.type,
+        fee,
+        paymentMethod: PAYMENT_METHOD.WALLET,
+      });
+
+      const currentTrxRef = createTrxResponse?.data?.trxRef || trxRef;
+      if (typeof window !== "undefined") {
+        localStorage.setItem("currentTrxRef", currentTrxRef);
+      }
+
       const tx = await fractionalizeNft(program!, {
         discriminant: new BN(selectedNFT?.priority.discriminant),
         partA: {
@@ -214,6 +298,12 @@ const JpgoldnftFractionalize = () => {
       });
       toast.dismiss(loadingToastId);
       console.log("Transfer result:", tx);
+
+      await updateTrx({
+        signature: tx,
+        trxRef: currentTrxRef,
+      });
+
       toast.success("NFT fractionalized successfully!");
       queryClient.invalidateQueries({ queryKey: ["get-wallet-nfts"] });
 
@@ -395,6 +485,28 @@ const JpgoldnftFractionalize = () => {
               </span>
             </div>
             <hr className="dark:border-[#3D3D3DCC]" />
+
+            {/* Show fee info */}
+            {isLoadingFees ? (
+              <div className="flex justify-between items-center">
+                <span className="text-base text-[#050706] dark:text-white/70">
+                  Loading fees...
+                </span>
+                <SpinnerLoader width={16} height={16} color="#CC8F00" />
+              </div>
+            ) : fees ? (
+              <div className="flex justify-between items-center">
+                <span className="text-base text-[#050706] dark:text-white/70">
+                  Fractionalize Fee
+                </span>
+                <span className="text-base text-[#050706] dark:text-white">
+                  {(fees.fractionalizeFee * 100).toFixed(2)}%
+                </span>
+              </div>
+            ) : null}
+
+            <hr className="dark:border-[#3D3D3DCC]" />
+
             {selectedNFT && (
               <>
                 {selectedNFT?.priority.goldWeight ? (
@@ -445,10 +557,15 @@ const JpgoldnftFractionalize = () => {
                     {fee && (
                       <div className="flex justify-between items-center">
                         <span className="text-base text-[#282928] dark:text-white/70">
-                          Fee (0.15%)
+                          Fee
                         </span>
                         <span className="text-base text-[#050706] font-semibold dark:text-white">
                           ${formatNumberWithoutExponential(fee, 3)}
+                          {tokenPrice &&
+                            `(${formatNumberWithoutExponential(
+                              tokenPrice,
+                              2
+                            )} ${symbol})`}
                         </span>
                       </div>
                     )}
