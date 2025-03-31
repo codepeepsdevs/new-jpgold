@@ -8,7 +8,12 @@ import {
   Program,
   Wallet,
 } from "@coral-xyz/anchor";
-import { Connection, PublicKey, Transaction } from "@solana/web3.js";
+import {
+  Connection,
+  LAMPORTS_PER_SOL,
+  PublicKey,
+  Transaction,
+} from "@solana/web3.js";
 import idl from "./jpgnft.idl.json";
 import { NftManager } from "./jpgnft.types";
 import { getClusterURL } from "@/utils/utilityFunctions";
@@ -163,6 +168,7 @@ export const mintNft = async (
         goldPriceUpdate,
         solPriceUpdate,
         signer,
+        recipient: signer,
       });
 
     // Send the transaction and get the signature
@@ -527,7 +533,10 @@ export const listNft = async (
     );
 
     const txSignature = await program.methods
-      .listNft(discriminant, price)
+      .listNft({
+        discriminant,
+        price,
+      })
       .accounts({
         owner,
       })
@@ -627,34 +636,6 @@ export const unlistNft = async (
   }
 };
 
-export const buyNft = async (
-  program: Program<NftManager>,
-  discriminant: BN,
-  owner: string
-): Promise<string> => {
-  if (!program.provider.publicKey) {
-    throw new Error("Wallet not connected");
-  }
-
-  const buyer = program.provider.publicKey;
-  const seller = new PublicKey(owner);
-  console.log("Buying NFT with discriminant:", discriminant.toString());
-
-  try {
-    const txSignature = await program.methods
-      .buyNft(discriminant)
-      .accounts({ buyer, seller })
-      .rpc();
-
-    console.log("NFT updated", txSignature);
-
-    return txSignature;
-  } catch (error) {
-    console.error("Error in NFT price updating process:", error);
-    throw error;
-  }
-};
-
 export const buyMultipleNfts = async (
   program: Program<NftManager>,
   nftsArgs: NftBuyArgs[]
@@ -671,6 +652,14 @@ export const buyMultipleNfts = async (
   const buyer = program.provider.publicKey;
   const connection = program.provider.connection;
 
+  const solanaPriceAddress = process.env.NEXT_PUBLIC_NFT_SOLANA_PRICE_ADDRESS;
+
+  if (!solanaPriceAddress) {
+    throw new Error("Price feed addresses not provided");
+  }
+
+  const solPriceUpdate = new PublicKey(solanaPriceAddress);
+
   try {
     // Create a new transaction
     const transaction = new Transaction();
@@ -686,7 +675,7 @@ export const buyMultipleNfts = async (
       // Get the instruction but don't send it yet
       const ix = program.methods
         .buyNft(discriminant)
-        .accounts({ buyer, seller })
+        .accounts({ buyer, seller, solPriceUpdate, recipient: buyer })
         .instruction();
 
       // Add the instruction to our transaction
@@ -711,5 +700,208 @@ export const buyMultipleNfts = async (
   } catch (error) {
     console.error("Error buying multiple NFTs:", error);
     throw error;
+  }
+};
+
+export const getFees = async (
+  program: Program<NftManager>
+): Promise<{
+  fractionalizeFee: number;
+  sellFee: number;
+  feesDecimals: number;
+}> => {
+  if (!program) {
+    throw new Error("Program is required");
+  }
+
+  try {
+    // Get the fees collector PDA address
+    const [feesCollectorPDA] = PublicKey.findProgramAddressSync(
+      [Buffer.from([102, 99, 111, 108, 116])], // "fcolt" in ascii (from IDL)
+      program.programId
+    );
+
+    // Fetch the fees collector account data
+    const feesCollectorAccount = await program.account.feesCollector.fetch(
+      feesCollectorPDA
+    );
+
+    // Extract the fees from the account data
+    const { fractionalizeFee, sellFee, feesDecimals } = feesCollectorAccount;
+
+    // Convert to proper decimal representation
+    const denominator = Math.pow(10, feesDecimals);
+
+    return {
+      fractionalizeFee: fractionalizeFee / denominator,
+      sellFee: sellFee / denominator,
+      feesDecimals,
+    };
+  } catch (error) {
+    console.error("Error retrieving fees:", error);
+    throw new Error(
+      `Failed to get fee information: ${
+        error instanceof Error ? error.message : "Unknown error"
+      }`
+    );
+  }
+};
+
+export const getListingAccounts = async (
+  program: Program<NftManager>
+): Promise<any> => {
+  if (!program) {
+    throw new Error("Program is required");
+  }
+
+  try {
+    const listingAccounts = await program.account.listing.all();
+    console.log("Listing accounts:", listingAccounts);
+    return listingAccounts;
+  } catch (error) {
+    console.error("Error retrieving listing accounts:", error);
+    throw new Error(
+      `Failed to get listing accounts: ${
+        error instanceof Error ? error.message : "Unknown error"
+      }`
+    );
+  }
+};
+
+export const getProceeds = async (
+  program: Program<NftManager>,
+  owner: string
+): Promise<{ proceedsBalance: number }> => {
+  if (!program) {
+    throw new Error("Program is required");
+  }
+
+  try {
+    // Convert the owner string to a PublicKey
+    const ownerPubkey = new PublicKey(owner);
+
+    // Derive the user account PDA
+    const [userAccountPDA] = PublicKey.findProgramAddressSync(
+      [Buffer.from([117, 115, 101, 114, 116]), ownerPubkey.toBuffer()],
+      program.programId
+    );
+
+    // Get the connection
+    const connection = program.provider.connection;
+
+    // Get the lamports (SOL balance) in the user account
+    const accountInfo = await connection.getAccountInfo(userAccountPDA);
+    const lamports = accountInfo?.lamports || 0;
+
+    // Calculate the available proceeds (subtract the rent-exempt minimum)
+    const rentExempt = await connection.getMinimumBalanceForRentExemption(0);
+    const availableProceeds = Math.max(0, lamports - rentExempt);
+
+    // Convert lamports to SOL (1 SOL = 1,000,000,000 lamports)
+    const proceedsBalance = availableProceeds / LAMPORTS_PER_SOL;
+
+    console.log("User proceeds balance:", proceedsBalance, "SOL");
+    return { proceedsBalance };
+  } catch (error) {
+    console.error("Error retrieving user proceeds:", error);
+    throw new Error(
+      `Failed to get user proceeds: ${
+        error instanceof Error ? error.message : "Unknown error"
+      }`
+    );
+  }
+};
+
+export const withdrawProceeds = async (
+  program: Program<NftManager>,
+  amount: number
+): Promise<string> => {
+  if (!program) {
+    throw new Error("Program is required");
+  }
+
+  if (!program.provider.publicKey) {
+    throw new Error("Wallet not connected");
+  }
+
+  try {
+    // Convert amount to lamports
+    const totalLamports = amount * LAMPORTS_PER_SOL;
+
+    // Get the user account PDA
+    const ownerPubkey = program.provider.publicKey;
+    const [userAccountPDA] = PublicKey.findProgramAddressSync(
+      [Buffer.from([117, 115, 101, 114, 116]), ownerPubkey.toBuffer()],
+      program.programId
+    );
+
+    // Get the connection
+    const connection = program.provider.connection;
+
+    // Get the account info to determine its data size and current lamports
+    const accountInfo = await connection.getAccountInfo(userAccountPDA);
+
+    if (!accountInfo) {
+      throw new Error("User account not found");
+    }
+
+    const currentLamports = accountInfo.lamports;
+    const accountDataSize = accountInfo.data.length;
+
+    // Calculate the minimum balance required to maintain rent exemption
+    const minRentExempt = await connection.getMinimumBalanceForRentExemption(
+      accountDataSize
+    );
+
+    // Add a small safety buffer (5000 lamports) to ensure account remains rent exempt
+    const safeMinimumBalance = minRentExempt + 5000;
+
+    // Calculate maximum withdrawable amount
+    const maxWithdrawableLamports = Math.max(
+      0,
+      currentLamports - safeMinimumBalance
+    );
+
+    console.log(`Account data size: ${accountDataSize} bytes`);
+    console.log(`Minimum rent exempt: ${minRentExempt} lamports`);
+    console.log(`Current account balance: ${currentLamports} lamports`);
+    console.log(`Maximum withdrawable: ${maxWithdrawableLamports} lamports`);
+
+    // If there's not enough to withdraw, throw an error
+    if (maxWithdrawableLamports < 1000) {
+      throw new Error(
+        "Insufficient funds available for withdrawal after maintaining minimum balance"
+      );
+    }
+
+    // Use the lesser of requested amount or maximum withdrawable amount
+    const safeWithdrawalAmount = Math.min(
+      totalLamports,
+      maxWithdrawableLamports
+    );
+
+    const lamports = new BN(safeWithdrawalAmount);
+
+    console.log(
+      `Attempting to withdraw ${safeWithdrawalAmount} lamports, leaving ${safeMinimumBalance} lamports as required minimum`
+    );
+
+    // Call the userWithdraw instruction
+    const txSignature = await program.methods
+      .userWithdraw(lamports)
+      .accounts({
+        user: program.provider.publicKey,
+      })
+      .rpc();
+
+    console.log("Proceeds withdrawn successfully:", txSignature);
+    return txSignature;
+  } catch (error) {
+    console.error("Error withdrawing proceeds:", error);
+    throw new Error(
+      `Failed to withdraw proceeds: ${
+        error instanceof Error ? error.message : "Unknown error"
+      }`
+    );
   }
 };

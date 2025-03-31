@@ -1,12 +1,5 @@
 "use client";
-import useOnClickOutside from "@/hooks/useOnClickOutside";
-import { useTheme } from "@/store/theme.store";
-import { motion } from "framer-motion";
-import { SetStateAction, Dispatch, useRef, useState } from "react";
-import { FaRegCalendar } from "react-icons/fa";
-import { IoMdCheckmark } from "react-icons/io";
-import { MdKeyboardArrowDown } from "react-icons/md";
-import classNames from "classnames";
+import { SetStateAction, Dispatch } from "react";
 
 export const DashboardSortList = [
   {
@@ -31,17 +24,14 @@ export const DashboardSortList = [
   },
 ];
 
-const DashboardFilter = ({
-  sort,
-  setSort,
-}: {
+const DashboardFilter = ({}: {
   sort: string;
   setSort: Dispatch<SetStateAction<string>>;
 }) => {
-  const [sortModalState, setSortModalState] = useState(false);
-  const theme = useTheme();
-  const sortModalStateRef = useRef<HTMLDivElement>(null);
-  useOnClickOutside(sortModalStateRef, () => setSortModalState(false));
+  // const [sortModalState, setSortModalState] = useState(false);
+  // const theme = useTheme();
+  // const sortModalStateRef = useRef<HTMLDivElement>(null);
+  // useOnClickOutside(sortModalStateRef, () => setSortModalState(false));
 
   return (
     <div className="w-full flex items-center justify-between gap-2 2xs:gap-4 xs:gap-8 sm:gap-10">
@@ -49,7 +39,7 @@ const DashboardFilter = ({
         NFT Metrics
       </h2>
 
-      <div ref={sortModalStateRef} className="flex flex-col relative">
+      {/* <div ref={sortModalStateRef} className="flex flex-col relative">
         <div
           onClick={() => {
             setSortModalState(!sortModalState);
@@ -111,7 +101,7 @@ const DashboardFilter = ({
             </div>
           </div>
         )}
-      </div>
+      </div> */}
     </div>
   );
 };
