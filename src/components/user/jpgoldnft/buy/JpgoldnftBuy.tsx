@@ -35,6 +35,12 @@ import { dynamicFrontendUrl } from "@/constants";
 import { loadStripe } from "@stripe/stripe-js";
 import { useQueryClient } from "@tanstack/react-query";
 import { useSimpleGoldPrice } from "@/api/metal-price/metal-price.queries";
+import {
+  useCreateTrx,
+  useUpdateTrx,
+} from "@/api/transactions/transactions.queries";
+import { PAYMENT_METHOD, TRX_TYPE } from "@/constants/types";
+import { useSimpleTokenPrice } from "@/api/coinmarketcap/coinmarketcap.queries";
 
 interface PaymentOption {
   value: string;
@@ -110,6 +116,13 @@ const JpgoldNftBuyComponent = () => {
   const [showChainDropdown, setShowChainDropdown] = useState(false);
   const [quantity, setQuantity] = useState<string>("0");
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [trxRef, setTrxRef] = useState<string>(() => {
+    // Try to load from localStorage on initial render
+    if (typeof window !== "undefined") {
+      return localStorage.getItem("currentTrxRef") || "";
+    }
+    return "";
+  });
 
   const onStripeError = (error: AxiosError<ErrorResponse>) => {
     // setIsCheckoutLoading(false);
@@ -201,6 +214,18 @@ const JpgoldNftBuyComponent = () => {
     isError: cryptomusCheckoutError,
   } = useCryptomusCheckout(onCryptomusError, onCryptomusSuccess);
 
+  const { mutateAsync: createTrx } = useCreateTrx((data) => {
+    const newTrxRef = data.data.trxRef;
+    setTrxRef(newTrxRef);
+
+    // Save to localStorage
+    if (typeof window !== "undefined") {
+      localStorage.setItem("currentTrxRef", newTrxRef);
+    }
+  });
+
+  const { mutateAsync: updateTrx } = useUpdateTrx();
+
   useEffect(() => {
     const option = chainOptions.find((item) => item.value === chain.type);
     if (option) {
@@ -214,8 +239,11 @@ const JpgoldNftBuyComponent = () => {
 
   const { value: oneJpgcValue } = useSimpleGoldPrice(1);
 
-  const fee = value * 0.03;
+  const feeValue = selectedPayment.value === "wallet" ? 0 : 0.03;
+  const fee = value * feeValue;
   const total = value + fee;
+
+  const { tokenPrice, symbol } = useSimpleTokenPrice(Number(total));
 
   const handleQuantityChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     // Get the current input value
@@ -261,6 +289,24 @@ const JpgoldNftBuyComponent = () => {
           // Set loading state to true when submission starts
           setIsSubmitting(true);
 
+          const createTrxResponse = await createTrx({
+            amount: total,
+            type: TRX_TYPE.JPGNFT_BUY,
+            walletAddress: address,
+            quantity: Number(quantity),
+            network: chain.type,
+            fee,
+            paymentMethod: PAYMENT_METHOD.WALLET,
+          });
+
+          // Get trxRef from response directly or use stored value
+          const currentTrxRef = createTrxResponse?.data?.trxRef || trxRef;
+
+          // Update localStorage again just to be sure
+          if (typeof window !== "undefined") {
+            localStorage.setItem("currentTrxRef", currentTrxRef);
+          }
+
           const metadata = {
             name: `Japaul Gold NFT (${quantity}g)`,
             symbol: `JPGNFT(${quantity}g)`,
@@ -289,17 +335,30 @@ const JpgoldNftBuyComponent = () => {
             Number(quantity)
           );
 
+          // Use the current trxRef
+          await updateTrx({
+            signature: tx.txSignature,
+            trxRef: currentTrxRef,
+          });
+
+          // Clear from localStorage after successful update
+          if (typeof window !== "undefined") {
+            localStorage.removeItem("currentTrxRef");
+          }
+
           toast.success("NFT minted successfully");
           console.log("Nft minted", tx);
 
           setIsSubmitting(false);
+          setTrxRef("");
+          setQuantity("");
+
           return;
         } catch (error) {
           // Handle any errors that occur during submission
           toast.error("An error occurred while minting the NFT");
           console.error("Minting error:", error);
           setIsSubmitting(false);
-          setQuantity("");
         } finally {
           setIsSubmitting(false);
         }
@@ -522,7 +581,13 @@ const JpgoldNftBuyComponent = () => {
               </span>
               <div className="text-right">
                 <p className="text-base font-medium text-[#050706] dark:text-white">
-                  ${formatNumberWithoutExponential(total, 3)}
+                  ${formatNumberWithoutExponential(total, 3)}{" "}
+                  {tokenPrice &&
+                    selectedPayment.value === "wallet" &&
+                    `(${formatNumberWithoutExponential(
+                      tokenPrice,
+                      2
+                    )} ${symbol})`}
                 </p>
               </div>
             </div>

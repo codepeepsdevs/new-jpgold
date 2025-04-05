@@ -2,20 +2,24 @@
 
 "use client";
 
-import { NFTAsset } from "@/constants/types";
+import { NFTAsset, PAYMENT_METHOD, TRX_TYPE } from "@/constants/types";
 import { useWalletInfo } from "@/hooks/useWalletInfo";
 import {
   extractNFTProperties,
   formatNumberWithoutExponential,
 } from "@/utils/utilityFunctions";
 import { useWalletModal } from "@solana/wallet-adapter-react-ui";
-import { FC, useMemo, useState } from "react";
+import { FC, useEffect, useMemo, useState } from "react";
 import { useForm } from "react-hook-form";
 import { IoWalletOutline } from "react-icons/io5";
 import { MdKeyboardArrowRight } from "react-icons/md";
 import { FaStripe, FaBitcoin } from "react-icons/fa";
 import { BsCreditCard2Front } from "react-icons/bs";
-import { buyMultipleNfts, getProvider } from "@/services/jpgnft/jpgnft";
+import {
+  buyMultipleNfts,
+  getFees,
+  getProvider,
+} from "@/services/jpgnft/jpgnft";
 import { useWallet } from "@solana/wallet-adapter-react";
 import toast from "react-hot-toast";
 import { BN } from "bn.js";
@@ -38,6 +42,11 @@ import {
 } from "@/api/payment/payment.queries";
 import { dynamicFrontendUrl } from "@/constants";
 import useWeb3ModalStore from "@/store/web3Modal.store";
+import {
+  useCreateTrx,
+  useUpdateTrx,
+} from "@/api/transactions/transactions.queries";
+import { useSimpleTokenPrice } from "@/api/coinmarketcap/coinmarketcap.queries";
 
 interface OrderSummaryProps {
   nfts: NFTAsset[];
@@ -71,11 +80,38 @@ const OrderSummaryComponent: FC<OrderSummaryProps> = ({ nfts }) => {
   const { setVisible } = useWalletModal();
   const { publicKey, sendTransaction, signTransaction, connect } = useWallet();
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [trxRef, setTrxRef] = useState<string>(() => {
+    // Try to load from localStorage on initial render
+    if (typeof window !== "undefined") {
+      return localStorage.getItem("currentTrxRef") || "";
+    }
+    return "";
+  });
+
+  const [fees, setFees] = useState<{
+    fractionalizeFee: number;
+    sellFee: number;
+    feesDecimals: number;
+  } | null>(null);
+
+  const [isLoadingFees, setIsLoadingFees] = useState(false);
+  console.log("isLoadingFeeses", isLoadingFees);
 
   const program = useMemo(
     () => getProvider(publicKey, signTransaction, sendTransaction),
     [publicKey, signTransaction, sendTransaction]
   );
+
+  const { mutateAsync: createTrx } = useCreateTrx((data) => {
+    const newTrxRef = data.data.trxRef;
+    setTrxRef(newTrxRef);
+
+    // Save to localStorage
+    if (typeof window !== "undefined") {
+      localStorage.setItem("currentTrxRef", newTrxRef);
+    }
+  });
+  const { mutateAsync: updateTrx } = useUpdateTrx();
 
   const {
     register,
@@ -90,6 +126,12 @@ const OrderSummaryComponent: FC<OrderSummaryProps> = ({ nfts }) => {
 
   const [paymentMethod, setPaymentMethod] = useState<PaymentMethod>("wallet");
 
+  const feeValue = useMemo(() => {
+    if (!fees) return 0;
+    const value = fees.sellFee * 100;
+    return paymentMethod === "wallet" ? value : 3 + value;
+  }, [fees, paymentMethod]); // Note: added paymentMethod as a dependency
+
   const calculatedTotals = useMemo(() => {
     // Calculate subtotal and total weight from all NFTs
     const subtotal = nfts.reduce((total, nft) => {
@@ -103,14 +145,37 @@ const OrderSummaryComponent: FC<OrderSummaryProps> = ({ nfts }) => {
       return total + Number(weight || 0);
     }, 0);
 
-    // Calculate fee (0.15%)
-    const fee = subtotal * 0.0015;
+    // Use the feeValue from outside
+    const fee = (feeValue / 100) * subtotal;
 
     // Calculate total
     const total = subtotal + fee;
 
-    return { subtotal, fee, total, totalWeight };
-  }, [nfts]);
+    return { subtotal, fee, total, totalWeight, feeValue };
+  }, [nfts, feeValue]); // Added feeValue as a dependency
+
+  const { tokenPrice, symbol } = useSimpleTokenPrice(
+    Number(calculatedTotals.total)
+  );
+
+  useEffect(() => {
+    async function fetchFees() {
+      if (!program) return;
+
+      try {
+        setIsLoadingFees(true);
+        const feesData = await getFees(program);
+        setFees(feesData);
+      } catch (error) {
+        console.error("Error fetching fees:", error);
+        toast.error("Could not retrieve fee information");
+      } finally {
+        setIsLoadingFees(false);
+      }
+    }
+
+    fetchFees();
+  }, [program]);
 
   const handleOpenWalletModal = () => {
     connect();
@@ -219,6 +284,15 @@ const OrderSummaryComponent: FC<OrderSummaryProps> = ({ nfts }) => {
       return;
     }
 
+    if (
+      calculatedTotals.total <= 0 ||
+      calculatedTotals.subtotal <= 0 ||
+      calculatedTotals.fee < 0
+    ) {
+      toast.error("Invalid total amount, please try again");
+      return;
+    }
+
     const marketplaceItems = nfts.map((nft) => {
       const { discriminant, owner, id } = extractNFTProperties(nft);
       return { discriminant: Number(discriminant), owner, mintAddress: id };
@@ -234,10 +308,36 @@ const OrderSummaryComponent: FC<OrderSummaryProps> = ({ nfts }) => {
             return { discriminant: new BN(discriminant), owner };
           });
 
-          // Your purchase logic here using buyMultipleNfts
-          const txSignature = await buyMultipleNfts(program!, nftsToBuy);
+          const proceeds = nfts.map((nft) => {
+            const { owner, listingPrice } = extractNFTProperties(nft);
+            return { amount: Number(listingPrice), owner };
+          });
 
-          console.log("Transaction Signature:", txSignature);
+          const createTrxResponse = await createTrx({
+            amount: calculatedTotals.total,
+            type: TRX_TYPE.JPGNFT_MARKETPLACE,
+            walletAddress: address,
+            quantity: calculatedTotals.totalWeight,
+            network: chain.type,
+            fee: calculatedTotals.fee,
+            paymentMethod: PAYMENT_METHOD.WALLET,
+          });
+
+          const currentTrxRef = createTrxResponse?.data?.trxRef || trxRef;
+          if (typeof window !== "undefined") {
+            localStorage.setItem("currentTrxRef", currentTrxRef);
+          }
+
+          // Your purchase logic here using buyMultipleNfts
+          const tx = await buyMultipleNfts(program!, nftsToBuy);
+
+          console.log("Transaction Signature:", tx);
+          await updateTrx({
+            signature: tx,
+            trxRef: currentTrxRef,
+            proceeds,
+          });
+
           queryClient.invalidateQueries({
             queryKey: ["get-featured-listed-nfts"],
           });
@@ -315,7 +415,9 @@ const OrderSummaryComponent: FC<OrderSummaryProps> = ({ nfts }) => {
         </div>
 
         <div className="flex justify-between">
-          <span className="text-[#282928] dark:text-gray-300">Fee (0.15%)</span>
+          <span className="text-[#282928] dark:text-gray-300">
+            Fee ({calculatedTotals.feeValue}%)
+          </span>
           <span className="font-medium text-[#050706] dark:text-white">
             ${formatNumberWithoutExponential(calculatedTotals.fee, 2)}
           </span>
@@ -327,6 +429,9 @@ const OrderSummaryComponent: FC<OrderSummaryProps> = ({ nfts }) => {
           <span className="text-[#282928] dark:text-gray-300">Total</span>
           <span className="font-semibold text-lg text-[#050706] dark:text-white">
             ${formatNumberWithoutExponential(calculatedTotals.total, 2)}
+            {tokenPrice &&
+              paymentMethod === "wallet" &&
+              `(${formatNumberWithoutExponential(tokenPrice, 2)} ${symbol})`}
           </span>
         </div>
       </div>

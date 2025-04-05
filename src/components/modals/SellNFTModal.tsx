@@ -26,7 +26,6 @@ import { useWallet } from "@solana/wallet-adapter-react";
 import { BN } from "bn.js";
 import SpinnerLoader from "../SpinnerLoader";
 import { useQueryClient } from "@tanstack/react-query";
-import { LAMPORTS_PER_SOL } from "@solana/web3.js";
 import { useGetListedNfts } from "@/api/jpgnft/jpgnft.queries";
 import { useWalletInfo } from "@/hooks/useWalletInfo";
 import classNames from "classnames";
@@ -105,7 +104,7 @@ const SellNFTModal = ({ nft, isOpen, onClose }: SellNFTModalProps) => {
     try {
       const tx = await updateListedNft(program!, {
         discriminant: new BN(discriminant),
-        newPrice: new BN(Number(amount) * LAMPORTS_PER_SOL),
+        newPrice: new BN(Number(amount) * 100),
       });
       console.log("Nft price updated", tx);
       toast.success("NFT price updated successfully");
@@ -163,7 +162,7 @@ const SellNFTModal = ({ nft, isOpen, onClose }: SellNFTModalProps) => {
       const tx = await listNft(
         program!,
         new BN(discriminant),
-        new BN(Number(amount) * LAMPORTS_PER_SOL)
+        new BN(Number(amount) * 100)
       );
       console.log("Nft listed", tx);
       toast.success("NFT listed successfully");

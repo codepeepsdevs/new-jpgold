@@ -235,6 +235,9 @@ export type NftManager = {
           address: "ATokenGPvbdGVxr1b2hvZbsiqW5xWH25efTNsLJA8knL";
         },
         {
+          name: "solPriceUpdate";
+        },
+        {
           name: "buyer";
           writable: true;
           signer: true;
@@ -258,6 +261,9 @@ export type NftManager = {
             ];
           };
           relations: ["listing"];
+        },
+        {
+          name: "recipient";
         },
         {
           name: "listing";
@@ -296,13 +302,13 @@ export type NftManager = {
           };
         },
         {
-          name: "buyerTokenAccount";
+          name: "recipientTokenAccount";
           writable: true;
           pda: {
             seeds: [
               {
                 kind: "account";
-                path: "buyer";
+                path: "recipient";
               },
               {
                 kind: "account";
@@ -1199,7 +1205,7 @@ export type NftManager = {
               },
               {
                 kind: "arg";
-                path: "discriminant";
+                path: "args.discriminant";
               }
             ];
           };
@@ -1322,12 +1328,12 @@ export type NftManager = {
       ];
       args: [
         {
-          name: "dicriminant";
-          type: "u64";
-        },
-        {
-          name: "price";
-          type: "u64";
+          name: "args";
+          type: {
+            defined: {
+              name: "listNftArgs";
+            };
+          };
         }
       ];
     },
@@ -1376,13 +1382,16 @@ export type NftManager = {
           };
         },
         {
-          name: "destination";
+          name: "recipient";
+        },
+        {
+          name: "recipientTokenAccount";
           writable: true;
           pda: {
             seeds: [
               {
                 kind: "account";
-                path: "signer";
+                path: "recipient";
               },
               {
                 kind: "account";
@@ -1896,6 +1905,10 @@ export type NftManager = {
             type: "pubkey";
           },
           {
+            name: "recipient";
+            type: "pubkey";
+          },
+          {
             name: "mint";
             type: "pubkey";
           },
@@ -2145,6 +2158,22 @@ export type NftManager = {
       };
     },
     {
+      name: "listNftArgs";
+      type: {
+        kind: "struct";
+        fields: [
+          {
+            name: "price";
+            type: "u64";
+          },
+          {
+            name: "discriminant";
+            type: "u64";
+          }
+        ];
+      };
+    },
+    {
       name: "listNftEvent";
       type: {
         kind: "struct";
@@ -2242,7 +2271,7 @@ export type NftManager = {
             type: "pubkey";
           },
           {
-            name: "metadata";
+            name: "recipient";
             type: "pubkey";
           },
           {
@@ -2595,6 +2624,11 @@ export type NftManager = {
       value: "[108, 105, 115, 116, 116, 97, 116]";
     },
     {
+      name: "listNftPriceDecimals";
+      type: "u8";
+      value: "2";
+    },
+    {
       name: "maxAge";
       type: "u64";
       value: "259200";
@@ -2613,6 +2647,11 @@ export type NftManager = {
       name: "nftManagerTag";
       type: "bytes";
       value: "[110, 102, 116, 109, 103]";
+    },
+    {
+      name: "solPriceFeedIdHex";
+      type: "string";
+      value: '"ef0d8b6fda2ceba41da15d4095d1da392a0d2f8ed0c6c7bc0f4cfac8c280b56d"';
     },
     {
       name: "userTag";

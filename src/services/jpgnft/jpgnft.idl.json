@@ -200,6 +200,9 @@
           "address": "ATokenGPvbdGVxr1b2hvZbsiqW5xWH25efTNsLJA8knL"
         },
         {
+          "name": "sol_price_update"
+        },
+        {
           "name": "buyer",
           "writable": true,
           "signer": true
@@ -223,6 +226,9 @@
             ]
           },
           "relations": ["listing"]
+        },
+        {
+          "name": "recipient"
         },
         {
           "name": "listing",
@@ -261,13 +267,13 @@
           }
         },
         {
-          "name": "buyer_token_account",
+          "name": "recipient_token_account",
           "writable": true,
           "pda": {
             "seeds": [
               {
                 "kind": "account",
-                "path": "buyer"
+                "path": "recipient"
               },
               {
                 "kind": "account",
@@ -1048,7 +1054,7 @@
               },
               {
                 "kind": "arg",
-                "path": "discriminant"
+                "path": "args.discriminant"
               }
             ]
           }
@@ -1142,12 +1148,12 @@
       ],
       "args": [
         {
-          "name": "_dicriminant",
-          "type": "u64"
-        },
-        {
-          "name": "price",
-          "type": "u64"
+          "name": "args",
+          "type": {
+            "defined": {
+              "name": "ListNFTArgs"
+            }
+          }
         }
       ]
     },
@@ -1196,13 +1202,16 @@
           }
         },
         {
-          "name": "destination",
+          "name": "recipient"
+        },
+        {
+          "name": "recipient_token_account",
           "writable": true,
           "pda": {
             "seeds": [
               {
                 "kind": "account",
-                "path": "signer"
+                "path": "recipient"
               },
               {
                 "kind": "account",
@@ -1687,6 +1696,10 @@
             "type": "pubkey"
           },
           {
+            "name": "recipient",
+            "type": "pubkey"
+          },
+          {
             "name": "mint",
             "type": "pubkey"
           },
@@ -1936,6 +1949,22 @@
       }
     },
     {
+      "name": "ListNFTArgs",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "price",
+            "type": "u64"
+          },
+          {
+            "name": "discriminant",
+            "type": "u64"
+          }
+        ]
+      }
+    },
+    {
       "name": "ListNFTEvent",
       "type": {
         "kind": "struct",
@@ -2033,7 +2062,7 @@
             "type": "pubkey"
           },
           {
-            "name": "metadata",
+            "name": "recipient",
             "type": "pubkey"
           },
           {
@@ -2386,6 +2415,11 @@
       "value": "[108, 105, 115, 116, 116, 97, 116]"
     },
     {
+      "name": "LIST_NFT_PRICE_DECIMALS",
+      "type": "u8",
+      "value": "2"
+    },
+    {
       "name": "MAX_AGE",
       "type": "u64",
       "value": "259200"
@@ -2404,6 +2438,11 @@
       "name": "NFT_MANAGER_TAG",
       "type": "bytes",
       "value": "[110, 102, 116, 109, 103]"
+    },
+    {
+      "name": "SOL_PRICE_FEED_ID_HEX",
+      "type": "string",
+      "value": "\"ef0d8b6fda2ceba41da15d4095d1da392a0d2f8ed0c6c7bc0f4cfac8c280b56d\""
     },
     {
       "name": "USER_TAG",

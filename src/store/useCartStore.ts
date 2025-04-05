@@ -8,7 +8,6 @@ interface CartStore {
   addItem: (item: NFTAsset) => void;
   removeItem: (itemId: string) => void;
   clearCart: () => void;
-  getTotalPrice: () => number;
   getItemCount: () => number;
 }
 
@@ -35,14 +34,6 @@ export const useCartStore = create<CartStore>()(
       },
 
       clearCart: () => set({ items: [] }),
-
-      getTotalPrice: () => {
-        const state = get();
-        return state.items.reduce(
-          (total, item) => total + (item?.priority?.listingPrice || 0),
-          0
-        );
-      },
 
       getItemCount: () => {
         const state = get();
