@@ -10,14 +10,14 @@ import {
   RainbowKitProvider,
 } from "@rainbow-me/rainbowkit";
 import { WagmiProvider } from "wagmi";
-import { mainnet, sepolia } from "wagmi/chains";
+import { mainnet, sepolia, polygon } from "wagmi/chains";
 import { useMemo, useState } from "react";
 import { useTheme } from "@/store/theme.store";
 
 export const config = getDefaultConfig({
   appName: "NFT Mint",
   projectId: process.env.NEXT_PUBLIC_WALLET_CONNECT_PROJECT_ID!,
-  chains: [sepolia, mainnet],
+  chains: [sepolia, mainnet, polygon],
   // ssr: true,
 });
 

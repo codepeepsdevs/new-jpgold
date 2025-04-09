@@ -1,4 +1,4 @@
-import { FaFacebookSquare } from "react-icons/fa";
+import { FaBitcoin, FaEthereum, FaFacebookSquare } from "react-icons/fa";
 import {
   RiInstagramFill,
   RiNftFill,
@@ -15,7 +15,7 @@ import {
 } from "react-icons/io5";
 import { FaCircleUser, FaRegCircleUser, FaXTwitter } from "react-icons/fa6";
 import images from "../../public/images";
-import { TeamMemberProps } from "./types";
+import { CryptoOption, TeamMemberProps } from "./types";
 import {
   MdDashboard,
   MdOutlineDashboard,
@@ -30,6 +30,7 @@ import {
   METAL_PRICE_BASES,
   METAL_PRICE_UNITS,
 } from "@/api/metal-price/metal-price.types";
+import { SiPolygon, SiTether } from "react-icons/si";
 
 export const dynamicFrontendUrl =
   typeof window !== "undefined"
@@ -501,5 +502,66 @@ export const metal_price_units = [
   {
     value: METAL_PRICE_UNITS.KILOGRAM,
     label: "KILOGRAM",
+  },
+];
+
+export const cryptoOptions: CryptoOption[] = [
+  {
+    id: 1,
+    value: "ETH",
+    label: "ETH",
+    icon: FaEthereum,
+    color: "#627EEA",
+    type: "native",
+    address: "0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE",
+    decimals: 18,
+  },
+  {
+    id: 2,
+    value: "BTC",
+    label: "BTC",
+    icon: FaBitcoin,
+    color: "#F7931A",
+    type: "native",
+    address: "0xbBbBBBBbbBBBbbbBbbBbbbbBBbBbbbbBbBbbBBbB",
+    decimals: 8,
+  },
+  {
+    id: 3,
+    value: "USDT",
+    label: "USDT",
+    icon: SiTether,
+    color: "#26A17B",
+    type: "token",
+    address: "0xdAC17F958D2ee523a2206206994597C13D831ec7",
+    decimals: 6,
+  },
+  {
+    id: 4,
+    value: "JPGC",
+    label: "JPGC",
+    icon: images.user.coin,
+    isImage: true,
+    type: "token",
+    address: "0xF292D52cc6366faa989be759BF2f221d4C0e1b5E",
+    decimals: 18,
+  },
+  {
+    id: 5,
+    value: "POL",
+    label: "POL",
+    icon: SiPolygon,
+    type: "native",
+    address: "0x0000000000000000000000000000000000001010",
+    decimals: 18,
+  },
+  {
+    id: 6,
+    value: "WPOL",
+    label: "WPOL",
+    icon: SiPolygon,
+    type: "token",
+    address: "0x0d500B1d8E8eF31E21C99d1Db9A6444d3ADf1270",
+    decimals: 18,
   },
 ];

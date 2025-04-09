@@ -1,6 +1,8 @@
 import { DasApiAsset } from "@metaplex-foundation/digital-asset-standard-api";
+import { FeeAmount } from "@uniswap/v3-sdk";
 import BN from "bn.js";
 import { StaticImageData } from "next/image";
+import { IconType } from "react-icons";
 
 export interface IResponse {
   message: string;
@@ -150,4 +152,31 @@ export interface TransactionProps {
   signature?: string;
   createdAt: Date;
   updatedAt: Date;
+}
+
+export interface TokenProps {
+  id: number;
+  TokenName: string;
+  ImageUrl: string;
+  address: `0x${string}`;
+  type: "native" | "token";
+  decimal: number;
+}
+
+export interface CryptoOption {
+  id: number;
+  value: string;
+  label: string;
+  icon: IconType | StaticImageData;
+  color?: string;
+  isImage?: boolean;
+  type: "native" | "token";
+  address: `0x${string}`;
+  decimals: number;
+}
+
+export interface PoolOption {
+  token0: string;
+  token1: string;
+  fee: FeeAmount;
 }
