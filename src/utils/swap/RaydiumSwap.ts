@@ -209,6 +209,8 @@ async function executeSwap(
       throw new Error("Invalid pool");
     }
 
+    console.log({poolData})
+
     // 2. Create pool keys from API data with all required properties
     const poolKeys: LiquidityPoolKeysV4 = {
       id: new PublicKey(poolData.id),
