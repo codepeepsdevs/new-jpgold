@@ -1,0 +1,215 @@
+import {
+  jsonInfo2PoolKeys,
+  LiquidityPoolJsonInfo,
+} from "@raydium-io/raydium-sdk";
+
+import {
+  Liquidity,
+  TokenAmount,
+  Token,
+  Percent,
+  LiquidityPoolKeys,
+  LIQUIDITY_STATE_LAYOUT_V4, // Layout for liquidity state in Raydium V4
+  MARKET_STATE_LAYOUT_V3, // Layout for market state in Raydium V3
+} from "@raydium-io/raydium-sdk";
+
+import {
+  TOKEN_PROGRAM_ID,
+  SPL_ACCOUNT_LAYOUT,
+  TokenAccount,
+} from "@raydium-io/raydium-sdk";
+import { Commitment, Connection, PublicKey } from "@solana/web3.js";
+
+const RAYDIUM_LIQUIDITY_JSON =
+  "https://api.raydium.io/v2/sdk/liquidity/mainnet.json";
+
+const networkData = {
+  marketProgramId: new PublicKey("RVKd61ztZW9hH1ZZzZ3aRMEDpxVRCfAS3auN1xjYqfJ"), // Raydium V4 AMM Program
+  openbookProgramId: new PublicKey(
+    "5quBzRLXna2MLB5VhFeG1EMuV28Kv53jjZNwHb4ENJ7y"
+  ), // OpenBook V2 Program
+};
+
+const HELIUS_API_KEY = process.env.NEXT_PUBLIC_HELIUS_API_KEY;
+
+const connection = new Connection(
+  `https://mainnet.helius-rpc.com/?api-key=${HELIUS_API_KEY}`
+);
+
+// export const getPoolInfo = async (lpMintKey: string) => {
+//   const liquidityJsonResp = await fetch(RAYDIUM_LIQUIDITY_JSON);
+//   if (!liquidityJsonResp.ok) return null;
+
+//   const liquidityJson = await liquidityJsonResp.json();
+//   const allPoolKeysJson = [
+//     ...(liquidityJson?.official ?? []),
+//     ...(liquidityJson?.unOfficial ?? []),
+//   ];
+
+//   const poolKeysJson: LiquidityPoolJsonInfo =
+//     allPoolKeysJson.find((item) => item.lpMint === lpMintKey) || null;
+
+//   if (!poolKeysJson) return null;
+
+//   return jsonInfo2PoolKeys(poolKeysJson);
+// };
+
+export async function getPoolKeyRaydium(
+  baseMint: PublicKey,
+  quoteMint: PublicKey
+) {
+  const markets = await fetchMarketAccounts(
+    connection,
+    baseMint,
+    quoteMint,
+    "confirmed"
+  );
+
+  console.log({ markets });
+
+  if (markets.length === 0) {
+    console.log("No pool found for this pair.");
+    return null;
+  }
+
+  const pool = markets[0]; // you could select by volume or other logic
+  console.log("Pool Key:", pool.id);
+  return pool.id;
+}
+
+export async function getTokenAccountsByOwner(
+  owner: PublicKey
+): Promise<TokenAccount[]> {
+  const tokenResp = await connection.getTokenAccountsByOwner(owner, {
+    programId: TOKEN_PROGRAM_ID,
+  });
+
+  return tokenResp.value.map(({ pubkey, account }) => ({
+    pubkey,
+    accountInfo: SPL_ACCOUNT_LAYOUT.decode(account.data),
+  }));
+}
+
+export async function calcAmountOut(
+  poolKeys: LiquidityPoolKeys,
+  rawAmountIn: number,
+  swapInDirection: boolean
+) {
+  const poolInfo = await Liquidity.fetchInfo({ connection, poolKeys });
+
+  let currencyInMint = poolKeys.baseMint;
+  let currencyInDecimals = poolInfo.baseDecimals;
+  let currencyOutMint = poolKeys.quoteMint;
+  let currencyOutDecimals = poolInfo.quoteDecimals;
+
+  if (!swapInDirection) {
+    currencyInMint = poolKeys.quoteMint;
+    currencyInDecimals = poolInfo.quoteDecimals;
+    currencyOutMint = poolKeys.baseMint;
+    currencyOutDecimals = poolInfo.baseDecimals;
+  }
+
+  const currencyIn = new Token(currencyInMint, currencyInDecimals);
+  const amountIn = new TokenAmount(currencyIn, rawAmountIn, false);
+  const currencyOut = new Token(currencyOutMint, currencyOutDecimals);
+  const slippage = new Percent(5, 100); // 5%
+
+  const {
+    amountOut,
+    minAmountOut,
+    currentPrice,
+    executionPrice,
+    priceImpact,
+    fee,
+  } = Liquidity.computeAmountOut({
+    poolKeys,
+    poolInfo,
+    amountIn,
+    currencyOut,
+    slippage,
+  });
+
+  return {
+    amountIn,
+    amountOut,
+    minAmountOut,
+    currentPrice,
+    executionPrice,
+    priceImpact,
+    fee,
+  };
+}
+
+export async function makeAndSendSwapTransaction({
+  connection,
+  poolKeys,
+  tokenAccounts,
+  amountIn,
+  minAmountOut,
+  publicKey,
+  sendTransaction,
+}: any) {
+  const { transaction, signers } = await Liquidity.makeSwapTransaction({
+    connection,
+    poolKeys,
+    userKeys: {
+      tokenAccounts,
+      owner: publicKey,
+    },
+    amountIn,
+    amountOut: minAmountOut,
+    fixedSide: "in",
+  });
+
+  const txid = await sendTransaction(transaction, connection, {
+    signers,
+    skipPreflight: true,
+  });
+
+  console.log(`✅ Tx Sent: https://solscan.io/tx/${txid}`);
+  return txid;
+}
+
+export async function fetchMarketAccounts(
+  connection: Connection,
+  base: PublicKey,
+  quote: PublicKey,
+  commitment: Commitment = "confirmed"
+) {
+  const accounts = await connection.getProgramAccounts(
+    networkData.marketProgramId, // Raydium AMM program ID (e.g., V4)
+    {
+      commitment,
+      filters: [
+        { dataSize: LIQUIDITY_STATE_LAYOUT_V4.span },
+        {
+          memcmp: {
+            offset: LIQUIDITY_STATE_LAYOUT_V4.offsetOf("baseMint"),
+            bytes: base.toBase58(),
+          },
+        },
+        {
+          memcmp: {
+            offset: LIQUIDITY_STATE_LAYOUT_V4.offsetOf("quoteMint"),
+            bytes: quote.toBase58(),
+          },
+        },
+      ],
+    }
+  );
+
+  return accounts.map(({ pubkey, account }) => ({
+    id: pubkey.toString(), // This is the Pool PublicKey (the pool key)
+    ...LIQUIDITY_STATE_LAYOUT_V4.decode(account.data),
+  }));
+}
+
+export const fetchPoolKeys = async () => {
+  console.log("HELIUS_API_KEY", HELIUS_API_KEY);
+
+  const pools = await Liquidity.fetchAllPoolKeys(connection);
+  const pool = pools.find(
+    (p) => p.id.toBase58() === "3ucNos4NbumPLZNWztqGHNFFgkHeRMBQAVemeeomsUxv"
+  );
+  return pool;
+};

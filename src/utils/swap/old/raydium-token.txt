@@ -1,0 +1,21 @@
+// tokens.ts
+export const TOKENS = [
+  {
+    name: "SOL",
+    symbol: "SOL",
+    mint: "So11111111111111111111111111111111111111112",
+    decimals: 9,
+  },
+  {
+    name: "USDC",
+    symbol: "USDC",
+    mint: "Es9vMFrzaCERQAc9JWtaTt41sFjFaU4Z1cRpp3y4gUGn", // or devnet version
+    decimals: 6,
+  },
+  {
+    name: "RAY",
+    symbol: "RAY",
+    mint: "4k3Dyjzvzp8eMJYjzQ1qU1fJkzF1h4nSdTyoD4cF8Vgx",
+    decimals: 6,
+  },
+];

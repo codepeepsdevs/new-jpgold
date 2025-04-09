@@ -1,0 +1,15 @@
+// pools.ts
+export async function fetchRaydiumPools() {
+  const response = await fetch("https://api.raydium.io/pairs");
+  const pools = await response.json();
+  return pools;
+}
+
+export async function findPool(inputMint: string, outputMint: string) {
+  const pools = await fetchRaydiumPools();
+  return pools.find(
+    (p: any) =>
+      (p.baseMint === inputMint && p.quoteMint === outputMint) ||
+      (p.baseMint === outputMint && p.quoteMint === inputMint)
+  );
+}
