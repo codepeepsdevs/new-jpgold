@@ -178,11 +178,11 @@ export class RaydiumSwapV2 {
     const pool = data[0];
 
     // Determine if we're swapping A to B or B to A
-    const isAtoB = inputMint === pool.mintA.address;
+    // const isAtoB = inputMint === pool.mintA.address;
 
     // Get input and output token info
-    const inputToken = isAtoB ? pool.mintA : pool.mintB;
-    const outputToken = isAtoB ? pool.mintB : pool.mintA;
+    // const inputToken = isAtoB ? pool.mintA : pool.mintB;
+    // const outputToken = isAtoB ? pool.mintB : pool.mintA;
 
     // Create proper ComputeAmountOutLayout object
 
