@@ -14,9 +14,9 @@ import { useConnection, useWallet, } from "@solana/wallet-adapter-react";
 import { Connection, PublicKey, Transaction, clusterApiUrl } from "@solana/web3.js";
 // import { calcAmountOut, fetchPoolKeys, getPoolKeyRaydium, getTokenAccountsByOwner, makeAndSendSwapTransaction } from "@/utils/swap/raydium-swap";
 import { RiLoader2Fill } from "react-icons/ri";
+import { swapSolana } from "@/utils/swap/RaydiumSwap";
 import { Wallet as AnchorWallet } from "@coral-xyz/anchor";
 import { toast } from "react-hot-toast";
-import { RaydiumSwapV2 } from "@/utils/swap/RaydiumSwapV2";
 
 interface CryptoOption {
   value: string;
@@ -232,99 +232,72 @@ const JpgoldcoinSwap = () => {
         };
 
 
-        const raydiumSwap = new RaydiumSwapV2(connection, wallet);
-
-        await raydiumSwap.initialize();
-
-        const fee = await raydiumSwap.calculateAmounts(
-          {
-            poolId,
-            inputMint,
-            outputMint,
-            amount: amountToSwap
-          }
-        )
-
-        console.log({ fee });
 
         try {
-
-          const swapResult = await raydiumSwap.executeSwap({
+          // First simulate the swap to get expected output
+          const swapSimulation = await swapSolana(
+            connection,
+            wallet,
             poolId,
             inputMint,
             outputMint,
-            amount: amountToSwap
-          });
+            amountToSwap,
+            true, // simulate first
+            true // use versioned transactions
+          );
 
+          if (!swapSimulation.success) {
+            throw new Error(swapSimulation.error);
+          }
 
-          console.log({ swapResult })
+          // Execute the actual swap
+          const swapResult = await swapSolana(
+            connection,
+            wallet,
+            poolId,
+            inputMint,
+            outputMint,
+            amountToSwap,
+            false, // not a simulation
+            true // use versioned transactions
+          );
 
-          // // First simulate the swap to get expected output
-          // const swapSimulation = await swapSolana(
-          //   connection,
-          //   wallet,
-          //   poolId,
-          //   inputMint,
-          //   outputMint,
-          //   amountToSwap,
-          //   true, // simulate first
-          //   true // use versioned transactions
-          // );
+          if (!swapResult.success) {
+            throw new Error(swapResult.error);
+          }
 
-          // if (!swapSimulation.success) {
-          //   throw new Error(swapSimulation.error);
-          // }
+          // If we need to do a second swap (e.g., USDC to JPGC)
+          if ((inputToken === "SOL" && outputToken === "JPGC") ||
+            (inputToken === "JPGC" && outputToken === "SOL")) {
 
-          // // Execute the actual swap
-          // const swapResult = await swapSolana(
-          //   connection,
-          //   wallet,
-          //   poolId,
-          //   inputMint,
-          //   outputMint,
-          //   amountToSwap,
-          //   false, // not a simulation
-          //   true // use versioned transactions
-          // );
+            const secondPoolId = inputToken === "SOL" ? POOLS.JPGC_USDC : POOLS.SOL_USDC;
+            const secondInputMint = TOKENS.USDC;
+            const secondOutputMint = inputToken === "SOL" ? TOKENS.JPGC : TOKENS.SOL;
 
-          // if (!swapResult.success) {
-          //   throw new Error(swapResult.error);
-          // }
+            const secondSwapResult = await swapSolana(
+              connection,
+              wallet,
+              secondPoolId,
+              secondInputMint,
+              secondOutputMint,
+              swapResult.amountOut,
+              false,
+              true
+            );
 
-          // // If we need to do a second swap (e.g., USDC to JPGC)
-          // if ((inputToken === "SOL" && outputToken === "JPGC") ||
-          //   (inputToken === "JPGC" && outputToken === "SOL")) {
+            if (!secondSwapResult.success) {
+              throw new Error(secondSwapResult.error);
+            }
 
-          //   const secondPoolId = inputToken === "SOL" ? POOLS.JPGC_USDC : POOLS.SOL_USDC;
-          //   const secondInputMint = TOKENS.USDC;
-          //   const secondOutputMint = inputToken === "SOL" ? TOKENS.JPGC : TOKENS.SOL;
-
-          //   const secondSwapResult = await swapSolana(
-          //     connection,
-          //     wallet,
-          //     secondPoolId,
-          //     secondInputMint,
-          //     secondOutputMint,
-          //     swapResult.amountOut,
-          //     false,
-          //     true
-          //   );
-
-          //   if (!secondSwapResult.success) {
-          //     throw new Error(secondSwapResult.error);
-          //   }
-
-          //   // Update final receiving amount
-          //   setReceivingAmount(secondSwapResult.amountOut.toString());
-          // } else {
-          //   setLoading(false)
-          //   // Update receiving amount for direct swaps
-          //   setReceivingAmount(swapResult.amountOut.toString());
-          // }
+            // Update final receiving amount
+            setReceivingAmount(secondSwapResult.amountOut.toString());
+          } else {
+            setLoading(false)
+            // Update receiving amount for direct swaps
+            setReceivingAmount(swapResult.amountOut.toString());
+          }
 
           toast.success("Swap completed successfully!");
-
-          setLoading(false)
         } catch (error) {
           setLoading(false)
           console.error("Swap error:", error);
