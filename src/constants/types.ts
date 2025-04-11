@@ -171,7 +171,7 @@ export interface CryptoOption {
   color?: string;
   isImage?: boolean;
   type: "native" | "token";
-  address: `0x${string}`;
+  address: string;
   decimals: number;
 }
 

@@ -11,21 +11,24 @@ import SpinnerLoader from "@/components/SpinnerLoader";
 import { useWalletInfo } from "@/hooks/useWalletInfo";
 import useWeb3ModalStore from "@/store/web3Modal.store";
 import icons from "@/public/icons";
-import { quote } from "@/utils/uniswap/quote";
 import { Token } from "@uniswap/sdk-core";
 import { FeeAmount } from "@uniswap/v3-sdk";
-import {
-  connectToMetaMask,
-  createTrade,
-  executeNativeTrade,
-  executeTrade,
-} from "@/utils/uniswap/trade";
 import classNames from "classnames";
 import { CryptoOption } from "@/constants/types";
-import { NATIVE_TO_WRAPPED, POOLS } from "@/utils/uniswap/constants";
-import { cryptoOptions } from "@/constants";
-import { TransactionState } from "@/utils/uniswap/providers";
+import { ethereumCryptoOptions, solanaCryptoOptions } from "@/constants";
 import toast from "react-hot-toast";
+import UniSwap, { TransactionState } from "@/utils/swap/uniswap";
+import {
+  NATIVE_TO_WRAPPED,
+  POOLS,
+  RPC_ENDPOINT,
+} from "@/utils/swap/uniswapContants";
+import { RPC_ENDPOINT as RPC_SOALANA_ENDPOINT } from "@/utils/swap/raydiumswapContants";
+
+import { connectToMetaMask } from "@/utils/connectMetamask";
+import RaydiumSwap from "@/utils/swap/raydiumswap";
+import { useWallet } from "@solana/wallet-adapter-react";
+import { VersionedTransaction } from "@solana/web3.js";
 
 interface ChainOption {
   value: string;
@@ -65,18 +68,30 @@ const renderCryptoIcon = (option: CryptoOption) => {
 const JpgoldcoinSwap = () => {
   const { address, connected } = useWalletInfo();
 
+  const { signTransaction } = useWallet();
   const { chain } = useWeb3ModalStore();
   const [payingAmount, setPayingAmount] = useState<string>("");
   const [receivingAmount, setReceivingAmount] = useState<string>("");
-  const [selectedPayCrypto, setSelectedPayCrypto] = useState(cryptoOptions[0]);
+  const [selectedPayCrypto, setSelectedPayCrypto] = useState(
+    ethereumCryptoOptions[0]
+  );
+
   const [selectedReceiveCrypto, setSelectedReceiveCrypto] = useState(
-    cryptoOptions[3]
+    ethereumCryptoOptions.find((option) => option.label === "JPGC") ||
+      ethereumCryptoOptions[0]
   );
   const [showPayDropdown, setShowPayDropdown] = useState(false);
   const [showReceiveDropdown, setShowReceiveDropdown] = useState(false);
   const [selectedChain, setSelectedChain] = useState<ChainOption>(
     chainOptions.find((item) => item.value === chain.type) || chainOptions[0]
   );
+
+  const [cryptoOptions, setCryptoOptions] = useState<CryptoOption[]>(
+    chainOptions.find((item) => item.value === chain.type)?.value === "ethereum"
+      ? ethereumCryptoOptions
+      : solanaCryptoOptions
+  );
+
   const [showChainDropdown, setShowChainDropdown] = useState(false);
   const [fee, setFee] = useState<string>("0.000");
   const [feePercentage, setFeePercentage] = useState<number>(0);
@@ -111,6 +126,14 @@ const JpgoldcoinSwap = () => {
         return;
       }
 
+      let uniswap;
+      try {
+        uniswap = new UniSwap(RPC_ENDPOINT, address as string);
+      } catch (error) {
+        console.log("error initializing uniswap", error);
+        return;
+      }
+
       // create a Trade
       setSwapLoading(true);
       let response: TransactionState = TransactionState.Failed;
@@ -120,7 +143,7 @@ const JpgoldcoinSwap = () => {
         const isReceiveNativeToken = selectedReceiveCrypto.type === "native";
 
         if (isPayNativeToken || isReceiveNativeToken) {
-          response = await executeNativeTrade(
+          response = await uniswap.executeNativeTrade(
             {
               in: isPayNativeToken
                 ? NATIVE_TO_WRAPPED[selectedPayCrypto.address].address
@@ -166,7 +189,7 @@ const JpgoldcoinSwap = () => {
           );
 
           console.log("before create trade");
-          const trade = await createTrade({
+          const trade = await uniswap.createTrade({
             in: isSetReverse ? token1 : token0,
             out: isSetReverse ? token0 : token1,
             amountIn: isSetReverse
@@ -180,9 +203,8 @@ const JpgoldcoinSwap = () => {
           console.log("new created trade", trade);
 
           // Execute the trade
-          response = await executeTrade(
+          response = await uniswap.executeTrade(
             trade,
-            address as string,
             web3Provider,
             isSetReverse ? Number(receivingAmount) : Number(payingAmount)
           );
@@ -200,6 +222,71 @@ const JpgoldcoinSwap = () => {
         setReceivingAmount("");
       }
     } else {
+      if (!signTransaction) {
+        console.log("no signtransaction exists");
+        return;
+      }
+
+      let raydiumSwap;
+      try {
+        raydiumSwap = new RaydiumSwap(RPC_SOALANA_ENDPOINT, address as string);
+      } catch (error) {
+        console.log("error initailizing raydium swap", error);
+        return;
+      }
+
+      setSwapLoading(true);
+
+      // load pool from file
+      await raydiumSwap.loadPoolKeys("trimmed_mainnet.json");
+
+      const poolKeys = raydiumSwap.findPoolInfoForTokens(
+        "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v", // USDC mint
+        "So11111111111111111111111111111111111111112" // SOL mint
+      );
+
+      if (!poolKeys) {
+        console.error("Pool not found for SOL/USDC");
+        return null;
+      }
+
+      const trx = await raydiumSwap.buildSwapTransaction(
+        "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v",
+        0.0001,
+        poolKeys,
+        1500000,
+        true,
+        "in"
+      );
+
+      console.log("Signing transaction....", trx);
+      // You need to type check before signing and sending
+      try {
+        if (trx instanceof VersionedTransaction) {
+          const signedTrx = await signTransaction(trx);
+          console.log("Sending Swap transaction....");
+          const txid = await raydiumSwap.sendSignedVersionedTransaction(
+            signedTrx,
+            5
+          );
+          console.log("Transaction confirmed:", txid);
+        } else {
+          const signedTrx = await signTransaction(trx);
+          console.log("Sending Swap transaction....");
+          const txid = await raydiumSwap.sendSignedLegacyTransaction(
+            signedTrx,
+            5
+          );
+          console.log("Transaction confirmed:", txid);
+        }
+      } catch (error) {
+        console.log("error sending swap transaction", error);
+        setSwapLoading(false);
+        return;
+      }
+
+      setSwapLoading(false);
+      toast.success("Swap successful!");
     }
   };
 
@@ -213,6 +300,8 @@ const JpgoldcoinSwap = () => {
       }
 
       setFeePercentage(poolFee / 10000);
+
+      const uniswap = new UniSwap(RPC_ENDPOINT, address as string);
       const timer = setTimeout(() => {
         const amount = isSetReverse ? receivingAmount : payingAmount;
         if (amount && chain?.id && address) {
@@ -254,7 +343,7 @@ const JpgoldcoinSwap = () => {
               : Number(payingAmount);
 
             const fetchQuotes = async () => {
-              return await quote(
+              return await uniswap.quote(
                 {
                   in: inputToken,
                   amountIn: amountIn,
@@ -278,6 +367,7 @@ const JpgoldcoinSwap = () => {
                   Number(quote?.amountOut).toFixed(5) || "0.00"
                 );
               }
+              setQuoteLoading(false);
             });
           }
         }
@@ -285,6 +375,78 @@ const JpgoldcoinSwap = () => {
 
       return () => clearTimeout(timer);
     } else {
+      console.log("initialization data", RPC_SOALANA_ENDPOINT, address);
+
+      let raydiumSwap;
+      try {
+        raydiumSwap = new RaydiumSwap(RPC_SOALANA_ENDPOINT, address as string);
+      } catch (error) {
+        console.log("error initailizing raydium swap", error);
+        return;
+      }
+
+      const timer = setTimeout(() => {
+        const fetchQuotes = async () => {
+          setQuoteLoading(true);
+          // load pool from file
+          await raydiumSwap.loadPoolKeys("trimmed_mainnet.json");
+
+          const poolKeys = raydiumSwap.findPoolInfoForTokens(
+            "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v", // USDC mint
+            "So11111111111111111111111111111111111111112" // SOL mint
+          );
+
+          if (!poolKeys) {
+            console.error("Pool not found for SOL/USDC");
+            return null;
+          }
+
+          console.log("pool keys", poolKeys);
+          // Get quote for swapping 1 SOL to USDC
+          const solToUsdcQuote = await raydiumSwap.calcAmountOut(
+            poolKeys,
+            0.0001,
+            true // SOL to USDC direction (base to quote)
+          );
+
+          console.log("response from fetching quotes", solToUsdcQuote);
+          return solToUsdcQuote;
+        };
+
+        fetchQuotes().then((quote) => {
+          console.log("done fetching solana  quotes", quote);
+          setFee(
+            quote?.fee
+              ? raydiumSwap.bnToStringWithDecimals(
+                  quote?.fee.raw,
+                  quote?.fee?.currency?.decimals
+                )
+              : "0.00"
+          );
+          if (isSetReverse) {
+            setPayingAmount(
+              quote?.amountOut
+                ? raydiumSwap.bnToStringWithDecimals(
+                    quote?.amountOut.raw,
+                    quote?.amountOut?.currency?.decimals
+                  )
+                : "0.00"
+            );
+          } else {
+            setReceivingAmount(
+              quote?.amountOut
+                ? raydiumSwap.bnToStringWithDecimals(
+                    quote?.amountOut.raw,
+                    quote?.amountOut?.currency?.decimals
+                  )
+                : "0.00"
+            );
+          }
+          setQuoteLoading(false);
+        });
+      }, 500);
+
+      return () => clearTimeout(timer);
     }
   }, [
     payingAmount,
@@ -304,8 +466,34 @@ const JpgoldcoinSwap = () => {
     }
   }, [chain]);
 
+  useEffect(() => {
+    if (!selectedChain) return;
+
+    setPayingAmount("");
+    setReceivingAmount("");
+    if (selectedChain?.value === "ethereum") {
+      setCryptoOptions(ethereumCryptoOptions);
+      setSelectedPayCrypto(ethereumCryptoOptions[0]);
+      setSelectedReceiveCrypto(
+        ethereumCryptoOptions.find((option) => option.label === "JPGC") ||
+          ethereumCryptoOptions[0]
+      );
+    } else {
+      setCryptoOptions(solanaCryptoOptions);
+      setSelectedPayCrypto(solanaCryptoOptions[0]);
+      setSelectedReceiveCrypto(
+        solanaCryptoOptions.find((option) => option.label === "JPGC") ||
+          solanaCryptoOptions[0]
+      );
+    }
+  }, [selectedChain]);
+
+  // useEffect(() => {}, [selectedChain]);
   console.log("quoteLoading", quoteLoading);
   console.log("swapLoading", swapLoading);
+
+  console.log("selected  pay currency", selectedPayCrypto);
+  console.log("selected  received currency", selectedReceiveCrypto);
   return (
     <div className="flex flex-col md:flex-row gap-4">
       <UserCard className="w-full md:w-1/2">
@@ -347,7 +535,7 @@ const JpgoldcoinSwap = () => {
                       >
                         {renderCryptoIcon(selectedPayCrypto)}
                         <span className="text-[#050706] dark:text-white">
-                          {selectedReceiveCrypto.label}
+                          {selectedPayCrypto.label}
                         </span>
                         <IoChevronDown className="text-[#5A5B5A] ml-1" />
                       </button>

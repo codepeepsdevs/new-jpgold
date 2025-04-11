@@ -30,7 +30,7 @@ import {
   METAL_PRICE_BASES,
   METAL_PRICE_UNITS,
 } from "@/api/metal-price/metal-price.types";
-import { SiPolygon, SiTether } from "react-icons/si";
+import { SiPolygon, SiSolana, SiTether } from "react-icons/si";
 
 export const dynamicFrontendUrl =
   typeof window !== "undefined"
@@ -505,7 +505,7 @@ export const metal_price_units = [
   },
 ];
 
-export const cryptoOptions: CryptoOption[] = [
+export const ethereumCryptoOptions: CryptoOption[] = [
   {
     id: 1,
     value: "ETH",
@@ -563,5 +563,38 @@ export const cryptoOptions: CryptoOption[] = [
     type: "token",
     address: "0x0d500B1d8E8eF31E21C99d1Db9A6444d3ADf1270",
     decimals: 18,
+  },
+];
+
+export const solanaCryptoOptions: CryptoOption[] = [
+  {
+    id: 1,
+    value: "SOL",
+    label: "SOL",
+    icon: SiSolana, // Use SiSolana instead of FaEthereum
+    color: "#14F195", // Solana's brand color
+    type: "native",
+    address: "So11111111111111111111111111111111111111112",
+    decimals: 9,
+  },
+  {
+    id: 2,
+    value: "USDC",
+    label: "USDC",
+    icon: SiTether, // Use SiUsdc instead of FaEthereum
+    color: "#2775CA", // USDC's brand color
+    type: "token",
+    address: "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v",
+    decimals: 6,
+  },
+  {
+    id: 4,
+    value: "JPGC",
+    label: "JPGC",
+    icon: images.user.coin,
+    isImage: true,
+    type: "token",
+    address: "YOUR_JPGC_TOKEN_ADDRESS_ON_SOLANA", // Replace with your token address
+    decimals: 6, // Replace with your token's decimals
   },
 ];
